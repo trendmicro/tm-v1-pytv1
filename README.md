@@ -1,8 +1,8 @@
-## PyTMV1: Python Library for Trend Micro Vision One
-[![Build](https://github.com/TrendATI/pytmv1/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/TrendATI/pytmv1/actions/workflows/build.yml)
-[![Lint](https://github.com/TrendATI/pytmv1/actions/workflows/lint.yml/badge.svg?branch=main)](https://github.com/TrendATI/pytmv1/actions/workflows/lint.yml)
-[![Test](https://github.com/TrendATI/pytmv1/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/TrendATI/pytmv1/actions/workflows/test.yml)
-[![Coverage](https://img.shields.io/endpoint?url=https%3A%2F%2Fgist.githubusercontent.com%2Ft0mz06%2F6c39ef59cc8beb9595e91fc96793de5b%2Fraw%2Fcoverage.json)](https://github.com/TrendATI/pytmv1/actions/workflows/coverage.yml)
+## PyTMV1: Python Library for Trend Vision One
+[![Build](https://github.com/trendmicro/tm-v1-pytv1/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/trendmicro/tm-v1-pytv1/actions/workflows/build.yml)
+[![Lint](https://github.com/trendmicro/tm-v1-pytv1/actions/workflows/lint.yml/badge.svg?branch=main)](https://github.com/trendmicro/tm-v1-pytv1/actions/workflows/lint.yml)
+[![Test](https://github.com/trendmicro/tm-v1-pytv1/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/trendmicro/tm-v1-pytv1/actions/workflows/test.yml)
+[![Coverage](https://img.shields.io/endpoint?url=https%3A%2F%2Fgist.githubusercontent.com%2Ft0mz06%2F6c39ef59cc8beb9595e91fc96793de5b%2Fraw%2Fcoverage.json)](https://github.com/trendmicro/tm-v1-pytv1/actions/workflows/coverage.yml)
 [![Pypi: version](https://img.shields.io/pypi/v/pytmv1)](https://pypi.org/project/pytmv1)
 [![Downloads](https://pepy.tech/badge/pytmv1)](https://pepy.tech/project/pytmv1)
 [![Python: version](https://img.shields.io/pypi/pyversions/pytmv1)](https://pypi.org/project/pytmv1)
@@ -19,7 +19,7 @@ Using this project requires at least [Python 3.7](https://www.python.org/downloa
 
 - A thread-safe client for your application.
 - HTTP pooling capabilities.
-- Easy integration with Trend Micro Vision One APIs.
+- Easy integration with Trend Vision One APIs.
 
 
 #### Configuration
@@ -137,11 +137,11 @@ Supported APIs
 
 Contributing
 ------------
-Thank you for your interest in this project, please make sure to read the [contribution guide](CONTRIBUTING.md).
+Read our [contributing guide](https://github.com/trendmicro/tm-v1/blob/main/CONTRIBUTING.md) to learn about our development process, how to propose bug fixes and improvements, and how to build and test your changes to Trend Vision One.
 
 Code of conduct
 ---------------
-See [Code of conduct](CODE_OF_CONDUCT.md).
+Trend Micro has adopted a [Code of Conduct](https://github.com/trendmicro/tm-v1/blob/main/CODE_OF_CONDUCT.md) that we expect project participants to adhere to. Please read the [full text](https://github.com/trendmicro/tm-v1/blob/main/CODE_OF_CONDUCT.md) to understand what actions will and will not be tolerated.
 
 License
 -------
