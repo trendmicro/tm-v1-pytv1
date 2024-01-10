@@ -10,40 +10,9 @@ from urllib3.poolmanager import PoolManager as ManagerUrllib
 
 class HTTPConnectionPool(HTTPUrllib):
     @typing.no_type_check
-    def urlopen(
-        self,
-        method,
-        url,
-        body=None,
-        headers=None,
-        retries=None,
-        redirect=True,
-        assert_same_host=True,
-        timeout=30,
-        pool_timeout=10,
-        release_conn=True,
-        chunked=False,
-        body_pos=None,
-        preload_content=True,
-        decode_content=True,
-        **response_kw,
-    ):
+    def urlopen(self, method, url, **kwargs):
         return super().urlopen(
-            method,
-            url,
-            body,
-            headers,
-            retries,
-            redirect,
-            assert_same_host,
-            timeout,
-            pool_timeout,
-            release_conn,
-            chunked,
-            body_pos,
-            preload_content,
-            decode_content,
-            **response_kw,
+            method, url, pool_timeout=5, release_conn=True, **kwargs
         )
 
 
@@ -54,11 +23,9 @@ class HTTPSConnectionPool(HTTPSUrllib, HTTPConnectionPool):
 class PoolManager(ManagerUrllib):
     def __init__(
         self,
-        num_pools: Any = 10,
-        headers: Any = None,
         **connection_pool_kw: Any,
     ):
-        super().__init__(num_pools, headers, **connection_pool_kw)
+        super().__init__(**connection_pool_kw)
         self.pool_classes_by_scheme = {
             "http": HTTPConnectionPool,
             "https": HTTPSConnectionPool,

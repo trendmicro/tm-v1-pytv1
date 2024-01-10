@@ -13,11 +13,11 @@ jobs:
     runs-on: ubuntu-latest
     env:
         VERSION: ${{ github.event.inputs.version }}
-        BRANCH: release-${{ github.event.inputs.version }}
+        BRANCH: releases/${{ github.event.inputs.version }}
     steps:
       - uses: actions/checkout@v3
         with:
-          ssh-key: ${{ secrets.GIT_BOT_SSH_KEY }}
+          ssh-key: ${{ secrets.USER_SSH_KEY }}
           fetch-depth: 0
       - name: Set up Python 3.7
         uses: actions/setup-python@v4
@@ -25,8 +25,8 @@ jobs:
           python-version: "3.7"
       - name: Set up Git
         run: |
-          git config --add user.name "TrendATI-bot"
-          git config --add user.email "ati-integration@trendmicro.com"
+          git config --add user.name "${{ secrets.USER_NAME }}"
+          git config --add user.email "${{ secrets.USER_MAIL }}"
       - name: Run build
         run: |
           pip install --upgrade hatch
@@ -45,7 +45,10 @@ jobs:
           git merge --no-ff ${{ env.BRANCH }}
           git tag -a ${{ env.VERSION }} -m "Release ${{ env.VERSION }}"
           git checkout ${{ env.BRANCH }}
-          git merge main
+          git merge --ff-only main
+          git push --atomic origin main ${{ env.BRANCH }} refs/tags/${{ env.VERSION }}
+          # Try to merge back release branch
           git checkout develop
           git merge --no-ff ${{ env.BRANCH }}
-          git push --atomic origin main develop ${{ env.BRANCH }} refs/tags/${{ env.VERSION }}
+          git branch -d ${{ env.BRANCH }}
+          git push origin develop :${{ env.BRANCH }}
