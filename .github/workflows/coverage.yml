@@ -2,9 +2,9 @@ name: coverage
 
 on:
   push:
-    branches: main
+    branches: [main]
   pull_request:
-    branches: [develop, release-**]
+    branches: [develop]
 
 jobs:
   coverage:
@@ -23,7 +23,7 @@ jobs:
         id: cov
         shell: bash {0}
         run: |
-          pytest --mock-url="${{ secrets.API_URL }}" --cov-fail-under=95 --cov-report=term-missing --cov-report=xml --cov=pytmv1 --verbose
+          pytest --mock-url="${{ secrets.MOCK_URL }}" --cov-fail-under=95 --cov-report=term-missing --cov-report=xml --cov=pytmv1 --log-cli-level="DEBUG" --verbose
           rc=$?
           echo "total=$(head -2 coverage.xml|grep -Po 'line-rate="\K\d{1}\.?\d{0,4}' |awk '{print $1 * 100}'|cut -d. -f1)" >> $GITHUB_OUTPUT
           exit $rc
