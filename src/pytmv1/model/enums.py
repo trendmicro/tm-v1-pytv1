@@ -2,48 +2,53 @@ from enum import Enum
 
 
 class Api(str, Enum):
-    ADD_ALERT_NOTE = "/workbench/alerts/{0}/notes"
-    ADD_TO_BLOCK_LIST = "/response/suspiciousObjects"
-    ADD_TO_EXCEPTION_LIST = "/threatintel/suspiciousObjectExceptions"
-    ADD_TO_SUSPICIOUS_LIST = "/threatintel/suspiciousObjects"
-    COLLECT_ENDPOINT_FILE = "/response/endpoints/collectFile"
-    CONNECTIVITY = ("/healthcheck/connectivity",)
+    CONNECTIVITY = "/healthcheck/connectivity"
+    GET_ENDPOINT_DATA = "/eiqs/endpoints"
+    GET_CUSTOM_SCRIPT_LIST = "/response/customScripts"
+    ADD_CUSTOM_SCRIPT = "/response/customScripts"
+    DELETE_CUSTOM_SCRIPT = "/response/customScripts/{0}"
+    DOWNLOAD_CUSTOM_SCRIPT = "/response/customScripts/{0}"
+    UPDATE_CUSTOM_SCRIPT = "/response/customScripts/{0}/update"
     DELETE_EMAIL_MESSAGE = "/response/emails/delete"
+    QUARANTINE_EMAIL_MESSAGE = "/response/emails/quarantine"
+    RESTORE_EMAIL_MESSAGE = "/response/emails/restore"
     DISABLE_ACCOUNT = "/response/domainAccounts/disable"
-    DOWNLOAD_SANDBOX_ANALYSIS_RESULT = "/sandbox/analysisResults/{0}/report"
+    ENABLE_ACCOUNT = "/response/domainAccounts/enable"
+    RESET_PASSWORD = "/response/domainAccounts/resetPassword"
+    SIGN_OUT_ACCOUNT = "/response/domainAccounts/signOut"
+    COLLECT_ENDPOINT_FILE = "/response/endpoints/collectFile"
+    ISOLATE_ENDPOINT = "/response/endpoints/isolate"
+    RESTORE_ENDPOINT = "/response/endpoints/restore"
+    RUN_CUSTOM_SCRIPT = "/response/endpoints/runScript"
+    TERMINATE_ENDPOINT_PROCESS = "/response/endpoints/terminateProcess"
+    ADD_TO_BLOCK_LIST = "/response/suspiciousObjects"
+    REMOVE_FROM_BLOCK_LIST = "/response/suspiciousObjects/delete"
+    GET_TASK_RESULT = "/response/tasks/{0}"
+    GET_SANDBOX_ANALYSIS_RESULT = "/sandbox/analysisResults/{0}"
     DOWNLOAD_SANDBOX_INVESTIGATION_PACKAGE = (
         "/sandbox/analysisResults/{0}/investigationPackage"
     )
-    EDIT_ALERT_STATUS = "/workbench/alerts/{0}"
-    ENABLE_ACCOUNT = "/response/domainAccounts/enable"
-    ISOLATE_ENDPOINT = "/response/endpoints/isolate"
-    GET_ALERT_DETAILS = "/workbench/alerts/{0}"
-    GET_ALERT_LIST = "/workbench/alerts"
-    GET_EMAIL_ACTIVITY_DATA = "/search/emailActivities"
-    GET_ENDPOINT_ACTIVITY_DATA = "/search/endpointActivities"
-    GET_ENDPOINT_DATA = "/eiqs/endpoints"
-    GET_EXCEPTION_LIST = "/threatintel/suspiciousObjectExceptions"
-    GET_SANDBOX_SUBMISSION_STATUS = "/sandbox/tasks/{0}"
-    GET_SANDBOX_ANALYSIS_RESULT = "/sandbox/analysisResults/{0}"
+    DOWNLOAD_SANDBOX_ANALYSIS_RESULT = "/sandbox/analysisResults/{0}/report"
     GET_SANDBOX_SUSPICIOUS_LIST = (
         "/sandbox/analysisResults/{0}/suspiciousObjects"
     )
+    SUBMIT_FILE_TO_SANDBOX = "/sandbox/files/analyze"
+    GET_SANDBOX_SUBMISSION_STATUS = "/sandbox/tasks/{0}"
+    SUBMIT_URLS_TO_SANDBOX = "/sandbox/urls/analyze"
+    GET_EMAIL_ACTIVITY_DATA = "/search/emailActivities"
+    GET_ENDPOINT_ACTIVITY_DATA = "/search/endpointActivities"
     GET_SUSPICIOUS_LIST = "/threatintel/suspiciousObjects"
-    GET_TASK_RESULT = "/response/tasks/{0}"
-    QUARANTINE_EMAIL_MESSAGE = "/response/emails/quarantine"
-    REMOVE_FROM_BLOCK_LIST = "/response/suspiciousObjects/delete"
+    ADD_TO_SUSPICIOUS_LIST = "/threatintel/suspiciousObjects"
+    REMOVE_FROM_SUSPICIOUS_LIST = "/threatintel/suspiciousObjects/delete"
+    ADD_TO_EXCEPTION_LIST = "/threatintel/suspiciousObjectExceptions"
+    GET_EXCEPTION_LIST = "/threatintel/suspiciousObjectExceptions"
     REMOVE_FROM_EXCEPTION_LIST = (
         "/threatintel/suspiciousObjectExceptions/delete"
     )
-    REMOVE_FROM_SUSPICIOUS_LIST = "/threatintel/suspiciousObjects/delete"
-    RESET_PASSWORD = "/response/domainAccounts/resetPassword"
-    RESTORE_EMAIL_MESSAGE = "/response/emails/restore"
-    RESTORE_ENDPOINT = "/response/endpoints/restore"
-    RUN_CUSTOM_SCRIPT = "/response/endpoints/runScript"
-    SIGN_OUT_ACCOUNT = "/response/domainAccounts/signOut"
-    SUBMIT_FILE_TO_SANDBOX = "/sandbox/files/analyze"
-    SUBMIT_URLS_TO_SANDBOX = "/sandbox/urls/analyze"
-    TERMINATE_ENDPOINT_PROCESS = "/response/endpoints/terminateProcess"
+    GET_ALERT_LIST = "/workbench/alerts"
+    EDIT_ALERT_STATUS = "/workbench/alerts/{0}"
+    GET_ALERT_DETAILS = "/workbench/alerts/{0}"
+    ADD_ALERT_NOTE = "/workbench/alerts/{0}/notes"
 
 
 class Iam(str, Enum):
@@ -142,6 +147,11 @@ class EventSubID(int, Enum):
     TELEMETRY_MEMORY_READ = 1003
     TELEMETRY_BM_INVOKE = 1101
     TELEMETRY_BM_INVOKE_API = 1102
+
+
+class FileType(str, Enum):
+    POWERSHELL = "powershell"
+    BASH = "bash"
 
 
 class HttpMethod(str, Enum):

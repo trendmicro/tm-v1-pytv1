@@ -35,6 +35,7 @@ from .model.enums import (
     EntityType,
     EventID,
     EventSubID,
+    FileType,
     Iam,
     IntegrityLevel,
     InvestigationStatus,
@@ -67,6 +68,7 @@ from .model.requests import (
 from .model.responses import (
     AccountTaskResp,
     AddAlertNoteResp,
+    AddCustomScriptResp,
     BaseTaskResp,
     BlockListTaskResp,
     BytesResp,
@@ -78,6 +80,7 @@ from .model.responses import (
     EndpointTaskResp,
     GetAlertDetailsResp,
     GetAlertListResp,
+    GetCustomScriptListResp,
     GetEmailActivityDataCountResp,
     GetEmailActivityDataResp,
     GetEndpointActivityDataCountResp,
@@ -94,6 +97,7 @@ from .model.responses import (
     SandboxSuspiciousListResp,
     SubmitFileToSandboxResp,
     TerminateProcessTaskResp,
+    TextResp,
 )
 from .results import MultiResult, Result, ResultCode
 
@@ -105,6 +109,7 @@ __all__ = [
     "AccountTask",
     "AccountTaskResp",
     "AddAlertNoteResp",
+    "AddCustomScriptResp",
     "Alert",
     "BaseTaskResp",
     "BlockListTaskResp",
@@ -133,6 +138,7 @@ __all__ = [
     "FileTask",
     "GetAlertDetailsResp",
     "GetAlertListResp",
+    "GetCustomScriptListResp",
     "GetEmailActivityDataResp",
     "GetEmailActivityDataCountResp",
     "GetEndpointActivityDataResp",
@@ -142,6 +148,7 @@ __all__ = [
     "GetSuspiciousListResp",
     "HostInfo",
     "Iam",
+    "FileType",
     "ImpactScope",
     "Indicator",
     "IntegrityLevel",
@@ -187,6 +194,7 @@ __all__ = [
     "SuspiciousObjectTask",
     "TaskAction",
     "TerminateProcessTaskResp",
+    "TextResp",
     "TiAlert",
     "TiIndicator",
     "Value",

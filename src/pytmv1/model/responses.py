@@ -1,7 +1,6 @@
 from typing import Any, Dict, Generic, List, Optional, Tuple, TypeVar, Union
 
 from pydantic import Field
-from pydantic.generics import GenericModel
 
 from .commons import (
     Account,
@@ -17,6 +16,7 @@ from .commons import (
     MsDataUrl,
     SaeAlert,
     SandboxSuspiciousObject,
+    Script,
     SuspiciousObject,
     TiAlert,
 )
@@ -34,15 +34,16 @@ M = TypeVar("M", bound=MsData)
 
 
 class BaseResponse(BaseModel):
-    ...
+    def __init__(self, **data: Any):
+        super().__init__(**data)
 
 
-class BaseLinkableResp(BaseResponse, GenericModel, Generic[C]):
+class BaseLinkableResp(BaseResponse, Generic[C]):
     next_link: Optional[str] = None
     items: List[C] = []
 
 
-class BaseMultiResponse(BaseResponse, GenericModel, Generic[M]):
+class BaseMultiResponse(BaseResponse, Generic[M]):
     items: List[M] = []
 
 
@@ -57,6 +58,9 @@ class BaseTaskResp(BaseStatusResponse):
     action: TaskAction
     description: Optional[str] = None
     account: Optional[str] = None
+
+    def __init__(self, **data: Any):
+        super().__init__(**data)
 
 
 MR = TypeVar("MR", bound=BaseMultiResponse[Any])
@@ -75,11 +79,18 @@ class AddAlertNoteResp(BaseResponse):
         return self.location.split("/")[-1]
 
 
+class AddCustomScriptResp(BaseResponse):
+    location: str = Field(alias="Location")
+
+    def script_id(self) -> str:
+        return self.location.split("/")[-1]
+
+
 class BlockListTaskResp(BaseTaskResp):
     type: ObjectType
     value: str
 
-    def __init__(self, **data: str) -> None:
+    def __init__(self, **data: Any):
         obj: Tuple[str, str] = self._map(data)
         super().__init__(type=obj[0], value=obj[1], **data)
 
@@ -129,6 +140,10 @@ class GetAlertDetailsResp(BaseResponse):
 class GetAlertListResp(BaseLinkableResp[Union[SaeAlert, TiAlert]]):
     total_count: int
     count: int
+
+
+class GetCustomScriptListResp(BaseLinkableResp[Script]):
+    ...
 
 
 class GetEndpointActivityDataResp(BaseLinkableResp[EndpointActivity]):
@@ -225,3 +240,7 @@ class TerminateProcessTaskResp(BaseTaskResp):
     endpoint_name: str
     file_sha1: str
     file_name: Optional[str] = None
+
+
+class TextResp(BaseResponse):
+    text: str

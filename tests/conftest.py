@@ -12,6 +12,13 @@ def pytest_addoption(parser):
         dest="mock-url",
         help="Mock URL for Vision One API",
     )
+    parser.addoption(
+        "--token",
+        action="store",
+        default="",
+        dest="token",
+        help="Token Vision One API",
+    )
 
 
 @pytest.fixture(scope="package")
@@ -21,19 +28,25 @@ def url(pytestconfig):
 
 
 @pytest.fixture(scope="package")
-def client(pytestconfig, url):
+def token(pytestconfig):
+    token = pytestconfig.getoption("token")
+    return token if token else "dummyToken"
+
+
+@pytest.fixture(scope="package")
+def client(pytestconfig, token, url):
     return pytmv1.client(
         "appname",
-        "token",
+        token,
         url,
     )
 
 
 @pytest.fixture(scope="package")
-def core(pytestconfig, url):
+def core(pytestconfig, token, url):
     return Core(
         "appname",
-        "token",
+        token,
         url,
         0,
         0,

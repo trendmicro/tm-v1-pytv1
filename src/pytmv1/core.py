@@ -6,7 +6,7 @@ from typing import Any, Callable, Dict, List, Type, Union
 from urllib.parse import SplitResult, urlsplit
 
 from bs4 import BeautifulSoup
-from pydantic import AnyHttpUrl, parse_obj_as
+from pydantic import AnyHttpUrl, TypeAdapter
 from requests import PreparedRequest, Request, Response
 
 from .__about__ import __version__
@@ -18,22 +18,12 @@ from .exceptions import (
     ServerMultiJsonError,
     ServerTextError,
 )
-from .model.commons import (
-    Error,
-    MsData,
-    MsDataUrl,
-    MsError,
-    MsStatus,
-    SaeAlert,
-    TiAlert,
-)
-from .model.enums import Api, HttpMethod, Provider, Status
+from .model.commons import Error, MsError, MsStatus
+from .model.enums import Api, HttpMethod, Status
 from .model.requests import EndpointTask
 from .model.responses import (
     MR,
-    AddAlertNoteResp,
     BaseLinkableResp,
-    BaseMultiResponse,
     BytesResp,
     C,
     ConsumeLinkableResp,
@@ -44,6 +34,7 @@ from .model.responses import (
     R,
     S,
     SandboxSubmissionStatusResp,
+    TextResp,
 )
 from .results import multi_result, result
 
@@ -69,7 +60,7 @@ class Core:
         self._r_timeout = read_timeout
         self._appname = appname
         self._token = token
-        self._url = parse_obj_as(AnyHttpUrl, _format(url))
+        self._url = str(TypeAdapter(AnyHttpUrl).validate_python(_format(url)))
         self._headers: Dict[str, str] = {
             "Authorization": f"Bearer {self._token}",
             "User-Agent": f"{self._appname}-{USERAGENT_SUFFIX}/{__version__}",
@@ -279,41 +270,22 @@ def _is_http_success(status_codes: List[int]) -> bool:
 def _parse_data(raw_response: Response, class_: Type[R]) -> R:
     content_type = raw_response.headers.get("Content-Type", "")
     if "json" in content_type:
-        if issubclass(class_, BaseMultiResponse):
-            log.debug(
-                "Parsing json multi response [Class=%s]", class_.__name__
-            )
-            class_d: Type[List[Any]]
-            if issubclass(class_, MultiUrlResp):
-                class_d = List[MsDataUrl]
-            else:
-                class_d = List[MsData]
-            return class_(
-                items=parse_obj_as(
-                    class_d,
-                    raw_response.json(),
-                )
-            )
-        log.info("Parsing json response [Class=%s]", class_.__name__)
+        log.debug("Parsing json response [Class=%s]", class_.__name__)
+        if class_ in [MultiResp, MultiUrlResp]:
+            return class_(items=raw_response.json())
         if class_ == GetAlertDetailsResp:
-            response_json: Dict[str, str] = raw_response.json()
             return class_(
-                alert=parse_obj_as(
-                    (
-                        SaeAlert
-                        if response_json.get("alertProvider") == Provider.SAE
-                        else TiAlert
-                    ),
-                    response_json,
-                ),
+                alert=raw_response.json(),
                 etag=raw_response.headers.get("ETag", ""),
             )
-        return class_.parse_obj(raw_response.json())
+        return class_(**raw_response.json())
     if "application" in content_type and class_ == BytesResp:
-        log.info("Parsing binary response")
-        return class_(content=raw_response.content)
-    if raw_response.status_code == 201 and class_ == AddAlertNoteResp:
-        return class_.parse_obj(raw_response.headers)
+        log.debug("Parsing binary response")
+        return class_.model_construct(content=raw_response.content)
+    if "text" in content_type and class_ == TextResp:
+        return class_.model_construct(text=raw_response.text)
+    if raw_response.status_code == 201:
+        return class_(**raw_response.headers)
     if raw_response.status_code == 204 and class_ == NoContentResp:
         return class_()
     raise ParseModelError(class_.__name__, raw_response)
@@ -336,6 +308,7 @@ def _poll_status(
     response: S = status_call()
     while elapsed_time < poll_time_sec:
         if response.status in [Status.QUEUED, Status.RUNNING]:
+            time.sleep(2)
             response = status_call()
             elapsed_time = time.time() - start_time
         else:
@@ -354,13 +327,18 @@ def _validate(raw_response: Response) -> None:
             error: Dict[str, Any] = raw_response.json().get("error")
             error["status"] = raw_response.status_code
             raise ServerJsonError(
-                Error.parse_obj(error),
+                Error(**error),
             )
         raise ServerTextError(raw_response.status_code, raw_response.text)
     if raw_response.status_code == 207:
         if not _is_http_success(
-            MsStatus.parse_obj(raw_response.json()).values()
+            MsStatus(
+                root=[int(d.get("status", 500)) for d in raw_response.json()]
+            ).values()
         ):
             raise ServerMultiJsonError(
-                parse_obj_as(List[MsError], raw_response.json())
+                [
+                    MsError.model_validate(error)
+                    for error in raw_response.json()
+                ]
             )

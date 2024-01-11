@@ -60,6 +60,11 @@ ResultCode.SUCCESS
 
 
 #### Build the project
+Set virtual env
+```console
+python3 -m venv venv
+source venv/bin/activate
+```
 Install dependencies
 ```console
 pip install -e ".[dev]"
@@ -89,7 +94,12 @@ Supported APIs
 | `get_base_task_result`                                        | [Download response task results](https://automation.trendmicro.com/xdr/api-v3#tag/Common/paths/~1v3.0~1response~1tasks~1%7Bid%7D/get)                                              |
 | `get_task_result`                                             | [Download response task results](https://automation.trendmicro.com/xdr/api-v3#tag/Common/paths/~1v3.0~1response~1tasks~1{id}/get)                                                  |
 | **Custom Scripts**                                            |                                                                                                                                                                                    |
-| `run_custom_script`                                           | [Run Custom Script](https://automation.trendmicro.com/xdr/api-v3#tag/Custom-Script/paths/~1v3.0~1response~1endpoints~1runScript/post)                                              |
+| `get_custom_script_list`                                      | [List custom scripts](https://automation.trendmicro.com/xdr/api-v3#tag/Custom-Script/paths/~1v3.0~1response~1customScripts/get)                                                    |
+| `add_custom_script`                                           | [Add custom script](https://automation.trendmicro.com/xdr/api-v3#tag/Custom-Script/paths/~1v3.0~1response~1customScripts/post)                                                     |
+| `update_custom_script`                                        | [Update custom script](https://automation.trendmicro.com/xdr/api-v3#tag/Custom-Script/paths/~1v3.0~1response~1customScripts~1%7Bid%7D~1update/post)                                |
+| `download_custom_script`                                      | [Download custom script](https://automation.trendmicro.com/xdr/api-v3#tag/Custom-Script/paths/~1v3.0~1response~1customScripts~1%7Bid%7D/get)                                       |
+| `delete_custom_script`                                        | [Delete custom script](https://automation.trendmicro.com/xdr/api-v3#tag/Custom-Script/paths/~1v3.0~1response~1customScripts~1%7Bid%7D/delete)                                      |
+| `run_custom_script`                                           | [Run custom script](https://automation.trendmicro.com/xdr/api-v3#tag/Custom-Script/paths/~1v3.0~1response~1endpoints~1runScript/post)                                              |
 | **Domain Account**                                            |                                                                                                                                                                                    |
 | `disable_account`                                             | [Disable user account](https://automation.trendmicro.com/xdr/api-v3#tag/Domain-Account/paths/~1v3.0~1response~1domainAccounts~1disable/post)                                       |                                                                                                                   
 | `enable_account`                                              | [Enable user account](https://automation.trendmicro.com/xdr/api-v3#tag/Domain-Account/paths/~1v3.0~1response~1domainAccounts~1enable/post)                                         |
