@@ -13,11 +13,13 @@ from .model.commons import (
     EndpointActivity,
     ExceptionObject,
     SaeAlert,
+    Script,
     SuspiciousObject,
     TiAlert,
 )
 from .model.enums import (
     Api,
+    FileType,
     HttpMethod,
     InvestigationStatus,
     QueryOp,
@@ -36,12 +38,14 @@ from .model.requests import (
 )
 from .model.responses import (
     AddAlertNoteResp,
+    AddCustomScriptResp,
     BaseTaskResp,
     BytesResp,
     ConnectivityResp,
     ConsumeLinkableResp,
     GetAlertDetailsResp,
     GetAlertListResp,
+    GetCustomScriptListResp,
     GetEmailActivityDataCountResp,
     GetEmailActivityDataResp,
     GetEndpointActivityDataCountResp,
@@ -57,6 +61,7 @@ from .model.responses import (
     SandboxSubmissionStatusResp,
     SandboxSuspiciousListResp,
     SubmitFileToSandboxResp,
+    TextResp,
 )
 from .results import MultiResult, Result
 
@@ -129,6 +134,36 @@ class Client:
             Api.ADD_ALERT_NOTE.value.format(alert_id),
             HttpMethod.POST,
             json={"content": note},
+        )
+
+    def add_custom_script(
+        self,
+        file_type: FileType,
+        file_name: str,
+        file: bytes,
+        description: Optional[str] = None,
+    ) -> Result[AddCustomScriptResp]:
+        """
+        Uploads a custom script. Supported file extensions: .ps1, .sh.
+        Note: Custom scripts must use UTF-8 encoding.
+        :param file_type: File type.
+        :type file_type: FileType
+        :param file_name: File name.
+        :type file_name: str
+        :param file: Raw content in bytes.
+        :type file: bytes
+        :param description: Description.
+        :type description: Optional[str]
+        :return: Result[AddACustomScriptResp]
+        """
+        return self._core.send(
+            AddCustomScriptResp,
+            Api.ADD_CUSTOM_SCRIPT,
+            HttpMethod.POST,
+            data=utils.filter_none(
+                {"fileType": file_type.value, "description": description}
+            ),
+            files={"file": (file_name, file, "text/plain")},
         )
 
     def add_to_block_list(
@@ -218,6 +253,30 @@ class Client:
                     "orderBy": "createdDateTime desc",
                 }
             ),
+        )
+
+    def consume_custom_script_list(
+        self,
+        consumer: Callable[[Script], None],
+        op: QueryOp = QueryOp.AND,
+        **fields: str,
+    ) -> Result[ConsumeLinkableResp]:
+        """Retrieves and consume cust. scripts filtered by provided values.
+
+        :param consumer: Function which will consume every record in result.
+        :type consumer: Callable[[Script], None]
+        :param op: Operator to apply between fields (ie: ... OR ...).
+        :type op: QueryOp
+        :param fields: Field/value used to filter result (i.e:fileName="1.sh"),
+        check Vision One API documentation for full list of supported fields.
+        :type fields: Dict[str, str]
+        :return: Result[ConsumeLinkableResp]
+        """
+        return self._core.send_linkable(
+            GetCustomScriptListResp,
+            Api.GET_CUSTOM_SCRIPT_LIST,
+            consumer,
+            params={"filter": utils.custom_script_query(op, **fields)},
         )
 
     def consume_email_activity_data(
@@ -368,6 +427,19 @@ class Client:
             GetSuspiciousListResp, Api.GET_SUSPICIOUS_LIST, consumer
         )
 
+    def delete_custom_script(self, script_id: str) -> Result[NoContentResp]:
+        """Deletes custom script.
+
+        :param script_id: Unique string that identifies a script file.
+        :type script_id: str
+        :return: Result[NoContentResp]
+        """
+        return self._core.send(
+            NoContentResp,
+            Api.DELETE_CUSTOM_SCRIPT.value.format(script_id),
+            HttpMethod.DELETE,
+        )
+
     def delete_email_message(
         self, *messages: Union[EmailMessageUIdTask, EmailMessageIdTask]
     ) -> MultiResult[MultiResp]:
@@ -403,6 +475,17 @@ class Client:
                 task.dict(by_alias=True, exclude_none=True)
                 for task in accounts
             ],
+        )
+
+    def download_custom_script(self, script_id: str) -> Result[TextResp]:
+        """Downloads custom script.
+
+        :param script_id: Unique string that identifies a script file.
+        :type script_id: str
+        :return: Result[BytesResp]
+        """
+        return self._core.send(
+            TextResp, Api.DOWNLOAD_CUSTOM_SCRIPT.value.format(script_id)
         )
 
     def download_sandbox_analysis_result(
@@ -563,6 +646,24 @@ class Client:
         """
         return self._core.send_task_result(
             BaseTaskResp, task_id, poll, poll_time_sec
+        )
+
+    def get_custom_script_list(
+        self, op: QueryOp = QueryOp.AND, **fields: str
+    ) -> Result[GetCustomScriptListResp]:
+        """Retrieves scripts in a paginated list filtered by provided values.
+
+        :param op: Operator to apply between fields (ie: ... OR ...).
+        :type op: QueryOp
+        :param fields: Field/value used to filter result (i.e:fileName="1.sh"),
+        check Vision One API documentation for full list of supported fields.
+        :type fields: Dict[str, str]
+        :return: Result[GetCustomScriptsResp]
+        """
+        return self._core.send(
+            GetCustomScriptListResp,
+            Api.GET_CUSTOM_SCRIPT_LIST,
+            params={"filter": utils.custom_script_query(op, **fields)},
         )
 
     def get_email_activity_data(
@@ -1091,6 +1192,39 @@ class Client:
         """
         return self._core.send_endpoint(
             Api.TERMINATE_ENDPOINT_PROCESS, *processes
+        )
+
+    def update_custom_script(
+        self,
+        script_id: str,
+        file_type: FileType,
+        file_name: str,
+        file: bytes,
+        description: Optional[str] = None,
+    ) -> Result[NoContentResp]:
+        """
+        Updates a custom script. Supported file extensions: .ps1, .sh.
+        Note: Custom scripts must use UTF-8 encoding.
+        :param script_id: Unique string that identifies a script file.
+        :type script_id: str
+        :param file_type: File type.
+        :type file_type: FileType
+        :param file_name: File name.
+        :type file_name: str
+        :param file: Raw content in bytes.
+        :type file: bytes
+        :param description: Description.
+        :type description: Optional[str]
+        :return: Result[NoContentResp]
+        """
+        return self._core.send(
+            NoContentResp,
+            Api.UPDATE_CUSTOM_SCRIPT.value.format(script_id),
+            HttpMethod.POST,
+            data=utils.filter_none(
+                {"fileType": file_type.value, "description": description}
+            ),
+            files={"file": (file_name, file, "text/plain")},
         )
 
     def check_connectivity(self) -> Result[ConnectivityResp]:

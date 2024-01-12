@@ -42,13 +42,12 @@ jobs:
           git checkout main
           git merge --no-ff ${{ env.BRANCH }}
           git tag -a v${{ env.VERSION }} -m "Release ${{ env.VERSION }}"
-          git push --atomic origin main refs/tags/v${{ env.VERSION }}
           # Try to merge back release branch
           git checkout ${{ env.BRANCH }}
           git merge --ff-only main
           git checkout develop
           git merge --no-ff ${{ env.BRANCH }}
-          git push origin develop :${{ env.BRANCH }}
+          git push --atomic origin main develop refs/tags/v${{ env.VERSION }} :${{ env.BRANCH }}
       - name: Publish package to PyPI
         uses: pypa/gh-action-pypi-publish@v1.5.2
         with:
