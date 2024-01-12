@@ -9,6 +9,15 @@ def test_b64_encode_with_none():
     assert utils._b64_encode(None) is None
 
 
+def test_custom_script_query():
+    assert (
+        utils.custom_script_query(
+            op=QueryOp.AND, fileName="test.sh", fileType="bash"
+        )
+        == "fileName eq 'test.sh' and fileType eq 'bash'"
+    )
+
+
 def test_activity_query():
     assert (
         utils.activity_query(

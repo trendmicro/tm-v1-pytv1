@@ -2,7 +2,7 @@ import base64
 import re
 from typing import Any, Dict, List, Optional, Pattern, Tuple
 
-from pydantic import IPvAnyAddress, IPvAnyAddressError
+from pydantic import IPvAnyAddress, TypeAdapter
 
 from .model.enums import (
     OperatingSystem,
@@ -84,6 +84,10 @@ def build_suspicious_request(
     ]
 
 
+def custom_script_query(op: QueryOp, **fields: str) -> str:
+    return (" " + op + " ").join([f"{k} eq '{v}'" for k, v in fields.items()])
+
+
 def activity_query(op: QueryOp, **fields: str) -> Dict[str, str]:
     return {
         "TMV1-Query": (" " + op + " ").join(
@@ -130,6 +134,6 @@ def _b64_encode(value: Optional[str]) -> Optional[str]:
 
 def _is_ip_address(endpoint_value: str) -> bool:
     try:
-        return bool(IPvAnyAddress.validate(endpoint_value))
-    except IPvAnyAddressError:
+        return bool(TypeAdapter(IPvAnyAddress).validate_python(endpoint_value))
+    except ValueError:
         return False

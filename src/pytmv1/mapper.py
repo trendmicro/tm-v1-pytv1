@@ -1,6 +1,6 @@
 from typing import Dict, List
 
-from pydantic.utils import to_lower_camel
+from pydantic.alias_generators import to_camel
 
 from .model.commons import (
     Alert,
@@ -83,9 +83,7 @@ def _map_indicators(data: Dict[str, str], indicators: List[Indicator]) -> None:
             data["src"] = ", ".join(indicator.value.ips)
         else:
             data[
-                INDICATOR_CEF_MAP.get(
-                    indicator.type, to_lower_camel(indicator.type)
-                )
+                INDICATOR_CEF_MAP.get(indicator.type, to_camel(indicator.type))
             ] = indicator.value
 
 

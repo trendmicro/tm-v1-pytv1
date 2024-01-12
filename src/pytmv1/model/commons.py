@@ -4,12 +4,14 @@ from typing import Any, Dict, List, Optional, Tuple, Union
 
 from pydantic import BaseModel as PydanticBaseModel
 from pydantic import Field
-from pydantic.utils import to_lower_camel
+from pydantic import RootModel as PydanticRootModel
+from pydantic.alias_generators import to_camel
 
 from .enums import (
     EntityType,
     EventID,
     EventSubID,
+    FileType,
     Iam,
     IntegrityLevel,
     InvestigationStatus,
@@ -25,13 +27,23 @@ from .enums import (
 
 
 class BaseModel(PydanticBaseModel):
+    def __init__(self, **data: Any):
+        super().__init__(**data)
+
     class Config:
-        alias_generator = to_lower_camel
+        alias_generator = to_camel
+        allow_population_by_field_name = True
+
+
+class RootModel(PydanticRootModel[List[int]]):
+    class Config:
+        alias_generator = to_camel
         allow_population_by_field_name = True
 
 
 class BaseConsumable(BaseModel):
-    ...
+    def __init__(self, **data: Any):
+        super().__init__(**data)
 
 
 def _get_task_id(headers: List[Dict[str, str]]) -> Optional[str]:
@@ -192,12 +204,15 @@ class Error(BaseModel):
     message: Optional[str] = None
     number: Optional[int] = None
 
+    def __init__(self, **data: Any):
+        super().__init__(**data)
+
 
 class ExceptionObject(BaseConsumable):
     value: str
     type: ObjectType
     last_modified_date_time: str
-    description: Optional[str]
+    description: Optional[str] = None
 
     def __init__(self, **data: str) -> None:
         super().__init__(value=self._obj_value(data), **data)
@@ -266,8 +281,8 @@ class MsData(BaseModel):
 
 class MsDataUrl(MsData):
     url: str
-    id: Optional[str]
-    digest: Optional[Digest]
+    id: Optional[str] = None
+    digest: Optional[Digest] = None
 
     def __init__(self, **data: Any):
         data.update(data.pop("body", {}))
@@ -276,7 +291,7 @@ class MsDataUrl(MsData):
 
 class MsError(Error):
     extra: Dict[str, str] = {}
-    task_id: Optional[str]
+    task_id: Optional[str] = None
 
     def __init__(self, **data: Any):
         data.update(data.pop("body", {}))
@@ -288,16 +303,11 @@ class MsError(Error):
         )
 
 
-class MsStatus(BaseModel):
-    __root__: List[int]
-
-    def __init__(self, **data: Any):
-        super().__init__(
-            root=[int(d.get("status", 500)) for d in data.get("__root__", [])]
-        )
+class MsStatus(RootModel):
+    root: List[int]
 
     def values(self) -> List[int]:
-        return self.__root__
+        return self.root
 
 
 class SaeAlert(Alert):
@@ -318,7 +328,7 @@ class SandboxSuspiciousObject(BaseModel):
     type: ObjectType
     value: str
 
-    def __init__(self, **data: str) -> None:
+    def __init__(self, **data: Any):
         obj: Tuple[str, str] = self._map(data)
         super().__init__(type=obj[0], value=obj[1], **data)
 
@@ -331,6 +341,13 @@ class SandboxSuspiciousObject(BaseModel):
         }.pop()
 
 
+class Script(BaseConsumable):
+    id: str
+    file_name: str
+    file_type: FileType
+    description: Optional[str] = None
+
+
 class SuspiciousObject(ExceptionObject):
     scan_action: ScanAction
     risk_level: RiskLevel
@@ -339,9 +356,9 @@ class SuspiciousObject(ExceptionObject):
 
 
 class TiAlert(Alert):
-    campaign: Optional[str]
-    industry: Optional[str]
-    region_and_country: Optional[str]
+    campaign: Optional[str] = None
+    industry: Optional[str] = None
+    region_and_country: Optional[str] = None
     created_by: str
     total_indicator_count: int
     matched_indicator_count: int

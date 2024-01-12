@@ -133,7 +133,7 @@ def test_errors():
 
 
 def test_headers(core):
-    assert core._headers["Authorization"] == "Bearer token"
+    assert core._headers["Authorization"] == "Bearer dummyToken"
     assert core._headers["User-Agent"] == "appname-{}/{}".format(
         USERAGENT_SUFFIX, __version__
     )
@@ -174,8 +174,8 @@ def test_parse_data_with_html_is_failed():
 def test_parse_data_with_json():
     raw_response = Response()
     raw_response.headers = {"Content-Type": "application/json"}
-    raw_response.json = lambda: SandboxSuspiciousListResp(
-        items=[
+    raw_response.json = lambda: {
+        "items": [
             SandboxSuspiciousObject(
                 riskLevel=RiskLevel.HIGH,
                 analysisCompletionDateTime="2021-05-07T03:08:40",
@@ -184,7 +184,7 @@ def test_parse_data_with_json():
                 ip="6.6.6.6",
             )
         ]
-    )
+    }
     response = core_m._parse_data(raw_response, SandboxSuspiciousListResp)
     assert response.items[0].risk_level == "high"
     assert (
@@ -205,7 +205,7 @@ def test_parse_data_with_multi_and_wrong_model_is_failed():
     raw_response.headers = {"Content-Type": "application/json"}
     raw_response.status_code = 207
     raw_response.json = lambda: MultiResp(items=[MsData(status=200)])
-    with pytest.raises(ValidationError):
+    with pytest.raises(TypeError):
         core_m._parse_data(raw_response, AddAlertNoteResp)
 
 
@@ -417,7 +417,7 @@ def test_send_with_validation_error_is_failed(core, mocker):
     mocker.patch.object(
         core,
         "_send_internal",
-        side_effect=ValidationError([], NoContentResp),
+        side_effect=ValidationError.from_exception_data("Test", []),
     )
     result = core.send(GetExceptionListResp, Api.GET_EXCEPTION_LIST)
     assert result.result_code == ResultCode.ERROR
