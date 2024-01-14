@@ -32,13 +32,13 @@ class BaseModel(PydanticBaseModel):
 
     class Config:
         alias_generator = to_camel
-        allow_population_by_field_name = True
+        populate_by_name = True
 
 
 class RootModel(PydanticRootModel[List[int]]):
     class Config:
         alias_generator = to_camel
-        allow_population_by_field_name = True
+        populate_by_name = True
 
 
 class BaseConsumable(BaseModel):
