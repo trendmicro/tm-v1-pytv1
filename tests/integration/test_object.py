@@ -21,6 +21,17 @@ def test_add_to_exception_list(client):
     assert result.response.items[0].status == 201
 
 
+def test_add_to_block_list(client):
+    result = client.add_to_block_list(
+        ObjectTask(objectType=ObjectType.IP, objectValue="1.1.1.1")
+    )
+    assert isinstance(result.response, MultiResp)
+    assert result.result_code == ResultCode.SUCCESS
+    assert len(result.response.items) > 0
+    assert result.response.items[0].task_id
+    assert result.response.items[0].status == 202
+
+
 def test_add_to_suspicious_list(client):
     result = client.add_to_suspicious_list(
         SuspiciousObjectTask(
@@ -34,6 +45,17 @@ def test_add_to_suspicious_list(client):
     assert len(result.response.items) > 0
     assert result.response.items[0].task_id is None
     assert result.response.items[0].status == 201
+
+
+def test_remove_from_block_list(client):
+    result = client.remove_from_block_list(
+        ObjectTask(objectType=ObjectType.IP, objectValue="1.1.1.1")
+    )
+    assert isinstance(result.response, MultiResp)
+    assert result.result_code == ResultCode.SUCCESS
+    assert len(result.response.items) > 0
+    assert result.response.items[0].task_id
+    assert result.response.items[0].status == 202
 
 
 def test_remove_from_exception_list(client):
@@ -58,6 +80,12 @@ def test_remove_from_suspicious_list(client):
     assert result.response.items[0].status == 204
 
 
+def test_consume_exception_list(client):
+    result = client.consume_exception_list(lambda s: None)
+    assert result.result_code == ResultCode.SUCCESS
+    assert result.response.total_consumed == 1
+
+
 def test_get_exception_list(client):
     result = client.get_exception_list()
     assert isinstance(result.response, GetExceptionListResp)
@@ -65,6 +93,12 @@ def test_get_exception_list(client):
     assert len(result.response.items) > 0
     assert result.response.items[0].type == ObjectType.URL
     assert result.response.items[0].value == "https://*.example.com/path1/*"
+
+
+def test_consume_suspicious_list(client):
+    result = client.consume_suspicious_list(lambda s: None)
+    assert result.result_code == ResultCode.SUCCESS
+    assert result.response.total_consumed == 1
 
 
 def test_get_suspicious_list(client):

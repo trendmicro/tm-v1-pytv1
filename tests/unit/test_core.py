@@ -11,7 +11,6 @@ from pytmv1 import (
     Error,
     ExceptionObject,
     GetExceptionListResp,
-    MsData,
     MsError,
     MultiResp,
     NoContentResp,
@@ -19,7 +18,6 @@ from pytmv1 import (
     SandboxAnalysisResultResp,
     SandboxSubmissionStatusResp,
     SandboxSuspiciousListResp,
-    SandboxSuspiciousObject,
     Status,
     __version__,
 )
@@ -33,7 +31,7 @@ from pytmv1.exceptions import (
     ServerMultiJsonError,
     ServerTextError,
 )
-from pytmv1.model.enums import Api, RiskLevel
+from pytmv1.model.enums import Api
 from pytmv1.model.responses import BaseStatusResponse
 from tests.data import TextResponse
 
@@ -48,14 +46,14 @@ def test_consume_linkable_with_next_link_multiple_items(mocker, core):
             GetExceptionListResp(
                 nextLink="not_empty",
                 items=[
-                    ExceptionObject.construct(),
-                    ExceptionObject.construct(),
+                    ExceptionObject.model_construct(),
+                    ExceptionObject.model_construct(),
                 ],
             ),
             GetExceptionListResp(
                 items=[
-                    ExceptionObject.construct(),
-                    ExceptionObject.construct(),
+                    ExceptionObject.model_construct(),
+                    ExceptionObject.model_construct(),
                 ]
             ),
         ],
@@ -78,7 +76,7 @@ def test_consume_linkable_with_next_link_single_item(mocker, core):
                 nextLink="https://host/api/path?skipToken=c2tpcFRva2Vu",
                 items=[],
             ),
-            GetExceptionListResp(items=[ExceptionObject.construct()]),
+            GetExceptionListResp(items=[ExceptionObject.model_construct()]),
         ],
     )
     total = core._consume_linkable(
@@ -176,13 +174,13 @@ def test_parse_data_with_json():
     raw_response.headers = {"Content-Type": "application/json"}
     raw_response.json = lambda: {
         "items": [
-            SandboxSuspiciousObject(
-                riskLevel=RiskLevel.HIGH,
-                analysisCompletionDateTime="2021-05-07T03:08:40",
-                expiredDateTime="2021-06-07T03:08:40Z",
-                rootSha1="fb5608fa03de204a12fe1e9e5275e4a682107471",
-                ip="6.6.6.6",
-            )
+            {
+                "riskLevel": "high",
+                "analysisCompletionDateTime": "2021-05-07T03:08:40",
+                "expiredDateTime": "2021-06-07T03:08:40Z",
+                "rootSha1": "fb5608fa03de204a12fe1e9e5275e4a682107471",
+                "ip": "6.6.6.6",
+            }
         ]
     }
     response = core_m._parse_data(raw_response, SandboxSuspiciousListResp)
@@ -204,8 +202,8 @@ def test_parse_data_with_multi_and_wrong_model_is_failed():
     raw_response = Response()
     raw_response.headers = {"Content-Type": "application/json"}
     raw_response.status_code = 207
-    raw_response.json = lambda: MultiResp(items=[MsData(status=200)])
-    with pytest.raises(TypeError):
+    raw_response.json = lambda: {"items": [{"status": 200}]}
+    with pytest.raises(ValidationError):
         core_m._parse_data(raw_response, AddAlertNoteResp)
 
 
@@ -213,7 +211,7 @@ def test_parse_data_with_single_and_wrong_model_is_failed():
     raw_response = Response()
     raw_response.headers = {"Content-Type": "application/json"}
     raw_response.status_code = 200
-    raw_response.json = lambda: AddAlertNoteResp(location="test")
+    raw_response.json = lambda: {"location": "test"}
     with pytest.raises(ValidationError):
         core_m._parse_data(raw_response, MultiResp)
 
@@ -233,7 +231,7 @@ def test_parse_html():
 def test_poll_status_with_rejected_status_is_not_polling():
     start_time = time.time()
     core_m._poll_status(
-        lambda: BaseStatusResponse.construct(status=Status.REJECTED),
+        lambda: BaseStatusResponse.model_construct(status=Status.REJECTED),
         20,
     )
     assert time.time() - start_time < 20
@@ -242,7 +240,7 @@ def test_poll_status_with_rejected_status_is_not_polling():
 def test_poll_status_with_running_status_is_polling():
     start_time = time.time()
     core_m._poll_status(
-        lambda: BaseStatusResponse.construct(status=Status.RUNNING),
+        lambda: BaseStatusResponse.model_construct(status=Status.RUNNING),
         2,
     )
     assert time.time() - start_time >= 2
@@ -251,7 +249,7 @@ def test_poll_status_with_running_status_is_polling():
 def test_poll_status_with_succeeded_status():
     start_time = time.time()
     core_m._poll_status(
-        lambda: BaseStatusResponse.construct(status=Status.SUCCEEDED),
+        lambda: BaseStatusResponse.model_construct(status=Status.SUCCEEDED),
         20,
     )
     assert time.time() - start_time < 20
@@ -270,7 +268,7 @@ def test_send(core, mocker):
 def test_send_linkable(mocker, core):
     mock_process = mocker.patch.object(core, "_process")
     mock_process.return_value = GetExceptionListResp(
-        items=[ExceptionObject.construct()]
+        items=[ExceptionObject.model_construct()]
     )
     result = core.send_linkable(
         GetExceptionListResp,
@@ -284,7 +282,7 @@ def test_send_linkable(mocker, core):
 
 def test_send_sandbox_result_with_polling(core, mocker):
     mock_poll = mocker.patch.object(core_m, "_poll_status")
-    mock_poll.return_value = SandboxSubmissionStatusResp.construct(
+    mock_poll.return_value = SandboxSubmissionStatusResp.model_construct(
         status=Status.SUCCEEDED
     )
     mock_send = mocker.patch.object(core, "_process")

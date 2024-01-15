@@ -1,19 +1,9 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import (
-    Any,
-    Dict,
-    Generic,
-    List,
-    Optional,
-    Tuple,
-    Type,
-    TypeVar,
-    Union,
-)
+from typing import Any, Dict, Generic, List, Optional, Type, TypeVar, Union
 
-from pydantic import Field
+from pydantic import Field, model_validator
 
 from .commons import (
     Account,
@@ -32,6 +22,7 @@ from .commons import (
     Script,
     SuspiciousObject,
     TiAlert,
+    get_object,
 )
 from .enums import (
     ObjectType,
@@ -71,9 +62,6 @@ class BaseTaskResp(BaseStatusResponse):
     description: Optional[str] = None
     account: Optional[str] = None
 
-    def __init__(self, **data: Any):
-        super().__init__(**data)
-
 
 MR = TypeVar("MR", bound=BaseMultiResponse[Any])
 R = TypeVar("R", bound=BaseResponse)
@@ -103,17 +91,13 @@ class BlockListTaskResp(BaseTaskResp):
     type: ObjectType
     value: str
 
-    def __init__(self, **data: Any):
-        obj: Tuple[str, str] = self._map(data)
-        super().__init__(type=obj[0], value=obj[1], **data)
-
-    @staticmethod
-    def _map(args: Dict[str, str]) -> Tuple[str, str]:
-        return {
-            (k, v)
-            for k, v in args.items()
-            if k in map(lambda ot: ot.value, ObjectType)
-        }.pop()
+    @model_validator(mode="before")
+    @classmethod
+    def map_data(cls, data: Dict[str, str]) -> Dict[str, str]:
+        obj = get_object(data)
+        data["type"] = obj[0]
+        data["value"] = obj[1]
+        return data
 
 
 class BytesResp(BaseResponse):
@@ -286,6 +270,6 @@ class TaskAction(Enum):
     RUN_OS_QUERY = ("runOsquery", None)
     RUN_YARA_RULES = ("runYaraRules", None)
 
-    def __init__(self, action: str, resp_class: Optional[Type[T]]):
+    def __init__(self, action: str, class_: Optional[Type[T]]):
         self.action = action
-        self.resp_class = resp_class
+        self.class_ = class_

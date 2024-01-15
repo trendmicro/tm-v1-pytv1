@@ -30,7 +30,7 @@ class TextResponse(Response):
 
 
 def sae_alert():
-    return SaeAlert.construct(
+    return SaeAlert.model_construct(
         id="1",
         investigationStatus=InvestigationStatus.NEW,
         model="Possible Credential Dumping via Registry",
@@ -40,32 +40,32 @@ def sae_alert():
         description="description",
         workbenchLink="https://THE_WORKBENCH_URL",
         score=64,
-        impactScope=ImpactScope.construct(
+        impactScope=ImpactScope.model_construct(
             desktopCount=1,
             serverCount=0,
             accountCount=1,
             emailAddressCount=0,
             entities=[
-                Entity.construct(
-                    entity_value=HostInfo.construct(
+                Entity.model_construct(
+                    entity_value=HostInfo.model_construct(
                         name="host", ips=["1.1.1.1", "2.2.2.2"]
                     )
                 )
             ],
         ),
         indicators=[
-            Indicator.construct(
+            Indicator.model_construct(
                 provenance=["Alert"],
-                value=HostInfo.construct(
+                value=HostInfo.model_construct(
                     name="host", ips=["1.1.1.1", "2.2.2.2"]
                 ),
             )
         ],
         matchedRules=[
-            MatchedRule.construct(
+            MatchedRule.model_construct(
                 name="Potential Credential Dumping via Registry",
                 matchedFilters=[
-                    MatchedFilter.construct(
+                    MatchedFilter.model_construct(
                         name="Possible Credential Dumping via Registry Hive",
                         mitreTechniqueIds=[
                             "V9.T1003.004",
@@ -80,7 +80,7 @@ def sae_alert():
 
 
 def ti_alert():
-    return TiAlert.construct(
+    return TiAlert.model_construct(
         id="1",
         investigationStatus=InvestigationStatus.NEW,
         model="Threat Intelligence Sweeping",
@@ -94,38 +94,38 @@ def ti_alert():
         reportLink="https://THE_TI_REPORT_URL",
         createdBy="n/a",
         score=42,
-        impactScope=ImpactScope.construct(
+        impactScope=ImpactScope.model_construct(
             desktopCount=1,
             serverCount=0,
             accountCount=1,
             emailAddressCount=0,
             entities=[
-                Entity.construct(
-                    entity_value=HostInfo.construct(
+                Entity.model_construct(
+                    entity_value=HostInfo.model_construct(
                         name="host", ips=["1.1.1.1", "2.2.2.2"]
                     )
                 )
             ],
         ),
         indicators=[
-            Indicator.construct(
+            Indicator.model_construct(
                 provenance=["Alert"],
-                value=HostInfo.construct(
+                value=HostInfo.model_construct(
                     name="host", ips=["1.1.1.1", "2.2.2.2"]
                 ),
             )
         ],
         matchedIndicatorPatterns=[
-            MatchedIndicatorPattern.construct(
+            MatchedIndicatorPattern.model_construct(
                 tags=["STIX2.malicious-activity"],
                 pattern="[file:name = 'goog-phish-proto-1.vlpset']",
             )
         ],
         matchedRules=[
-            MatchedRule.construct(
+            MatchedRule.model_construct(
                 name="Potential Credential Dumping via Registry",
                 matchedFilters=[
-                    MatchedFilter.construct(
+                    MatchedFilter.model_construct(
                         name="Possible Credential Dumping via Registry Hive",
                         mitreTechniqueIds=[
                             "V9.T1003.004",
