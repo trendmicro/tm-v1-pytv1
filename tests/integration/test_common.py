@@ -1,10 +1,4 @@
-from pytmv1 import (
-    BaseTaskResp,
-    CollectFileTaskResp,
-    EmailMessageIdTask,
-    ResultCode,
-    Status,
-)
+from pytmv1 import CollectFileTaskResp, EmailMessageIdTask, ResultCode, Status
 
 
 def test_check_connectivity(client):
@@ -12,11 +6,13 @@ def test_check_connectivity(client):
 
 
 def test_get_base_task_result(client):
-    result = client.get_base_task_result("00000004", False)
-    assert isinstance(result.response, BaseTaskResp)
+    result = client.get_base_task_result("collect_file", False)
+    assert isinstance(result.response, CollectFileTaskResp)
     assert result.result_code == ResultCode.SUCCESS
     assert result.response.status == Status.SUCCEEDED
-    assert result.response.id == "00000004"
+    assert result.response.action == "collectFile"
+    assert result.response.file_sha256
+    assert result.response.id == "00000003"
 
 
 def test_collect_file_task_result(client):
@@ -24,6 +20,7 @@ def test_collect_file_task_result(client):
     assert isinstance(result.response, CollectFileTaskResp)
     assert result.result_code == ResultCode.SUCCESS
     assert result.response.status == Status.SUCCEEDED
+    assert result.response.action == "collectFile"
     assert result.response.file_sha256
     assert result.response.id == "00000003"
 

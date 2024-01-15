@@ -1,4 +1,17 @@
-from typing import Any, Dict, Generic, List, Optional, Tuple, TypeVar, Union
+from __future__ import annotations
+
+from enum import Enum
+from typing import (
+    Any,
+    Dict,
+    Generic,
+    List,
+    Optional,
+    Tuple,
+    Type,
+    TypeVar,
+    Union,
+)
 
 from pydantic import Field
 
@@ -26,7 +39,6 @@ from .enums import (
     SandboxAction,
     SandboxObjectType,
     Status,
-    TaskAction,
 )
 
 C = TypeVar("C", bound=BaseConsumable)
@@ -55,7 +67,7 @@ class BaseStatusResponse(BaseResponse):
 
 
 class BaseTaskResp(BaseStatusResponse):
-    action: TaskAction
+    action: str
     description: Optional[str] = None
     account: Optional[str] = None
 
@@ -66,6 +78,7 @@ class BaseTaskResp(BaseStatusResponse):
 MR = TypeVar("MR", bound=BaseMultiResponse[Any])
 R = TypeVar("R", bound=BaseResponse)
 S = TypeVar("S", bound=BaseStatusResponse)
+T = TypeVar("T", bound=BaseTaskResp)
 
 
 class AccountTaskResp(BaseTaskResp):
@@ -244,3 +257,35 @@ class TerminateProcessTaskResp(BaseTaskResp):
 
 class TextResp(BaseResponse):
     text: str
+
+
+class TaskAction(Enum):
+    COLLECT_FILE = ("collectFile", CollectFileTaskResp)
+    COLLECT_EVIDENCE = ("collectEvidence", None)
+    COLLECT_NETWORK_ANALYSIS_PACKAGE = ("collectNetworkAnalysisPackage", None)
+    ISOLATE_ENDPOINT = ("isolate", EndpointTaskResp)
+    ISOLATE_ENDPOINT_MULTIPLE = ("isolateForMultiple", None)
+    RESTORE_ENDPOINT = ("restoreIsolate", EndpointTaskResp)
+    RESTORE_ENDPOINT_MULTIPLE = ("restoreIsolateForMultiple", None)
+    TERMINATE_PROCESS = ("terminateProcess", TerminateProcessTaskResp)
+    DUMP_PROCESS_MEMORY = ("dumpProcessMemory", None)
+    QUARANTINE_MESSAGE = ("quarantineMessage", EmailMessageTaskResp)
+    DELETE_MESSAGE = ("deleteMessage", EmailMessageTaskResp)
+    RESTORE_MESSAGE = ("restoreMessage", EmailMessageTaskResp)
+    BLOCK_SUSPICIOUS = ("block", BlockListTaskResp)
+    REMOVE_SUSPICIOUS = ("restoreBlock", BlockListTaskResp)
+    RESET_PASSWORD = ("resetPassword", AccountTaskResp)
+    SUBMIT_SANDBOX = ("submitSandbox", SandboxSubmitUrlTaskResp)
+    ENABLE_ACCOUNT = ("enableAccount", AccountTaskResp)
+    DISABLE_ACCOUNT = ("disableAccount", AccountTaskResp)
+    FORCE_SIGN_OUT = ("forceSignOut", AccountTaskResp)
+    REMOTE_SHELL = ("remoteShell", None)
+    RUN_INVESTIGATION_KIT = ("runInvestigationKit", None)
+    RUN_CUSTOM_SCRIPT = ("runCustomScript", CustomScriptTaskResp)
+    RUN_CUSTOM_SCRIPT_MULTIPLE = ("runCustomScriptForMultiple", None)
+    RUN_OS_QUERY = ("runOsquery", None)
+    RUN_YARA_RULES = ("runYaraRules", None)
+
+    def __init__(self, action: str, resp_class: Optional[Type[T]]):
+        self.action = action
+        self.resp_class = resp_class

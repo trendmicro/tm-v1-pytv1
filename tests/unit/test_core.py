@@ -380,7 +380,7 @@ def test_send_task_result_with_poll(core, mocker):
     mock_send = mocker.patch.object(core, "_process")
     result = core.send_task_result(CollectFileTaskResp, "123", True, 0)
     mock_poll.assert_called()
-    mock_send.assert_called()
+    mock_send.assert_not_called()
     assert result.result_code == ResultCode.SUCCESS
 
 

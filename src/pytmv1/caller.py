@@ -56,11 +56,11 @@ from .model.responses import (
     MultiResp,
     MultiUrlResp,
     NoContentResp,
-    S,
     SandboxAnalysisResultResp,
     SandboxSubmissionStatusResp,
     SandboxSuspiciousListResp,
     SubmitFileToSandboxResp,
+    T,
     TextResp,
 )
 from .results import MultiResult, Result
@@ -453,7 +453,7 @@ class Client:
             MultiResp,
             Api.DELETE_EMAIL_MESSAGE,
             json=[
-                task.dict(by_alias=True, exclude_none=True)
+                task.model_dump(by_alias=True, exclude_none=True)
                 for task in messages
             ],
         )
@@ -472,7 +472,7 @@ class Client:
             MultiResp,
             Api.DISABLE_ACCOUNT,
             json=[
-                task.dict(by_alias=True, exclude_none=True)
+                task.model_dump(by_alias=True, exclude_none=True)
                 for task in accounts
             ],
         )
@@ -582,7 +582,7 @@ class Client:
             MultiResp,
             Api.ENABLE_ACCOUNT,
             json=[
-                task.dict(by_alias=True, exclude_none=True)
+                task.model_dump(by_alias=True, exclude_none=True)
                 for task in accounts
             ],
         )
@@ -950,23 +950,23 @@ class Client:
     def get_task_result(
         self,
         task_id: str,
-        class_: Type[S],
+        class_: Type[T],
         poll: bool = True,
         poll_time_sec: float = 1800,
-    ) -> Result[S]:
+    ) -> Result[T]:
         """Retrieves the result of a response task.
 
         :param task_id: Task id.
         :type task_id: str
         :param class_: Expected task result class.
-        :type class_: Type[S]
+        :type class_: Type[T]
         :param poll: If we should wait until the task is finished before
          to return the result.
         :type poll: bool
         :param poll_time_sec: Maximum time to wait for the result
         to be available.
         :type poll_time_sec: float
-        :rtype: Result[S]:
+        :rtype: Result[T]:
         """
         return self._core.send_task_result(
             class_, task_id, poll, poll_time_sec
@@ -997,7 +997,7 @@ class Client:
             MultiResp,
             Api.QUARANTINE_EMAIL_MESSAGE,
             json=[
-                task.dict(by_alias=True, exclude_none=True)
+                task.model_dump(by_alias=True, exclude_none=True)
                 for task in messages
             ],
         )
@@ -1063,7 +1063,7 @@ class Client:
             MultiResp,
             Api.RESET_PASSWORD,
             json=[
-                task.dict(by_alias=True, exclude_none=True)
+                task.model_dump(by_alias=True, exclude_none=True)
                 for task in accounts
             ],
         )
@@ -1093,7 +1093,7 @@ class Client:
             MultiResp,
             Api.RESTORE_EMAIL_MESSAGE,
             json=[
-                task.dict(by_alias=True, exclude_none=True)
+                task.model_dump(by_alias=True, exclude_none=True)
                 for task in messages
             ],
         )
@@ -1111,7 +1111,8 @@ class Client:
             MultiResp,
             Api.RUN_CUSTOM_SCRIPT,
             json=[
-                task.dict(by_alias=True, exclude_none=True) for task in scripts
+                task.model_dump(by_alias=True, exclude_none=True)
+                for task in scripts
             ],
         )
 
@@ -1128,7 +1129,7 @@ class Client:
             MultiResp,
             Api.SIGN_OUT_ACCOUNT,
             json=[
-                task.dict(by_alias=True, exclude_none=True)
+                task.model_dump(by_alias=True, exclude_none=True)
                 for task in accounts
             ],
         )
