@@ -283,7 +283,7 @@ def _parse_data(raw_response: Response, class_: Type[R]) -> R:
                 etag=raw_response.headers.get("ETag", ""),
             )
         if class_ == BaseTaskResp:
-            resp_class = task_action(raw_response.json()["action"]).resp_class
+            resp_class = task_action(raw_response.json()["action"]).class_
             class_ = resp_class if resp_class else class_
         return class_(**raw_response.json())
     if "application" in content_type and class_ == BytesResp:
