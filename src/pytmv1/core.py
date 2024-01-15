@@ -24,6 +24,7 @@ from .model.requests import EndpointTask
 from .model.responses import (
     MR,
     BaseLinkableResp,
+    BaseTaskResp,
     BytesResp,
     C,
     ConsumeLinkableResp,
@@ -34,6 +35,8 @@ from .model.responses import (
     R,
     S,
     SandboxSubmissionStatusResp,
+    T,
+    TaskAction,
     TextResp,
 )
 from .results import multi_result, result
@@ -92,7 +95,8 @@ class Core:
             api,
             HttpMethod.POST,
             json=[
-                task.dict(by_alias=True, exclude_none=True) for task in tasks
+                task.model_dump(by_alias=True, exclude_none=True)
+                for task in tasks
             ],
         )
 
@@ -151,14 +155,14 @@ class Core:
 
     @result
     def send_task_result(
-        self, class_: Type[S], task_id: str, poll: bool, poll_time_sec: float
-    ) -> S:
-        status_call: Callable[[], S] = lambda: self._process(
+        self, class_: Type[T], task_id: str, poll: bool, poll_time_sec: float
+    ) -> T:
+        status_call: Callable[[], T] = lambda: self._process(
             class_,
             Api.GET_TASK_RESULT.value.format(task_id),
         )
         if poll:
-            _poll_status(
+            return _poll_status(
                 status_call,
                 poll_time_sec,
             )
@@ -278,6 +282,9 @@ def _parse_data(raw_response: Response, class_: Type[R]) -> R:
                 alert=raw_response.json(),
                 etag=raw_response.headers.get("ETag", ""),
             )
+        if class_ == BaseTaskResp:
+            resp_class = task_action(raw_response.json()["action"]).resp_class
+            class_ = resp_class if resp_class else class_
         return class_(**raw_response.json())
     if "application" in content_type and class_ == BytesResp:
         log.debug("Parsing binary response")
@@ -291,6 +298,10 @@ def _parse_data(raw_response: Response, class_: Type[R]) -> R:
     raise ParseModelError(class_.__name__, raw_response)
 
 
+def task_action(action_name: str) -> TaskAction:
+    return next(filter(lambda ta: action_name == ta.action, TaskAction))
+
+
 def _parse_html(html: str) -> str:
     log.info("Parsing html response [Html=%s]", html)
     soup = BeautifulSoup(html, "html.parser")
@@ -302,7 +313,7 @@ def _parse_html(html: str) -> str:
 def _poll_status(
     status_call: Callable[[], S],
     poll_time_sec: float,
-) -> None:
+) -> S:
     start_time: float = time.time()
     elapsed_time: float = 0
     response: S = status_call()
@@ -313,6 +324,7 @@ def _poll_status(
             elapsed_time = time.time() - start_time
         else:
             break
+    return response
 
 
 def _validate(raw_response: Response) -> None:

@@ -52,7 +52,6 @@ from .model.enums import (
     ScanAction,
     Severity,
     Status,
-    TaskAction,
 )
 from .model.requests import (
     AccountTask,
@@ -96,6 +95,7 @@ from .model.responses import (
     SandboxSubmitUrlTaskResp,
     SandboxSuspiciousListResp,
     SubmitFileToSandboxResp,
+    TaskAction,
     TerminateProcessTaskResp,
     TextResp,
 )
