@@ -265,6 +265,17 @@ def test_send(core, mocker):
     assert result.result_code == ResultCode.SUCCESS
 
 
+def test_send_multi_failed(core, mocker):
+    mock_send_multi = mocker.patch.object(
+        core, "_process", side_effect=RuntimeError()
+    )
+    result = core.send_multi(NoContentResp, Api.GET_EXCEPTION_LIST)
+    mock_send_multi.assert_called()
+    assert result.result_code == ResultCode.ERROR
+    assert result.errors[0].status == 500
+    assert result.errors[0].code == "RuntimeError"
+
+
 def test_send_linkable(mocker, core):
     mock_process = mocker.patch.object(core, "_process")
     mock_process.return_value = GetExceptionListResp(

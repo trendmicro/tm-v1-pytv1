@@ -5,6 +5,7 @@ from pytmv1 import (
     NoContentResp,
     Provider,
     ResultCode,
+    Severity,
 )
 
 
@@ -70,7 +71,7 @@ def test_get_alert_details(client):
 
 def test_get_alert_list(client):
     result = client.get_alert_list(
-        "2020-06-15T10:00:00Z", "2020-06-15T10:00:00Z"
+        "2020-06-15T10:00:00Z", "2020-06-15T10:00:00Z", severity=Severity.HIGH
     )
     assert isinstance(result.response, GetAlertListResp)
     assert result.result_code == ResultCode.SUCCESS
