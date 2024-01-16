@@ -11,13 +11,10 @@ from urllib3.poolmanager import PoolManager as ManagerUrllib
 class HTTPConnectionPool(HTTPUrllib):
     @typing.no_type_check
     def urlopen(self, method, url, **kwargs):
-        kwargs.pop("preload_content", "")
         return super().urlopen(
             method,
             url,
             pool_timeout=5,
-            release_conn=True,
-            preload_content=False,
             **kwargs,
         )
 

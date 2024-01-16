@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 import logging
+import threading
 from functools import lru_cache
 from logging import Logger
-from typing import Callable, List, Optional, Type, Union
+from typing import Any, Callable, List, Optional, Type, Union
 
 from . import utils
 from .core import Core
@@ -66,9 +67,9 @@ from .model.responses import (
 from .results import MultiResult, Result
 
 log: Logger = logging.getLogger(__name__)
+lock = threading.Lock()
 
 
-@lru_cache(maxsize=None)
 def client(
     name: str,
     token: str,
@@ -78,7 +79,7 @@ def client(
     connect_timeout: int = 30,
     read_timeout: int = 30,
 ) -> Client:
-    """Helper function to initialize a :class:`Client`.
+    """Synchronized Helper function to initialize a :class:`Client`.
 
     :param name: Identify the application using this library.
     :type name: str
@@ -96,22 +97,28 @@ def client(
     :type connect_timeout: int
     :rtype: Client
     """
+    lock.acquire()
+    client_ = _client(
+        appname=name,
+        token=token,
+        url=url,
+        pool_connections=pool_connections,
+        pool_maxsize=pool_maxsize,
+        connect_timeout=connect_timeout,
+        read_timeout=read_timeout,
+    )
+    lock.release()
+    return client_
+
+
+@lru_cache(maxsize=1)
+def _client(**kwargs: Any) -> Client:
     log.debug(
         "Initializing new client with [Appname=%s, Token=*****, URL=%s]",
-        name,
-        url,
+        kwargs["appname"],
+        kwargs["url"],
     )
-    return Client(
-        Core(
-            name,
-            token,
-            url,
-            pool_connections,
-            pool_maxsize,
-            connect_timeout,
-            read_timeout,
-        )
-    )
+    return Client(Core(**kwargs))
 
 
 class Client:

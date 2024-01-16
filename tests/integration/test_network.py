@@ -4,6 +4,8 @@ from threading import Thread
 import psutil
 import pytest
 
+import pytmv1
+
 
 def test_conn_opened_with_single_call_single_client_is_one(client):
     client.get_exception_list()
@@ -19,7 +21,7 @@ def test_conn_opened_with_multi_call_single_client_is_one(
 
 
 def test_conn_opened_with_multi_processing_single_client_is_one(client):
-    threads = thread_list(lambda: client.get_exception_list())
+    threads = thread_list(lambda: client.add_alert_note("1", "dummy note"))
     for t in threads:
         t.start()
     for t in threads:
@@ -27,10 +29,12 @@ def test_conn_opened_with_multi_processing_single_client_is_one(client):
     assert len(list_tcp_conn()) == 1
 
 
-def test_conn_opened_with_multi_processing_multi_client_is_one(
-    pytestconfig, client
-):
-    threads = thread_list(lambda: client.get_exception_list())
+def test_conn_opened_with_multi_processing_multi_client_is_one(url):
+    threads = thread_list(
+        lambda: pytmv1.client(
+            "appname", "dummyToken", url
+        ).get_exception_list()
+    )
     for t in threads:
         t.start()
     for t in threads:
