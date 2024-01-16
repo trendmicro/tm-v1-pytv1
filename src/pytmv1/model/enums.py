@@ -49,6 +49,10 @@ class Api(str, Enum):
     EDIT_ALERT_STATUS = "/workbench/alerts/{0}"
     GET_ALERT_DETAILS = "/workbench/alerts/{0}"
     ADD_ALERT_NOTE = "/workbench/alerts/{0}/notes"
+    GET_ALERT_NOTE_LIST = "/workbench/alerts/{0}/notes"
+    GET_ALERT_NOTE = "/workbench/alerts/{0}/notes/{1}"
+    UPDATE_ALERT_NOTE = "/workbench/alerts/{0}/notes/{1}"
+    DELETE_ALERT_NOTE = "/workbench/alerts/{0}/notes/delete"
 
 
 class Iam(str, Enum):

@@ -7,6 +7,7 @@ from pydantic import Field, model_validator
 
 from .commons import (
     Account,
+    AlertNote,
     BaseConsumable,
     BaseModel,
     Digest,
@@ -141,13 +142,22 @@ class EndpointTaskResp(BaseTaskResp):
 
 
 class GetAlertDetailsResp(BaseResponse):
-    alert: Union[SaeAlert, TiAlert]
+    data: Union[SaeAlert, TiAlert]
+    etag: str
+
+
+class GetAlertNoteDetailsResp(BaseResponse):
+    data: AlertNote
     etag: str
 
 
 class GetAlertListResp(BaseLinkableResp[Union[SaeAlert, TiAlert]]):
     total_count: int
     count: int
+
+
+class GetAlertNoteListResp(BaseLinkableResp[AlertNote]):
+    ...
 
 
 class GetCustomScriptListResp(BaseLinkableResp[Script]):

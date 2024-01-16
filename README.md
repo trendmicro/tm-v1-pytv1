@@ -144,6 +144,12 @@ Supported APIs
 | `edit_alert_status`                                           | [Modify alert status](https://automation.trendmicro.com/xdr/api-v3#tag/Workbench/paths/~1v3.0~1workbench~1alerts~1{id}/patch)                                                      |
 | `get_alert_details`                                           | [Get alert details](https://automation.trendmicro.com/xdr/api-v3#tag/Workbench/paths/~1v3.0~1workbench~1alerts/get)                                                                |
 | `get_alert_list` `consume_alert_list`                         | [Get alerts list](https://automation.trendmicro.com/xdr/api-v3#tag/Workbench/paths/~1v3.0~1workbench~1alerts/get)                                                                  |
+| **Workbench Notes**                                           |                                                                                                                                                                                    |
+| `add_alert_note`                                              | [Add alert note](https://automation.trendmicro.com/xdr/api-v3#tag/Workbench-notes/paths/~1v3.0~1workbench~1alerts~1{alertId}~1notes/post)                                          |
+| `update_alert_note_status`                                    | [Edit alert note](https://automation.trendmicro.com/xdr/api-v3#tag/Workbench-notes/paths/~1v3.0~1workbench~1alerts~1%7BalertId%7D~1notes~1%7Bid%7D/patch)                          |
+| `delete_alert_note_status`                                    | [Delete alert notes](https://automation.trendmicro.com/xdr/api-v3#tag/Workbench-notes/paths/~1v3.0~1workbench~1alerts~1%7BalertId%7D~1notes~1delete/post)                          |
+| `get_alert_note_details`                                      | [Get alert note](https://automation.trendmicro.com/xdr/api-v3#tag/Workbench-notes/paths/~1v3.0~1workbench~1alerts~1%7BalertId%7D~1notes~1%7Bid%7D/get)                             |
+| `get_alert_note_list` `consume_alert_note_list`               | [Get alerts notes](https://automation.trendmicro.com/xdr/api-v3#tag/Workbench-notes/paths/~1v3.0~1workbench~1alerts~1%7BalertId%7D~1notes/get)                                                                 |
 
 Contributing
 ------------
