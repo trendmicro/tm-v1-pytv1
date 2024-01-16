@@ -4,7 +4,7 @@ from .. import utils
 from ..core import Core
 from ..model.commons import Script
 from ..model.enums import Api, FileType, HttpMethod, QueryOp
-from ..model.requests import RunCustomScriptRequest
+from ..model.requests import CustomScriptRequest
 from ..model.responses import (
     AddCustomScriptResp,
     ConsumeLinkableResp,
@@ -131,7 +131,7 @@ class CustomScript:
             params=utils.filter_query(op, fields),
         )
 
-    def run(self, *scripts: RunCustomScriptRequest) -> MultiResult[MultiResp]:
+    def run(self, *scripts: CustomScriptRequest) -> MultiResult[MultiResp]:
         """Runs multiple custom script.
 
         :param scripts: Custom scripts to run.

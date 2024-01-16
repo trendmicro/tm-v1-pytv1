@@ -9,6 +9,7 @@ from pydantic import model_validator
 from pydantic.alias_generators import to_camel
 
 from .enums import (
+    ApiStatus,
     EntityType,
     EventID,
     EventSubID,
@@ -71,6 +72,16 @@ class AlertNote(BaseConsumable):
     creator_mail_address: Optional[str]
     last_updated_by: Optional[str]
     last_updated_date_time: Optional[str]
+
+
+class ApiKey(BaseConsumable):
+    id: str
+    name: str
+    status: ApiStatus
+    role: str
+    expired_date_time: str
+    last_used_date_time: str
+    description: Optional[str]
 
 
 class Digest(BaseModel):
@@ -264,6 +275,18 @@ class MsData(BaseModel):
     @classmethod
     def map_task_id(cls, data: Dict[str, Any]) -> Dict[str, Any]:
         data["task_id"] = _get_task_id(data)
+        return data
+
+
+class MsDataApiKey(MsData):
+    id: str
+    value: str
+    expired_date_time: str
+
+    @model_validator(mode="before")
+    @classmethod
+    def map_data(cls, data: Dict[str, Any]) -> Dict[str, Any]:
+        data.update(data.pop("body", {}))
         return data
 
 

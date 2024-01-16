@@ -1,8 +1,8 @@
 from pytmv1 import (
     GetEmailActivitiesCountResp,
     GetEndpointActivitiesCountResp,
-    ListEmailActivityDataResp,
-    ListEndpointActivitiesResp,
+    ListEmailActivityResp,
+    ListEndpointActivityResp,
     ListEndpointDataResp,
     ProductCode,
     QueryOp,
@@ -23,7 +23,7 @@ def test_list_email_activities(client):
         mailMsgSubject="spam", mailSenderIp="192.169.1.1"
     )
     assert result.result_code == ResultCode.SUCCESS
-    assert isinstance(result.response, ListEmailActivityDataResp)
+    assert isinstance(result.response, ListEmailActivityResp)
     assert len(result.response.items) > 0
 
 
@@ -43,7 +43,7 @@ def test_consume_endpoint_activities(client):
 def test_list_endpoint_activities(client):
     result = client.endpoint.list_activities(dpt="443")
     assert result.result_code == ResultCode.SUCCESS
-    assert isinstance(result.response, ListEndpointActivitiesResp)
+    assert isinstance(result.response, ListEndpointActivityResp)
     assert len(result.response.items) > 0
 
 

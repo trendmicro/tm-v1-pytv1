@@ -30,6 +30,8 @@ from .model.responses import (
     ConsumeLinkableResp,
     GetAlertNoteResp,
     GetAlertResp,
+    GetApiKeyResp,
+    MultiApiKeyResp,
     MultiResp,
     MultiUrlResp,
     NoContentResp,
@@ -276,9 +278,9 @@ def _parse_data(raw_response: Response, class_: Type[R]) -> R:
     content_type = raw_response.headers.get("Content-Type", "")
     if "json" in content_type:
         log.debug("Parsing json response [Class=%s]", class_.__name__)
-        if class_ in [MultiResp, MultiUrlResp]:
+        if class_ in [MultiResp, MultiUrlResp, MultiApiKeyResp]:
             return class_(items=raw_response.json())
-        if class_ in [GetAlertResp, GetAlertNoteResp]:
+        if class_ in [GetAlertResp, GetApiKeyResp, GetAlertNoteResp]:
             return class_(
                 data=raw_response.json(),
                 etag=raw_response.headers.get("ETag", ""),

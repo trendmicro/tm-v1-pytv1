@@ -1,12 +1,12 @@
 from pytmv1 import (
     AddCustomScriptResp,
     ConsumeLinkableResp,
+    CustomScriptRequest,
     FileType,
     ListCustomScriptsResp,
     MultiResp,
     NoContentResp,
     ResultCode,
-    RunCustomScriptRequest,
     TextResp,
 )
 
@@ -37,7 +37,7 @@ def test_download_custom_script(client):
 
 def test_run_custom_scripts(client):
     result = client.script.run(
-        RunCustomScriptRequest(fileName="test", endpointName="client1")
+        CustomScriptRequest(fileName="test", endpointName="client1")
     )
     assert isinstance(result.response, MultiResp)
     assert result.result_code == ResultCode.SUCCESS

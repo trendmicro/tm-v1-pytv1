@@ -71,6 +71,7 @@ class Client:
     def __init__(self, core: Core):
         self._core = core
         self.alert = api.Alert(self._core)
+        self.api_key = api.ApiKey(self._core)
         self.note = api.Note(self._core)
         self.script = api.CustomScript(self._core)
         self.object = api.Object(self._core)

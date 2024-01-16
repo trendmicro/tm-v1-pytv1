@@ -3,6 +3,11 @@ from enum import Enum
 
 class Api(str, Enum):
     CONNECTIVITY = "/healthcheck/connectivity"
+    CREATE_API_KEYS = "/iam/apiKeys"
+    GET_API_KEY_LIST = "/iam/apiKeys"
+    GET_API_KEY = "/iam/apiKeys/{0}"
+    UPDATE_API_KEY = "/iam/apiKeys/{0}"
+    DELETE_API_KEYS = "/iam/apiKeys/delete"
     GET_ENDPOINT_DATA = "/eiqs/endpoints"
     GET_CUSTOM_SCRIPTS = "/response/customScripts"
     ADD_CUSTOM_SCRIPT = "/response/customScripts"
@@ -53,6 +58,19 @@ class Api(str, Enum):
     GET_ALERT_NOTE = "/workbench/alerts/{0}/notes/{1}"
     UPDATE_ALERT_NOTE = "/workbench/alerts/{0}/notes/{1}"
     DELETE_ALERT_NOTE = "/workbench/alerts/{0}/notes/delete"
+
+
+class ApiExpInMonths(int, Enum):
+    ONE = 1
+    THREE = 3
+    SIX = 6
+    TWELVE = 12
+    ZERO = 0
+
+
+class ApiStatus(str, Enum):
+    ENABLED = "enabled"
+    DISABLED = "disabled"
 
 
 class Iam(str, Enum):
