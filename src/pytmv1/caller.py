@@ -283,7 +283,7 @@ class Client:
             GetCustomScriptListResp,
             Api.GET_CUSTOM_SCRIPT_LIST,
             consumer,
-            params={"filter": utils.custom_script_query(op, **fields)},
+            params=utils.filter_query(op, fields),
         )
 
     def consume_email_activity_data(
@@ -332,7 +332,7 @@ class Client:
                 top,
                 SearchMode.DEFAULT,
             ),
-            headers=utils.activity_query(op, **fields),
+            headers=utils.tmv1_query(op, fields),
         )
 
     def consume_endpoint_activity_data(
@@ -381,14 +381,14 @@ class Client:
                 top,
                 SearchMode.DEFAULT,
             ),
-            headers=utils.activity_query(op, **fields),
+            headers=utils.tmv1_query(op, fields),
         )
 
     def consume_endpoint_data(
         self,
         consumer: Callable[[Endpoint], None],
         op: QueryOp,
-        *values: str,
+        **fields: str,
     ) -> Result[ConsumeLinkableResp]:
         """Retrieves and consume endpoints.
 
@@ -396,16 +396,16 @@ class Client:
         :type consumer: Callable[[Endpoint], None]
         :param op: Query operator to apply.
         :type op: QueryOp
-        :param values: Agent guid, login account, endpoint name, ip address,
-        mac address, operating system, product code.
-        :type values: Tuple[str, ...]
+        :param fields: Field/value used to filter result (i.e:ip="1.1.1.1")
+        check Vision One API documentation for full list of supported fields.
+        :type fields: Dict[str, str]
         :rtype: Result[ConsumeLinkableResp]:
         """
         return self._core.send_linkable(
             GetEndpointDataResp,
             Api.GET_ENDPOINT_DATA,
             consumer,
-            headers=utils.endpoint_query(op, *values),
+            headers=utils.tmv1_query(op, fields),
         )
 
     def consume_exception_list(
@@ -607,7 +607,11 @@ class Client:
         )
 
     def get_alert_list(
-        self, start_time: Optional[str] = None, end_time: Optional[str] = None
+        self,
+        start_time: Optional[str] = None,
+        end_time: Optional[str] = None,
+        op: QueryOp = QueryOp.AND,
+        **fields: str,
     ) -> Result[GetAlertListResp]:
         """Retrieves workbench alerts in a paginated list.
 
@@ -619,6 +623,11 @@ class Client:
         time range (yyyy-MM-ddThh:mm:ssZ in UTC).
         Defaults to the time the request is made.
         :type end_time: Optional[str]
+        :param op: Operator to apply between fields (ie: ... OR ...).
+        :type op: QueryOp
+        :param fields: Field/value used to filter result (i.e:fileName="1.sh"),
+        check Vision One API documentation for full list of supported fields.
+        :type fields: Dict[str, str]
         :rtype: Result[GetAlertListResp]:
         """
         return self._core.send(
@@ -631,6 +640,7 @@ class Client:
                     "orderBy": "createdDateTime desc",
                 }
             ),
+            headers=utils.tmv1_filter(op, fields),
         )
 
     def get_base_task_result(
@@ -670,7 +680,7 @@ class Client:
         return self._core.send(
             GetCustomScriptListResp,
             Api.GET_CUSTOM_SCRIPT_LIST,
-            params={"filter": utils.custom_script_query(op, **fields)},
+            params=utils.filter_query(op, fields),
         )
 
     def get_email_activity_data(
@@ -715,7 +725,7 @@ class Client:
                 top,
                 SearchMode.DEFAULT,
             ),
-            headers=utils.activity_query(op, **fields),
+            headers=utils.tmv1_query(op, fields),
         )
 
     def get_email_activity_data_count(
@@ -760,7 +770,7 @@ class Client:
                 top,
                 SearchMode.COUNT_ONLY,
             ),
-            headers=utils.activity_query(op, **fields),
+            headers=utils.tmv1_query(op, fields),
         )
 
     def get_endpoint_activity_data(
@@ -805,7 +815,7 @@ class Client:
                 top,
                 SearchMode.DEFAULT,
             ),
-            headers=utils.activity_query(op, **fields),
+            headers=utils.tmv1_query(op, fields),
         )
 
     def get_endpoint_activity_data_count(
@@ -850,25 +860,25 @@ class Client:
                 top,
                 SearchMode.COUNT_ONLY,
             ),
-            headers=utils.activity_query(op, **fields),
+            headers=utils.tmv1_query(op, fields),
         )
 
     def get_endpoint_data(
-        self, op: QueryOp, *values: str
+        self, op: QueryOp, **fields: str
     ) -> Result[GetEndpointDataResp]:
         """Retrieves endpoints in a paginated list filtered by provided values.
 
         :param op: Query operator to apply.
         :type op: QueryOp
-        :param values: Agent guid, login account, endpoint name, ip address,
-        mac address, operating system, product code.
-        :type values: Tuple[str, ...]
+        :param fields: Field/value used to filter result (i.e:ip="1.1.1.1")
+        check Vision One API documentation for full list of supported fields.
+        :type fields: Dict[str, str]
         :rtype: Result[GetEndpointDataResp]:
         """
         return self._core.send(
             GetEndpointDataResp,
             Api.GET_ENDPOINT_DATA,
-            headers=utils.endpoint_query(op, *values),
+            headers=utils.tmv1_query(op, fields),
         )
 
     def get_exception_list(self) -> Result[GetExceptionListResp]:

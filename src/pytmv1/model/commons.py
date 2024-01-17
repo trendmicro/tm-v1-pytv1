@@ -349,13 +349,6 @@ class TiIndicator(Indicator):
     last_seen_date_times: List[str]
 
 
-def get_object(data: Dict[str, str]) -> Tuple[str, str]:
-    for k, v in data.items():
-        if k in map(lambda ot: ot.value, ObjectType):
-            return k, v
-    raise ValueError("Could not find ObjectType")
-
-
 def _get_task_id(data: Dict[str, Any]) -> Optional[str]:
     return next(
         map(
@@ -366,4 +359,13 @@ def _get_task_id(data: Dict[str, Any]) -> Optional[str]:
             ),
         ),
         None,
+    )
+
+
+def get_object(data: Dict[str, str]) -> Tuple[str, str]:
+    return next(
+        filter(
+            lambda i: i[0] in map(lambda ot: ot.value, ObjectType),
+            [(k, v) for k, v in data.items()],
+        )
     )

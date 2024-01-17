@@ -4,6 +4,7 @@ from pytmv1 import (
     GetEndpointActivityDataCountResp,
     GetEndpointActivityDataResp,
     GetEndpointDataResp,
+    ProductCode,
     QueryOp,
     ResultCode,
 )
@@ -55,14 +56,16 @@ def test_get_endpoint_activity_count(client):
 
 def test_consume_endpoint_data(client):
     result = client.consume_endpoint_data(
-        lambda s: None, QueryOp.AND, "client1"
+        lambda s: None, QueryOp.AND, endpointName="client1"
     )
     assert result.result_code == ResultCode.SUCCESS
     assert result.response.total_consumed == 1
 
 
 def test_get_endpoint_data(client):
-    result = client.get_endpoint_data(QueryOp.AND, "client1")
+    result = client.get_endpoint_data(
+        QueryOp.AND, endpointName="client1", productCode=ProductCode.XES
+    )
     assert result.result_code == ResultCode.SUCCESS
     assert isinstance(result.response, GetEndpointDataResp)
     assert len(result.response.items) > 0

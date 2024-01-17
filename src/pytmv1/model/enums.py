@@ -195,17 +195,6 @@ class Provider(str, Enum):
     TI = "TI"
 
 
-class QueryField(str, Enum):
-    AGENT_GUID = "agentGuid"
-    LOGIN_ACCOUNT = "loginAccount"
-    ENDPOINT_NAME = "endpointName"
-    MAC_ADDRESS = "macAddress"
-    IP = "ip"
-    OS_NAME = "osName"
-    PRODUCT_CODE = "productCode"
-    INSTALLED_PRODUCT_CODES = "installedProductCodes"
-
-
 class QueryOp(str, Enum):
     AND = "and"
     OR = "or"
