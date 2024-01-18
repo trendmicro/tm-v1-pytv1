@@ -64,7 +64,7 @@ def test_consume_endpoint_data(client):
 
 def test_get_endpoint_data(client):
     result = client.get_endpoint_data(
-        QueryOp.AND, endpointName="client1", productCode=ProductCode.XES
+        endpointName="client1", productCode=ProductCode.XES
     )
     assert result.result_code == ResultCode.SUCCESS
     assert isinstance(result.response, GetEndpointDataResp)
