@@ -1,6 +1,8 @@
 from pytmv1 import (
     AddAlertNoteResp,
     GetAlertListResp,
+    GetAlertNoteDetailsResp,
+    GetAlertNoteListResp,
     InvestigationStatus,
     NoContentResp,
     Provider,
@@ -14,6 +16,41 @@ def test_add_alert_note(client):
     assert isinstance(result.response, AddAlertNoteResp)
     assert result.result_code == ResultCode.SUCCESS
     assert result.response.note_id.isdigit()
+
+
+def test_update_alert_note(client):
+    result = client.update_alert_note("1", "2", "3", "update content")
+    assert isinstance(result.response, NoContentResp)
+    assert result.result_code == ResultCode.SUCCESS
+
+
+def test_delete_alert_note(client):
+    result = client.delete_alert_notes("1", "2", "3")
+    assert isinstance(result.response, NoContentResp)
+    assert result.result_code == ResultCode.SUCCESS
+
+
+def test_get_alert_note(client):
+    result = client.get_alert_note("1", "2")
+    assert isinstance(result.response, GetAlertNoteDetailsResp)
+    assert result.result_code == ResultCode.SUCCESS
+    assert result.response.etag == "33a64df551425fcc55e4d42a148795d9f25f89d4"
+    assert result.response.data.content
+
+
+def test_get_alert_note_list(client):
+    result = client.get_alert_note_list("1", creatorName="John Doe")
+    assert isinstance(result.response, GetAlertNoteListResp)
+    assert result.result_code == ResultCode.SUCCESS
+    assert len(result.response.items) > 0
+
+
+def test_consume_alert_note_list(client):
+    result = client.consume_alert_note_list(
+        lambda s: None, "1", creatorName="John Doe"
+    )
+    assert result.result_code == ResultCode.SUCCESS
+    assert result.response.total_consumed == 2
 
 
 def test_consume_alert_list(client):
@@ -65,7 +102,7 @@ def test_edit_alert_status_is_not_found(client):
 def test_get_alert_details(client):
     result = client.get_alert_details("12345")
     assert result.result_code == ResultCode.SUCCESS
-    assert result.response.alert.alert_provider == Provider.SAE
+    assert result.response.data.alert_provider == Provider.SAE
     assert result.response.etag == "33a64df551425fcc55e4d42a148795d9f25f89d4"
 
 

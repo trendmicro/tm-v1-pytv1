@@ -63,6 +63,16 @@ class Alert(BaseConsumable):
     indicators: List[Indicator]
 
 
+class AlertNote(BaseConsumable):
+    id: int
+    content: str
+    creator_name: str
+    created_date_time: str
+    creator_mail_address: Optional[str]
+    last_updated_by: Optional[str]
+    last_updated_date_time: Optional[str]
+
+
 class Digest(BaseModel):
     md5: str
     sha1: str
