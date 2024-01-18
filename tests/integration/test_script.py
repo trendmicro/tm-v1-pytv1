@@ -15,11 +15,11 @@ def test_add_custom_script(client):
     result = client.add_custom_script(
         file_type=FileType.BASH,
         file_name="add_script.sh",
-        file=bytes("#!/bin/sh\necho 'Add script'", "utf-8"),
+        file_content="#!/bin/sh\necho 'Add script'",
     )
     assert isinstance(result.response, AddCustomScriptResp)
     assert result.result_code == ResultCode.SUCCESS
-    assert result.response.script_id()
+    assert result.response.script_id
 
 
 def test_delete_custom_script(client):
@@ -50,7 +50,7 @@ def test_update_custom_script(client):
         script_id="123",
         file_type=FileType.BASH,
         file_name="update_script.sh",
-        file=bytes("#!/bin/sh Update script", "utf-8"),
+        file_content="#!/bin/sh Update script",
     )
     assert isinstance(result.response, NoContentResp)
     assert result.result_code == ResultCode.SUCCESS
