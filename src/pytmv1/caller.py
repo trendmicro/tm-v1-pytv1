@@ -866,7 +866,7 @@ class Client:
         )
 
     def get_endpoint_data(
-        self, op: QueryOp, **fields: str
+        self, op: QueryOp = QueryOp.AND, **fields: str
     ) -> Result[GetEndpointDataResp]:
         """Retrieves endpoints in a paginated list filtered by provided values.
 
