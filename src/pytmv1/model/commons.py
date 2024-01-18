@@ -197,7 +197,9 @@ class ExceptionObject(BaseConsumable):
     @model_validator(mode="before")
     @classmethod
     def _map_data(cls, data: Dict[str, str]) -> Dict[str, str]:
-        data["value"] = data[data["type"]]
+        value = data.get(data.get("type", ""))
+        if value:
+            data["value"] = value
         return data
 
 
@@ -276,8 +278,8 @@ class MsError(Error):
     def map_data(cls, data: Dict[str, Any]) -> Dict[str, Any]:
         data.update(data.pop("body", {}))
         data.update(data.pop("error", {}))
-        url = data.pop("url", None)
         data["task_id"] = _get_task_id(data)
+        url = data.pop("url", None)
         if url:
             data["extra"] = {"url": url}
         return data
@@ -312,8 +314,9 @@ class SandboxSuspiciousObject(BaseModel):
     @classmethod
     def map_data(cls, data: Dict[str, str]) -> Dict[str, str]:
         obj = get_object(data)
-        data["type"] = obj[0]
-        data["value"] = obj[1]
+        if obj:
+            data["type"] = obj[0]
+            data["value"] = obj[1]
         return data
 
 
@@ -362,10 +365,12 @@ def _get_task_id(data: Dict[str, Any]) -> Optional[str]:
     )
 
 
-def get_object(data: Dict[str, str]) -> Tuple[str, str]:
-    return next(
+def get_object(data: Dict[str, str]) -> Optional[Tuple[str, str]]:
+    obj = next(
         filter(
-            lambda i: i[0] in map(lambda ot: ot.value, ObjectType),
-            [(k, v) for k, v in data.items()],
-        )
+            lambda item: item[0] in map(lambda ot: ot.value, ObjectType),
+            data.items(),
+        ),
+        None,
     )
+    return obj

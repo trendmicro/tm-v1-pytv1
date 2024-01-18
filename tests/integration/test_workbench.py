@@ -13,7 +13,7 @@ def test_add_alert_note(client):
     result = client.add_alert_note("1", "dummy note")
     assert isinstance(result.response, AddAlertNoteResp)
     assert result.result_code == ResultCode.SUCCESS
-    assert result.response.note_id().isdigit()
+    assert result.response.note_id.isdigit()
 
 
 def test_consume_alert_list(client):

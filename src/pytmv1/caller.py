@@ -147,7 +147,7 @@ class Client:
         self,
         file_type: FileType,
         file_name: str,
-        file: bytes,
+        file_content: str,
         description: Optional[str] = None,
     ) -> Result[AddCustomScriptResp]:
         """
@@ -157,8 +157,8 @@ class Client:
         :type file_type: FileType
         :param file_name: File name.
         :type file_name: str
-        :param file: Raw content in bytes.
-        :type file: bytes
+        :param file_content: Plain text content of the file.
+        :type file_content: str
         :param description: Description.
         :type description: Optional[str]
         :return: Result[AddACustomScriptResp]
@@ -170,7 +170,9 @@ class Client:
             data=utils.filter_none(
                 {"fileType": file_type.value, "description": description}
             ),
-            files={"file": (file_name, file, "text/plain")},
+            files={
+                "file": (file_name, bytes(file_content, "utf-8"), "text/plain")
+            },
         )
 
     def add_to_block_list(
@@ -1217,7 +1219,7 @@ class Client:
         script_id: str,
         file_type: FileType,
         file_name: str,
-        file: bytes,
+        file_content: str,
         description: Optional[str] = None,
     ) -> Result[NoContentResp]:
         """
@@ -1229,8 +1231,8 @@ class Client:
         :type file_type: FileType
         :param file_name: File name.
         :type file_name: str
-        :param file: Raw content in bytes.
-        :type file: bytes
+        :param file_content: Plain text content of the file.
+        :type file_content: str
         :param description: Description.
         :type description: Optional[str]
         :return: Result[NoContentResp]
@@ -1242,7 +1244,9 @@ class Client:
             data=utils.filter_none(
                 {"fileType": file_type.value, "description": description}
             ),
-            files={"file": (file_name, file, "text/plain")},
+            files={
+                "file": (file_name, bytes(file_content, "utf-8"), "text/plain")
+            },
         )
 
     def check_connectivity(self) -> Result[ConnectivityResp]:

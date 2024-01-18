@@ -74,17 +74,27 @@ class AccountTaskResp(BaseTaskResp):
 
 
 class AddAlertNoteResp(BaseResponse):
-    location: str = Field(alias="Location")
+    note_id: str
 
-    def note_id(self) -> str:
-        return self.location.split("/")[-1]
+    @model_validator(mode="before")
+    @classmethod
+    def map_data(cls, data: Dict[str, str]) -> Dict[str, str]:
+        location = data.get("Location")
+        if location:
+            data["note_id"] = location.split("/")[-1]
+        return data
 
 
 class AddCustomScriptResp(BaseResponse):
-    location: str = Field(alias="Location")
+    script_id: str
 
-    def script_id(self) -> str:
-        return self.location.split("/")[-1]
+    @model_validator(mode="before")
+    @classmethod
+    def map_data(cls, data: Dict[str, str]) -> Dict[str, str]:
+        location = data.get("Location")
+        if location:
+            data["script_id"] = location.split("/")[-1]
+        return data
 
 
 class BlockListTaskResp(BaseTaskResp):
@@ -95,8 +105,9 @@ class BlockListTaskResp(BaseTaskResp):
     @classmethod
     def map_data(cls, data: Dict[str, str]) -> Dict[str, str]:
         obj = get_object(data)
-        data["type"] = obj[0]
-        data["value"] = obj[1]
+        if obj:
+            data["type"] = obj[0]
+            data["value"] = obj[1]
         return data
 
 
