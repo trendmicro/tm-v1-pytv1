@@ -20,7 +20,7 @@ from .exceptions import (
 )
 from .model.commons import Error, MsError, MsStatus
 from .model.enums import Api, HttpMethod, Status
-from .model.requests import EndpointTask
+from .model.requests import EndpointRequest
 from .model.responses import (
     MR,
     BaseLinkableResp,
@@ -28,8 +28,8 @@ from .model.responses import (
     BytesResp,
     C,
     ConsumeLinkableResp,
-    GetAlertDetailsResp,
-    GetAlertNoteDetailsResp,
+    GetAlertNoteResp,
+    GetAlertResp,
     MultiResp,
     MultiUrlResp,
     NoContentResp,
@@ -89,7 +89,7 @@ class Core:
     def send_endpoint(
         self,
         api: Api,
-        *tasks: EndpointTask,
+        *tasks: EndpointRequest,
     ) -> MultiResp:
         return self._process(
             MultiResp,
@@ -278,7 +278,7 @@ def _parse_data(raw_response: Response, class_: Type[R]) -> R:
         log.debug("Parsing json response [Class=%s]", class_.__name__)
         if class_ in [MultiResp, MultiUrlResp]:
             return class_(items=raw_response.json())
-        if class_ in [GetAlertDetailsResp, GetAlertNoteDetailsResp]:
+        if class_ in [GetAlertResp, GetAlertNoteResp]:
             return class_(
                 data=raw_response.json(),
                 etag=raw_response.headers.get("ETag", ""),

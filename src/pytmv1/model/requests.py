@@ -4,14 +4,14 @@ from .commons import BaseModel
 from .enums import ObjectType, RiskLevel, ScanAction
 
 
-class AccountTask(BaseModel):
+class AccountRequest(BaseModel):
     account_name: str
     """User account name."""
     description: Optional[str] = None
     """Description of a response task."""
 
 
-class EndpointTask(BaseModel):
+class EndpointRequest(BaseModel):
     endpoint_name: Optional[str] = None
     """Endpoint name."""
     agent_guid: Optional[str] = None
@@ -20,13 +20,13 @@ class EndpointTask(BaseModel):
     """Description of a response task."""
 
 
-class CustomScriptTask(EndpointTask):
+class RunCustomScriptRequest(EndpointRequest):
     file_name: str
     parameter: Optional[str] = None
     """Options passed to the script during execution"""
 
 
-class EmailMessageIdTask(BaseModel):
+class EmailMessageIdRequest(BaseModel):
     message_id: str
     """Email message id."""
     mail_box: Optional[str] = None
@@ -35,14 +35,14 @@ class EmailMessageIdTask(BaseModel):
     """Description of a response task."""
 
 
-class EmailMessageUIdTask(BaseModel):
+class EmailMessageUIdRequest(BaseModel):
     unique_id: str
     """Email unique message id."""
     description: Optional[str] = None
     """Description of a response task."""
 
 
-class ObjectTask(BaseModel):
+class ObjectRequest(BaseModel):
     object_type: ObjectType
     """Type of object."""
     object_value: str
@@ -51,7 +51,7 @@ class ObjectTask(BaseModel):
     """Description of an object."""
 
 
-class SuspiciousObjectTask(ObjectTask):
+class SuspiciousObjectRequest(ObjectRequest):
     scan_action: Optional[ScanAction] = None
     """Action applied after detecting a suspicious object."""
     risk_level: Optional[RiskLevel] = None
@@ -60,12 +60,12 @@ class SuspiciousObjectTask(ObjectTask):
     """Number of days before the object expires."""
 
 
-class FileTask(EndpointTask):
+class CollectFileRequest(EndpointRequest):
     file_path: str
     """File path of the file to be collected from the target."""
 
 
-class ProcessTask(EndpointTask):
+class TerminateProcessRequest(EndpointRequest):
     file_sha1: str
     """SHA1 hash of the terminated process's executable file."""
     file_name: Optional[str] = None

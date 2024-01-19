@@ -1,4 +1,9 @@
-from pytmv1 import CollectFileTaskResp, EmailMessageIdTask, ResultCode, Status
+from pytmv1 import (
+    CollectFileTaskResp,
+    EmailMessageIdRequest,
+    ResultCode,
+    Status,
+)
 
 
 def test_check_connectivity(client):
@@ -44,8 +49,8 @@ def test_collect_file_task_result_is_bad_request(client):
 
 
 def test_multi_status_is_failed(client):
-    result = client.delete_email_message(
-        EmailMessageIdTask(messageId="internal_server_error")
+    result = client.email.delete(
+        EmailMessageIdRequest(messageId="internal_server_error")
     )
     assert not result.response
     assert result.result_code == ResultCode.ERROR
@@ -54,8 +59,8 @@ def test_multi_status_is_failed(client):
 
 
 def test_multi_status_is_bad_request(client):
-    result = client.delete_email_message(
-        EmailMessageIdTask(messageId="fields_not_found")
+    result = client.email.delete(
+        EmailMessageIdRequest(messageId="fields_not_found")
     )
     assert not result.response
     assert result.result_code == ResultCode.ERROR
@@ -64,8 +69,8 @@ def test_multi_status_is_bad_request(client):
 
 
 def test_multi_status_is_denied(client):
-    result = client.delete_email_message(
-        EmailMessageIdTask(messageId="insufficient_permissions")
+    result = client.email.delete(
+        EmailMessageIdRequest(messageId="insufficient_permissions")
     )
     assert not result.response
     assert result.result_code == ResultCode.ERROR
@@ -74,8 +79,8 @@ def test_multi_status_is_denied(client):
 
 
 def test_multi_status_is_not_supported(client):
-    result = client.delete_email_message(
-        EmailMessageIdTask(messageId="action_not_supported")
+    result = client.email.delete(
+        EmailMessageIdRequest(messageId="action_not_supported")
     )
     assert not result.response
     assert result.result_code == ResultCode.ERROR
@@ -84,8 +89,8 @@ def test_multi_status_is_not_supported(client):
 
 
 def test_multi_status_is_task_error(client):
-    result = client.delete_email_message(
-        EmailMessageIdTask(messageId="task_duplication")
+    result = client.email.delete(
+        EmailMessageIdRequest(messageId="task_duplication")
     )
     assert not result.response
     assert result.result_code == ResultCode.ERROR

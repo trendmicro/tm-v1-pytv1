@@ -8,7 +8,7 @@ import pytmv1
 
 
 def test_conn_opened_with_single_call_single_client_is_one(client):
-    client.get_exception_list()
+    client.object.list_exceptions()
     assert len(list_tcp_conn()) == 1
 
 
@@ -16,12 +16,12 @@ def test_conn_opened_with_single_call_single_client_is_one(client):
 def test_conn_opened_with_multi_call_single_client_is_one(
     execution_number, client
 ):
-    client.get_exception_list()
+    client.object.list_exceptions()
     assert len(list_tcp_conn()) == 1
 
 
 def test_conn_opened_with_multi_processing_single_client_is_one(client):
-    threads = thread_list(lambda: client.add_alert_note("1", "dummy note"))
+    threads = thread_list(lambda: client.add("1", "dummy note"))
     for t in threads:
         t.start()
     for t in threads:
@@ -31,9 +31,7 @@ def test_conn_opened_with_multi_processing_single_client_is_one(client):
 
 def test_conn_opened_with_multi_processing_multi_client_is_one(url):
     threads = thread_list(
-        lambda: pytmv1.client(
-            "appname", "dummyToken", url
-        ).get_exception_list()
+        lambda: pytmv1.client("appname", "dummyToken", url).list_exceptions()
     )
     for t in threads:
         t.start()

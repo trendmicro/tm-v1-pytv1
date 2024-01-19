@@ -1,4 +1,4 @@
-from pytmv1 import ObjectTask, QueryOp, SuspiciousObjectTask, utils
+from pytmv1 import ObjectRequest, QueryOp, SuspiciousObjectRequest, utils
 from pytmv1.model.enums import ObjectType, ScanAction, SearchMode
 
 
@@ -26,14 +26,14 @@ def test_build_activity_request():
 
 def test_build_object_request():
     result = utils.build_object_request(
-        ObjectTask(objectType=ObjectType.IP, objectValue="1.1.1.1")
+        ObjectRequest(objectType=ObjectType.IP, objectValue="1.1.1.1")
     )
     assert result == [{"ip": "1.1.1.1"}]
 
 
 def test_build_object_request_by_field_name():
     result = utils.build_object_request(
-        ObjectTask(object_type=ObjectType.IP, object_value="1.1.1.1")
+        ObjectRequest(object_type=ObjectType.IP, object_value="1.1.1.1")
     )
     assert result == [{"ip": "1.1.1.1"}]
 
@@ -48,7 +48,7 @@ def test_build_sandbox_file_request():
 
 def test_build_suspicious_request():
     result = utils.build_suspicious_request(
-        SuspiciousObjectTask(
+        SuspiciousObjectRequest(
             objectType=ObjectType.DOMAIN,
             objectValue="bad.com",
             scanAction=ScanAction.BLOCK,

@@ -38,23 +38,24 @@ pip install pytmv1
 ```
 
 Usage
+
 ```python
->>> import pytmv1
->>> client = pytmv1.client("MyApplication", "Token", "https://api.xdr.trendmicro.com")
->>> result = client.get_exception_list()
->>> result.response
+>> > import pytmv1
+>> > client = pytmv1.client("MyApplication", "Token", "https://api.xdr.trendmicro.com")
+>> > result = client.list_exceptions()
+>> > result.response
 GetExceptionListResp(
     next_link=None,
     items=[
         ExceptionObject(
             url='https://*.example.com/path1/*',
-            type=<ObjectType.URL: 'url'>,
-            last_modified_date_time='2023-01-12T14:05:37Z',
-            description='object description'
-        )
-    ]
+            type= < ObjectType.URL: 'url' >,
+last_modified_date_time = '2023-01-12T14:05:37Z',
+description = 'object description'
 )
->>> result.result_code
+]
+)
+>> > result.result_code
 ResultCode.SUCCESS
 ```
 

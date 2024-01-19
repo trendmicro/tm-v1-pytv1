@@ -3,7 +3,7 @@ import re
 from typing import Any, Dict, List, Optional, Pattern
 
 from .model.enums import QueryOp, SearchMode
-from .model.requests import ObjectTask, SuspiciousObjectTask
+from .model.requests import ObjectRequest, SuspiciousObjectRequest
 
 MAC_ADDRESS_PATTERN: Pattern[str] = re.compile(
     "^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$"
@@ -45,7 +45,7 @@ def build_activity_request(
     )
 
 
-def build_object_request(*tasks: ObjectTask) -> List[Dict[str, str]]:
+def build_object_request(*tasks: ObjectRequest) -> List[Dict[str, str]]:
     return [
         filter_none(
             {
@@ -72,7 +72,7 @@ def build_sandbox_file_request(
 
 
 def build_suspicious_request(
-    *tasks: SuspiciousObjectTask,
+    *tasks: SuspiciousObjectRequest,
 ) -> List[Dict[str, Any]]:
     return [
         filter_none(

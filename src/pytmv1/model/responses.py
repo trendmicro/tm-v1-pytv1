@@ -141,54 +141,54 @@ class EndpointTaskResp(BaseTaskResp):
     endpoint_name: str
 
 
-class GetAlertDetailsResp(BaseResponse):
+class GetAlertResp(BaseResponse):
     data: Union[SaeAlert, TiAlert]
     etag: str
 
 
-class GetAlertNoteDetailsResp(BaseResponse):
+class GetAlertNoteResp(BaseResponse):
     data: AlertNote
     etag: str
 
 
-class GetAlertListResp(BaseLinkableResp[Union[SaeAlert, TiAlert]]):
+class ListAlertsResp(BaseLinkableResp[Union[SaeAlert, TiAlert]]):
     total_count: int
     count: int
 
 
-class GetAlertNoteListResp(BaseLinkableResp[AlertNote]):
+class ListAlertNoteResp(BaseLinkableResp[AlertNote]):
     ...
 
 
-class GetCustomScriptListResp(BaseLinkableResp[Script]):
+class ListCustomScriptsResp(BaseLinkableResp[Script]):
     ...
 
 
-class GetEndpointActivityDataResp(BaseLinkableResp[EndpointActivity]):
+class ListEndpointActivitiesResp(BaseLinkableResp[EndpointActivity]):
     progress_rate: int
 
 
-class GetEndpointActivityDataCountResp(BaseResponse):
+class GetEndpointActivitiesCountResp(BaseResponse):
     total_count: int
 
 
-class GetEmailActivityDataResp(BaseLinkableResp[EmailActivity]):
+class ListEmailActivityDataResp(BaseLinkableResp[EmailActivity]):
     progress_rate: int
 
 
-class GetEmailActivityDataCountResp(BaseResponse):
+class GetEmailActivitiesCountResp(BaseResponse):
     total_count: int
 
 
-class GetEndpointDataResp(BaseLinkableResp[Endpoint]):
+class ListEndpointDataResp(BaseLinkableResp[Endpoint]):
     ...
 
 
-class GetExceptionListResp(BaseLinkableResp[ExceptionObject]):
+class ListExceptionsResp(BaseLinkableResp[ExceptionObject]):
     ...
 
 
-class GetSuspiciousListResp(BaseLinkableResp[SuspiciousObject]):
+class ListSuspiciousResp(BaseLinkableResp[SuspiciousObject]):
     ...
 
 
@@ -244,7 +244,7 @@ class SandboxSubmissionStatusResp(BaseStatusResponse):
     arguments: Optional[str] = None
 
 
-class SandboxSuspiciousListResp(BaseResponse):
+class ListSandboxSuspiciousResp(BaseResponse):
     items: List[SandboxSuspiciousObject]
 
 

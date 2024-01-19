@@ -1,18 +1,18 @@
 from pytmv1 import (
     AddCustomScriptResp,
     ConsumeLinkableResp,
-    CustomScriptTask,
     FileType,
-    GetCustomScriptListResp,
+    ListCustomScriptsResp,
     MultiResp,
     NoContentResp,
     ResultCode,
+    RunCustomScriptRequest,
     TextResp,
 )
 
 
 def test_add_custom_script(client):
-    result = client.add_custom_script(
+    result = client.script.add(
         file_type=FileType.BASH,
         file_name="add_script.sh",
         file_content="#!/bin/sh\necho 'Add script'",
@@ -23,21 +23,21 @@ def test_add_custom_script(client):
 
 
 def test_delete_custom_script(client):
-    result = client.delete_custom_script("delete_script")
+    result = client.script.delete("delete_script")
     assert isinstance(result.response, NoContentResp)
     assert result.result_code == ResultCode.SUCCESS
 
 
 def test_download_custom_script(client):
-    result = client.download_custom_script("download_script")
+    result = client.script.download("download_script")
     assert isinstance(result.response, TextResp)
     assert result.result_code == ResultCode.SUCCESS
     assert result.response.text == "#!/bin/sh Download Script"
 
 
-def test_run_custom_script(client):
-    result = client.run_custom_script(
-        CustomScriptTask(fileName="test", endpointName="client1")
+def test_run_custom_scripts(client):
+    result = client.script.run(
+        RunCustomScriptRequest(fileName="test", endpointName="client1")
     )
     assert isinstance(result.response, MultiResp)
     assert result.result_code == ResultCode.SUCCESS
@@ -46,7 +46,7 @@ def test_run_custom_script(client):
 
 
 def test_update_custom_script(client):
-    result = client.update_custom_script(
+    result = client.script.update(
         script_id="123",
         file_type=FileType.BASH,
         file_name="update_script.sh",
@@ -56,8 +56,8 @@ def test_update_custom_script(client):
     assert result.result_code == ResultCode.SUCCESS
 
 
-def test_consume_custom_script_list(client):
-    result = client.consume_custom_script_list(
+def test_consume_custom_scripts(client):
+    result = client.script.consume(
         lambda s: None, fileName="random_script.ps1", fileType="powershell"
     )
     assert isinstance(result.response, ConsumeLinkableResp)
@@ -65,10 +65,10 @@ def test_consume_custom_script_list(client):
     assert result.response.total_consumed == 1
 
 
-def test_get_custom_script_list(client):
-    result = client.get_custom_script_list(
+def test_list_custom_scripts(client):
+    result = client.script.list(
         fileName="random_script.ps1", fileType="powershell"
     )
-    assert isinstance(result.response, GetCustomScriptListResp)
+    assert isinstance(result.response, ListCustomScriptsResp)
     assert result.result_code == ResultCode.SUCCESS
     assert len(result.response.items) > 0
