@@ -1,15 +1,15 @@
 from pytmv1 import (
     BytesResp,
+    ListSandboxSuspiciousResp,
     ResultCode,
     SandboxAnalysisResultResp,
     SandboxSubmissionStatusResp,
-    SandboxSuspiciousListResp,
     SubmitFileToSandboxResp,
 )
 
 
-def test_submit_file_to_sandbox(client):
-    result = client.submit_file_to_sandbox(
+def test_submit_sandbox_file(client):
+    result = client.sandbox.submit_file(
         bytes("content", "utf-8"), "fileName.txt"
     )
     assert isinstance(result.response, SubmitFileToSandboxResp)
@@ -17,8 +17,8 @@ def test_submit_file_to_sandbox(client):
     assert result.response.id
 
 
-def test_submit_file_to_sandbox_is_too_large_file(client):
-    result = client.submit_file_to_sandbox(
+def test_submit_sandbox_file_is_too_large_file(client):
+    result = client.sandbox.submit_file(
         bytes("content", "utf-8"), "tooBig.txt"
     )
     assert result.result_code == ResultCode.ERROR
@@ -26,8 +26,8 @@ def test_submit_file_to_sandbox_is_too_large_file(client):
     assert result.error.status == 413
 
 
-def test_submit_file_to_sandbox_is_too_many_request(client):
-    result = client.submit_file_to_sandbox(
+def test_submit_sandbox_file_is_too_many_request(client):
+    result = client.sandbox.submit_file(
         bytes("content", "utf-8"), "tooMany.txt"
     )
     assert result.result_code == ResultCode.ERROR
@@ -35,8 +35,8 @@ def test_submit_file_to_sandbox_is_too_many_request(client):
     assert result.error.status == 429
 
 
-def test_submit_urls_to_sandbox_with_multi_url(client):
-    result = client.submit_urls_to_sandbox(
+def test_submit_sandbox_urls_with_multi_url(client):
+    result = client.sandbox.submit_url(
         "https://trendmicro.com", "https://trendmicro2.com"
     )
     assert result.result_code == ResultCode.SUCCESS
@@ -63,8 +63,8 @@ def test_submit_urls_to_sandbox_with_multi_url(client):
     )
 
 
-def test_submit_urls_to_sandbox_is_bad_request(client):
-    result = client.submit_urls_to_sandbox("bad_request")
+def test_submit_sandbox_urls_is_bad_request(client):
+    result = client.sandbox.submit_url("bad_request")
     assert result.result_code == ResultCode.ERROR
     assert result.errors[0].extra["url"] == "https://www.trendmicro.com"
     assert result.errors[0].status == 202
@@ -76,22 +76,22 @@ def test_submit_urls_to_sandbox_is_bad_request(client):
 
 
 def test_get_sandbox_submission_status(client):
-    result = client.get_sandbox_submission_status("123")
+    result = client.sandbox.get_submission_status("123")
     assert isinstance(result.response, SandboxSubmissionStatusResp)
     assert result.result_code == ResultCode.SUCCESS
     assert result.response.id == "123"
 
 
 def test_get_sandbox_analysis_result(client):
-    result = client.get_sandbox_analysis_result("123", False)
+    result = client.sandbox.get_analysis_result("123", False)
     assert isinstance(result.response, SandboxAnalysisResultResp)
     assert result.result_code == ResultCode.SUCCESS
     assert result.response.id == "123"
 
 
-def test_get_sandbox_suspicious_list(client):
-    result = client.get_sandbox_suspicious_list("1", False)
-    assert isinstance(result.response, SandboxSuspiciousListResp)
+def test_list_sandbox_suspicious(client):
+    result = client.sandbox.list_suspicious("1", False)
+    assert isinstance(result.response, ListSandboxSuspiciousResp)
     assert result.result_code == ResultCode.SUCCESS
     assert len(result.response.items) > 0
     assert result.response.items[0].type == "ip"
@@ -99,14 +99,14 @@ def test_get_sandbox_suspicious_list(client):
 
 
 def test_download_sandbox_analysis_result(client):
-    result = client.download_sandbox_analysis_result("1", False)
+    result = client.sandbox.download_analysis_result("1", False)
     assert isinstance(result.response, BytesResp)
     assert result.result_code == ResultCode.SUCCESS
     assert result.response.content
 
 
 def test_download_sandbox_investigation_package(client):
-    result = client.download_sandbox_investigation_package("1", False)
+    result = client.sandbox.download_investigation_package("1", False)
     assert isinstance(result.response, BytesResp)
     assert result.result_code == ResultCode.SUCCESS
     assert result.response.content
