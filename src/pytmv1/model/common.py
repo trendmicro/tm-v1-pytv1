@@ -13,7 +13,6 @@ from .enum import (
     EntityType,
     EventID,
     EventSubID,
-    FileType,
     Iam,
     IntegrityLevel,
     InvestigationStatus,
@@ -23,6 +22,7 @@ from .enum import (
     Provider,
     RiskLevel,
     ScanAction,
+    ScriptType,
     Severity,
     Status,
 )
@@ -356,7 +356,7 @@ class SandboxSuspiciousObject(BaseModel):
 class Script(BaseConsumable):
     id: str
     file_name: str
-    file_type: FileType
+    file_type: ScriptType
     description: Optional[str] = None
 
 

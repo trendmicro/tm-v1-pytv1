@@ -20,20 +20,22 @@ class Note:
     def __init__(self, core: Core):
         self._core = core
 
-    def add(self, alert_id: str, note: str) -> Result[AddAlertNoteResp]:
+    def create(
+        self, alert_id: str, note_content: str
+    ) -> Result[AddAlertNoteResp]:
         """Adds a note to the specified Workbench alert.
 
         :param alert_id: Workbench alert id.
         :type alert_id: str
-        :param note: Value of the note.
-        :type note: str
+        :param note_content: Value of the note.
+        :type note_content: str
         :rtype: Result[AddAlertNoteResp]:
         """
         return self._core.send(
             AddAlertNoteResp,
             Api.ADD_ALERT_NOTE.value.format(alert_id),
             HttpMethod.POST,
-            json={"content": note},
+            json={"content": note_content},
         )
 
     def update(

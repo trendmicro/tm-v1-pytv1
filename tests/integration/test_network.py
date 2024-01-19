@@ -21,7 +21,7 @@ def test_conn_opened_with_multi_call_single_client_is_one(
 
 
 def test_conn_opened_with_multi_processing_single_client_is_one(client):
-    threads = thread_list(lambda: client.note.add("1", "dummy note"))
+    threads = thread_list(lambda: client.note.create("1", "dummy note"))
     for t in threads:
         t.start()
     for t in threads:
