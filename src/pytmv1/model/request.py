@@ -1,7 +1,7 @@
 from typing import Optional
 
-from .commons import BaseModel
-from .enums import ApiExpInMonths, ApiStatus, ObjectType, RiskLevel, ScanAction
+from .common import BaseModel
+from .enum import ApiExpInMonths, ApiStatus, ObjectType, RiskLevel, ScanAction
 
 
 class AccountRequest(BaseModel):

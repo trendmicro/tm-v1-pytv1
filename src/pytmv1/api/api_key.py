@@ -4,10 +4,10 @@ from typing import Callable, Optional
 
 from .. import utils
 from ..core import Core
-from ..model.commons import ApiKey as Apk
-from ..model.enums import Api, ApiStatus, HttpMethod, QueryOp
-from ..model.requests import ApiKeyRequest
-from ..model.responses import (
+from ..model.common import ApiKey as Apk
+from ..model.enum import Api, ApiStatus, HttpMethod, QueryOp
+from ..model.request import ApiKeyRequest
+from ..model.response import (
     ConsumeLinkableResp,
     GetApiKeyResp,
     ListApiKeyResp,
@@ -15,7 +15,7 @@ from ..model.responses import (
     MultiResp,
     NoContentResp,
 )
-from ..results import MultiResult, Result
+from ..result import MultiResult, Result
 
 
 class ApiKey:

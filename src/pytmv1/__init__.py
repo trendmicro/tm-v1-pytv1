@@ -1,7 +1,7 @@
 from .__about__ import __version__
 from .client import Client, init
 from .mapper import map_cef
-from .model.commons import (
+from .model.common import (
     Account,
     Alert,
     AlertNote,
@@ -34,7 +34,7 @@ from .model.commons import (
     Value,
     ValueList,
 )
-from .model.enums import (
+from .model.enum import (
     ApiExpInMonths,
     ApiStatus,
     EntityType,
@@ -57,7 +57,7 @@ from .model.enums import (
     Severity,
     Status,
 )
-from .model.requests import (
+from .model.request import (
     AccountRequest,
     ApiKeyRequest,
     CollectFileRequest,
@@ -69,7 +69,7 @@ from .model.requests import (
     SuspiciousObjectRequest,
     TerminateProcessRequest,
 )
-from .model.responses import (
+from .model.response import (
     AccountTaskResp,
     AddAlertNoteResp,
     AddCustomScriptResp,
@@ -109,7 +109,7 @@ from .model.responses import (
     TerminateProcessTaskResp,
     TextResp,
 )
-from .results import MultiResult, Result, ResultCode
+from .result import MultiResult, Result, ResultCode
 
 __all__ = [
     "__version__",

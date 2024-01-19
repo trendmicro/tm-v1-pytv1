@@ -22,17 +22,17 @@ from pytmv1 import (
     __version__,
 )
 from pytmv1 import core as core_m
-from pytmv1 import results
+from pytmv1 import result
 from pytmv1.core import API_VERSION, USERAGENT_SUFFIX, Core
-from pytmv1.exceptions import (
+from pytmv1.exception import (
     ParseModelError,
     ServerHtmlError,
     ServerJsonError,
     ServerMultiJsonError,
     ServerTextError,
 )
-from pytmv1.model.enums import Api
-from pytmv1.model.responses import BaseStatusResponse
+from pytmv1.model.enum import Api
+from pytmv1.model.response import BaseStatusResponse
 from tests.data import TextResponse
 
 API_URL = "https://dummy.com/v3.0"
@@ -102,7 +102,7 @@ def test_consume_linkable_without_next_link(mocker, core):
 
 
 def test_error():
-    error = results._error(
+    error = result._error(
         ServerJsonError(
             Error(status=500, code="X12", message="error", number=123)
         )
@@ -114,7 +114,7 @@ def test_error():
 
 
 def test_errors():
-    errors = results._errors(
+    errors = result._errors(
         ServerMultiJsonError(
             [
                 MsError(status=123, code="code", message="message"),
@@ -435,7 +435,7 @@ def test_send_with_validation_error_is_failed(core, mocker):
 
 
 def test_status():
-    status = results._status(ServerTextError(450, "error"))
+    status = result._status(ServerTextError(450, "error"))
     assert status == 450
 
 

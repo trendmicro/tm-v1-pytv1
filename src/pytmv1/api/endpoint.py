@@ -2,22 +2,22 @@ from typing import Callable, List, Optional
 
 from .. import utils
 from ..core import Core
-from ..model.commons import Endpoint as Ept
-from ..model.commons import EndpointActivity
-from ..model.enums import Api, QueryOp, SearchMode
-from ..model.requests import (
+from ..model.common import Endpoint as Ept
+from ..model.common import EndpointActivity
+from ..model.enum import Api, QueryOp, SearchMode
+from ..model.request import (
     CollectFileRequest,
     EndpointRequest,
     TerminateProcessRequest,
 )
-from ..model.responses import (
+from ..model.response import (
     ConsumeLinkableResp,
     GetEndpointActivitiesCountResp,
     ListEndpointActivityResp,
     ListEndpointDataResp,
     MultiResp,
 )
-from ..results import MultiResult, Result
+from ..result import MultiResult, Result
 
 
 class Endpoint:
@@ -71,7 +71,7 @@ class Endpoint:
             Api.TERMINATE_ENDPOINT_PROCESS, *processes
         )
 
-    def get_activities_count(
+    def get_activity_count(
         self,
         start_time: Optional[str] = None,
         end_time: Optional[str] = None,
@@ -116,7 +116,7 @@ class Endpoint:
             headers=utils.tmv1_query(op, fields),
         )
 
-    def list(
+    def list_data(
         self, op: QueryOp = QueryOp.AND, **fields: str
     ) -> Result[ListEndpointDataResp]:
         """Retrieves endpoints in a paginated list filtered by provided values.
@@ -134,7 +134,7 @@ class Endpoint:
             headers=utils.tmv1_query(op, fields),
         )
 
-    def list_activities(
+    def list_activity(
         self,
         start_time: Optional[str] = None,
         end_time: Optional[str] = None,
@@ -179,7 +179,7 @@ class Endpoint:
             headers=utils.tmv1_query(op, fields),
         )
 
-    def consume(
+    def consume_data(
         self,
         consumer: Callable[[Ept], None],
         op: QueryOp,
@@ -203,7 +203,7 @@ class Endpoint:
             headers=utils.tmv1_query(op, fields),
         )
 
-    def consume_activities(
+    def consume_activity(
         self,
         consumer: Callable[[EndpointActivity], None],
         start_time: Optional[str] = None,

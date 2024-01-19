@@ -2,15 +2,15 @@ from typing import Callable, Optional, Union
 
 from .. import utils
 from ..core import Core
-from ..model.commons import SaeAlert, TiAlert
-from ..model.enums import Api, HttpMethod, InvestigationStatus, QueryOp
-from ..model.responses import (
+from ..model.common import SaeAlert, TiAlert
+from ..model.enum import Api, HttpMethod, InvestigationStatus, QueryOp
+from ..model.response import (
     ConsumeLinkableResp,
     GetAlertResp,
     ListAlertsResp,
     NoContentResp,
 )
-from ..results import Result
+from ..result import Result
 
 
 class Alert:

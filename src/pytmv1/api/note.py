@@ -2,16 +2,16 @@ from typing import Callable, Optional
 
 from .. import utils
 from ..core import Core
-from ..model.commons import AlertNote
-from ..model.enums import Api, HttpMethod, QueryOp
-from ..model.responses import (
+from ..model.common import AlertNote
+from ..model.enum import Api, HttpMethod, QueryOp
+from ..model.response import (
     AddAlertNoteResp,
     ConsumeLinkableResp,
     GetAlertNoteResp,
     ListAlertNoteResp,
     NoContentResp,
 )
-from ..results import Result
+from ..result import Result
 
 
 class Note:

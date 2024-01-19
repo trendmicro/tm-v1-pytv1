@@ -2,16 +2,16 @@ from typing import Callable, List, Optional, Union
 
 from .. import utils
 from ..core import Core
-from ..model.commons import EmailActivity
-from ..model.enums import Api, QueryOp, SearchMode
-from ..model.requests import EmailMessageIdRequest, EmailMessageUIdRequest
-from ..model.responses import (
+from ..model.common import EmailActivity
+from ..model.enum import Api, QueryOp, SearchMode
+from ..model.request import EmailMessageIdRequest, EmailMessageUIdRequest
+from ..model.response import (
     ConsumeLinkableResp,
     GetEmailActivitiesCountResp,
     ListEmailActivityResp,
     MultiResp,
 )
-from ..results import MultiResult, Result
+from ..result import MultiResult, Result
 
 
 class Email:
@@ -74,7 +74,7 @@ class Email:
             ],
         )
 
-    def get_activities_count(
+    def get_activity_count(
         self,
         start_time: Optional[str] = None,
         end_time: Optional[str] = None,
@@ -119,7 +119,7 @@ class Email:
             headers=utils.tmv1_query(op, fields),
         )
 
-    def list_activities(
+    def list_activity(
         self,
         start_time: Optional[str] = None,
         end_time: Optional[str] = None,
@@ -164,7 +164,7 @@ class Email:
             headers=utils.tmv1_query(op, fields),
         )
 
-    def consume_activities(
+    def consume_activity(
         self,
         consumer: Callable[[EmailActivity], None],
         start_time: Optional[str] = None,

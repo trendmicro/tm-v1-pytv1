@@ -11,17 +11,17 @@ from requests import PreparedRequest, Request, Response
 
 from .__about__ import __version__
 from .adapter import HTTPAdapter
-from .exceptions import (
+from .exception import (
     ParseModelError,
     ServerHtmlError,
     ServerJsonError,
     ServerMultiJsonError,
     ServerTextError,
 )
-from .model.commons import Error, MsError, MsStatus
-from .model.enums import Api, HttpMethod, Status
-from .model.requests import EndpointRequest
-from .model.responses import (
+from .model.common import Error, MsError, MsStatus
+from .model.enum import Api, HttpMethod, Status
+from .model.request import EndpointRequest
+from .model.response import (
     MR,
     BaseLinkableResp,
     BaseTaskResp,
@@ -42,7 +42,7 @@ from .model.responses import (
     TaskAction,
     TextResp,
 )
-from .results import multi_result, result
+from .result import multi_result, result
 
 USERAGENT_SUFFIX: str = "PyTMV1"
 API_VERSION: str = "v3.0"

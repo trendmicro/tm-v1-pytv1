@@ -7,7 +7,7 @@ from pytmv1 import (
     ResultCode,
     SuspiciousObjectRequest,
 )
-from pytmv1.model.enums import ScanAction
+from pytmv1.model.enum import ScanAction
 
 
 def test_add_exceptions(client):
@@ -81,7 +81,7 @@ def test_delete_suspicious(client):
 
 
 def test_list_exceptions(client):
-    result = client.object.list_exceptions()
+    result = client.object.list_exception()
     assert isinstance(result.response, ListExceptionsResp)
     assert result.result_code == ResultCode.SUCCESS
     assert len(result.response.items) > 0
@@ -102,7 +102,7 @@ def test_list_suspicious(client):
 
 
 def test_consume_exceptions(client):
-    result = client.object.consume_exceptions(lambda s: None)
+    result = client.object.consume_exception(lambda s: None)
     assert result.result_code == ResultCode.SUCCESS
     assert result.response.total_consumed == 1
 

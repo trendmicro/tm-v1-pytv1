@@ -11,7 +11,7 @@ from pytmv1 import (
 
 
 def test_consume_email_activities(client):
-    result = client.email.consume_activities(
+    result = client.email.consume_activity(
         lambda s: None, mailMsgSubject="spam"
     )
     assert result.result_code == ResultCode.SUCCESS
@@ -19,7 +19,7 @@ def test_consume_email_activities(client):
 
 
 def test_list_email_activities(client):
-    result = client.email.list_activities(
+    result = client.email.list_activity(
         mailMsgSubject="spam", mailSenderIp="192.169.1.1"
     )
     assert result.result_code == ResultCode.SUCCESS
@@ -28,34 +28,34 @@ def test_list_email_activities(client):
 
 
 def test_get_email_activities_count(client):
-    result = client.email.get_activities_count(mailMsgSubject="spam")
+    result = client.email.get_activity_count(mailMsgSubject="spam")
     assert result.result_code == ResultCode.SUCCESS
     assert isinstance(result.response, GetEmailActivitiesCountResp)
     assert result.response.total_count > 0
 
 
 def test_consume_endpoint_activities(client):
-    result = client.endpoint.consume_activities(lambda s: None, dpt="443")
+    result = client.endpoint.consume_activity(lambda s: None, dpt="443")
     assert result.result_code == ResultCode.SUCCESS
     assert result.response.total_consumed == 1
 
 
 def test_list_endpoint_activities(client):
-    result = client.endpoint.list_activities(dpt="443")
+    result = client.endpoint.list_activity(dpt="443")
     assert result.result_code == ResultCode.SUCCESS
     assert isinstance(result.response, ListEndpointActivityResp)
     assert len(result.response.items) > 0
 
 
 def test_get_endpoint_activities_count(client):
-    result = client.endpoint.get_activities_count(dpt="443")
+    result = client.endpoint.get_activity_count(dpt="443")
     assert result.result_code == ResultCode.SUCCESS
     assert isinstance(result.response, GetEndpointActivitiesCountResp)
     assert result.response.total_count > 0
 
 
 def test_consume_endpoint_data(client):
-    result = client.endpoint.consume(
+    result = client.endpoint.consume_data(
         lambda s: None, QueryOp.AND, endpointName="client1"
     )
     assert result.result_code == ResultCode.SUCCESS
@@ -63,7 +63,7 @@ def test_consume_endpoint_data(client):
 
 
 def test_list_endpoint_data(client):
-    result = client.endpoint.list(
+    result = client.endpoint.list_data(
         endpointName="client1", productCode=ProductCode.XES
     )
     assert result.result_code == ResultCode.SUCCESS

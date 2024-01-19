@@ -2,8 +2,8 @@ import base64
 import re
 from typing import Any, Dict, List, Optional, Pattern
 
-from .model.enums import QueryOp, SearchMode
-from .model.requests import ObjectRequest, SuspiciousObjectRequest
+from .model.enum import QueryOp, SearchMode
+from .model.request import ObjectRequest, SuspiciousObjectRequest
 
 MAC_ADDRESS_PATTERN: Pattern[str] = re.compile(
     "^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$"

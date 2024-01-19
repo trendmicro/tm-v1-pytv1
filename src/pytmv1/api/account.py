@@ -1,9 +1,9 @@
 from pytmv1.core import Core
-from pytmv1.model.enums import Api
+from pytmv1.model.enum import Api
 
-from ..model.requests import AccountRequest
-from ..model.responses import MultiResp
-from ..results import MultiResult
+from ..model.request import AccountRequest
+from ..model.response import MultiResp
+from ..result import MultiResult
 
 
 class Account:

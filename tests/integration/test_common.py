@@ -7,11 +7,11 @@ from pytmv1 import (
 
 
 def test_check_connectivity(client):
-    assert client.check_connectivity()
+    assert client.system.check_connectivity()
 
 
-def test_get_base_task_result(client):
-    result = client.get_base_task_result("collect_file", False)
+def test_get_task_result(client):
+    result = client.task.get_result("collect_file")
     assert isinstance(result.response, CollectFileTaskResp)
     assert result.result_code == ResultCode.SUCCESS
     assert result.response.status == Status.SUCCEEDED
@@ -21,7 +21,9 @@ def test_get_base_task_result(client):
 
 
 def test_collect_file_task_result(client):
-    result = client.get_task_result("collect_file", CollectFileTaskResp, False)
+    result = client.task.get_result_class(
+        "collect_file", CollectFileTaskResp, False
+    )
     assert isinstance(result.response, CollectFileTaskResp)
     assert result.result_code == ResultCode.SUCCESS
     assert result.response.status == Status.SUCCEEDED
@@ -31,7 +33,7 @@ def test_collect_file_task_result(client):
 
 
 def test_collect_file_task_result_is_failed(client):
-    result = client.get_task_result(
+    result = client.task.get_result_class(
         "internal_error", CollectFileTaskResp, False
     )
     assert not result.response
@@ -41,7 +43,9 @@ def test_collect_file_task_result_is_failed(client):
 
 
 def test_collect_file_task_result_is_bad_request(client):
-    result = client.get_task_result("bad_request", CollectFileTaskResp, False)
+    result = client.task.get_result_class(
+        "bad_request", CollectFileTaskResp, False
+    )
     assert not result.response
     assert result.result_code == ResultCode.ERROR
     assert result.error.code == "BadRequest"

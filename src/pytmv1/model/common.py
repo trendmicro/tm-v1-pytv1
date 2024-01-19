@@ -8,7 +8,7 @@ from pydantic import RootModel as PydanticRootModel
 from pydantic import model_validator
 from pydantic.alias_generators import to_camel
 
-from .enums import (
+from .enum import (
     ApiStatus,
     EntityType,
     EventID,
