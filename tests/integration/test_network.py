@@ -4,9 +4,11 @@ from threading import Thread
 import psutil
 import pytest
 
+import pytmv1
+
 
 def test_conn_opened_with_single_call_single_client_is_one(client):
-    client.get_exception_list()
+    client.object.list_exception()
     assert len(list_tcp_conn()) == 1
 
 
@@ -14,12 +16,12 @@ def test_conn_opened_with_single_call_single_client_is_one(client):
 def test_conn_opened_with_multi_call_single_client_is_one(
     execution_number, client
 ):
-    client.get_exception_list()
+    client.object.list_exception()
     assert len(list_tcp_conn()) == 1
 
 
 def test_conn_opened_with_multi_processing_single_client_is_one(client):
-    threads = thread_list(lambda: client.get_exception_list())
+    threads = thread_list(lambda: client.note.add("1", "dummy note"))
     for t in threads:
         t.start()
     for t in threads:
@@ -27,15 +29,18 @@ def test_conn_opened_with_multi_processing_single_client_is_one(client):
     assert len(list_tcp_conn()) == 1
 
 
-def test_conn_opened_with_multi_processing_multi_client_is_one(
-    pytestconfig, client
-):
-    threads = thread_list(lambda: client.get_exception_list())
+def test_conn_opened_with_multi_processing_multi_client_is_two(client, url):
+    client.object.list_exception()
+    threads = thread_list(
+        lambda: pytmv1.init(
+            "appname2", "dummyToken", url
+        ).object.list_exception()
+    )
     for t in threads:
         t.start()
     for t in threads:
         t.join()
-    assert len(list_tcp_conn()) == 1
+    assert len(list_tcp_conn()) == 2
 
 
 def list_tcp_conn():

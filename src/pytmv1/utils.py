@@ -1,22 +1,30 @@
 import base64
 import re
-from typing import Any, Dict, List, Optional, Pattern, Tuple
+from typing import Any, Dict, List, Optional, Pattern
 
-from pydantic import IPvAnyAddress, TypeAdapter
-
-from .model.enums import (
-    OperatingSystem,
-    ProductCode,
-    QueryField,
-    QueryOp,
-    SearchMode,
-)
-from .model.requests import ObjectTask, SuspiciousObjectTask
+from .model.enum import QueryOp, SearchMode
+from .model.request import ObjectRequest, SuspiciousObjectRequest
 
 MAC_ADDRESS_PATTERN: Pattern[str] = re.compile(
     "^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$"
 )
 GUID_PATTERN: Pattern[str] = re.compile("^(\\w+-+){1,5}\\w+$")
+
+
+def _build_query(
+    op: QueryOp, header: str, fields: Dict[str, str]
+) -> Dict[str, str]:
+    return filter_none(
+        {
+            header: (" " + op + " ").join(
+                [f"{k} eq '{v}'" for k, v in fields.items()]
+            )
+        }
+    )
+
+
+def _b64_encode(value: Optional[str]) -> Optional[str]:
+    return base64.b64encode(value.encode()).decode() if value else None
 
 
 def build_activity_request(
@@ -37,7 +45,7 @@ def build_activity_request(
     )
 
 
-def build_object_request(*tasks: ObjectTask) -> List[Dict[str, str]]:
+def build_object_request(*tasks: ObjectRequest) -> List[Dict[str, str]]:
     return [
         filter_none(
             {
@@ -64,7 +72,7 @@ def build_sandbox_file_request(
 
 
 def build_suspicious_request(
-    *tasks: SuspiciousObjectTask,
+    *tasks: SuspiciousObjectRequest,
 ) -> List[Dict[str, Any]]:
     return [
         filter_none(
@@ -84,56 +92,17 @@ def build_suspicious_request(
     ]
 
 
-def custom_script_query(op: QueryOp, **fields: str) -> str:
-    return (" " + op + " ").join([f"{k} eq '{v}'" for k, v in fields.items()])
-
-
-def activity_query(op: QueryOp, **fields: str) -> Dict[str, str]:
-    return {
-        "TMV1-Query": (" " + op + " ").join(
-            [f'{k}:"{v}"' for k, v in fields.items()]
-        )
-    }
-
-
-def endpoint_query(op: QueryOp, *values: str) -> Dict[str, str]:
-    return {
-        "TMV1-Query": (" " + op + " ").join(
-            "("
-            + (" " + QueryOp.OR + " ").join(
-                f"{qt.value} eq '{value}'"
-                for qt in endpoint_query_field(value)
-            )
-            + ")"
-            for value in values
-        )
-    }
-
-
-def endpoint_query_field(value: str) -> Tuple[QueryField, ...]:
-    if _is_ip_address(value):
-        return (QueryField.IP,)
-    if bool(MAC_ADDRESS_PATTERN.match(value)):
-        return (QueryField.MAC_ADDRESS,)
-    if bool(GUID_PATTERN.match(value)):
-        return (QueryField.AGENT_GUID,)
-    if next(filter(lambda os: os.value == value, OperatingSystem), None):
-        return (QueryField.OS_NAME,)
-    if next(filter(lambda pc: pc.value == value, ProductCode), None):
-        return QueryField.PRODUCT_CODE, QueryField.INSTALLED_PRODUCT_CODES
-    return QueryField.ENDPOINT_NAME, QueryField.LOGIN_ACCOUNT
-
-
 def filter_none(dictionary: Dict[str, Optional[Any]]) -> Dict[str, Any]:
     return {k: v for k, v in dictionary.items() if v}
 
 
-def _b64_encode(value: Optional[str]) -> Optional[str]:
-    return base64.b64encode(value.encode()).decode() if value else None
+def tmv1_filter(op: QueryOp, fields: Dict[str, str]) -> Dict[str, str]:
+    return _build_query(op, "TMV1-Filter", fields)
 
 
-def _is_ip_address(endpoint_value: str) -> bool:
-    try:
-        return bool(TypeAdapter(IPvAnyAddress).validate_python(endpoint_value))
-    except ValueError:
-        return False
+def tmv1_query(op: QueryOp, fields: Dict[str, str]) -> Dict[str, str]:
+    return _build_query(op, "TMV1-Query", fields)
+
+
+def filter_query(op: QueryOp, fields: Dict[str, str]) -> Dict[str, str]:
+    return _build_query(op, "filter", fields)

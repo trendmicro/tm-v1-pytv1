@@ -3,11 +3,13 @@ from __future__ import annotations
 from typing import Any, Dict, List, Optional, Tuple, Union
 
 from pydantic import BaseModel as PydanticBaseModel
-from pydantic import Field
+from pydantic import ConfigDict, Field
 from pydantic import RootModel as PydanticRootModel
+from pydantic import model_validator
 from pydantic.alias_generators import to_camel
 
-from .enums import (
+from .enum import (
+    ApiStatus,
     EntityType,
     EventID,
     EventSubID,
@@ -25,37 +27,19 @@ from .enums import (
     Status,
 )
 
+CFG = ConfigDict(alias_generator=to_camel, populate_by_name=True)
+
 
 class BaseModel(PydanticBaseModel):
-    def __init__(self, **data: Any):
-        super().__init__(**data)
-
-    class Config:
-        alias_generator = to_camel
-        populate_by_name = True
+    model_config = CFG
 
 
 class RootModel(PydanticRootModel[List[int]]):
-    class Config:
-        alias_generator = to_camel
-        populate_by_name = True
+    model_config = CFG
 
 
 class BaseConsumable(BaseModel):
-    def __init__(self, **data: Any):
-        super().__init__(**data)
-
-
-def _get_task_id(headers: List[Dict[str, str]]) -> Optional[str]:
-    task_id: str = next(
-        (
-            h.get("value", "")
-            for h in headers
-            if "Operation-Location" == h.get("name", "")
-        ),
-        "",
-    ).split("/")[-1]
-    return task_id if task_id != "" else None
+    ...
 
 
 class Account(BaseModel):
@@ -78,6 +62,26 @@ class Alert(BaseConsumable):
     created_date_time: str
     updated_date_time: str
     indicators: List[Indicator]
+
+
+class AlertNote(BaseConsumable):
+    id: int
+    content: str
+    creator_name: str
+    created_date_time: str
+    creator_mail_address: Optional[str]
+    last_updated_by: Optional[str]
+    last_updated_date_time: Optional[str]
+
+
+class ApiKey(BaseConsumable):
+    id: str
+    name: str
+    status: ApiStatus
+    role: str
+    expired_date_time: str
+    last_used_date_time: str
+    description: Optional[str]
 
 
 class Digest(BaseModel):
@@ -204,9 +208,6 @@ class Error(BaseModel):
     message: Optional[str] = None
     number: Optional[int] = None
 
-    def __init__(self, **data: Any):
-        super().__init__(**data)
-
 
 class ExceptionObject(BaseConsumable):
     value: str
@@ -214,15 +215,13 @@ class ExceptionObject(BaseConsumable):
     last_modified_date_time: str
     description: Optional[str] = None
 
-    def __init__(self, **data: str) -> None:
-        super().__init__(value=self._obj_value(data), **data)
-
-    @staticmethod
-    def _obj_value(args: Dict[str, str]) -> str:
-        obj_value: Optional[str] = args.get(args.get("type", ""))
-        if obj_value is None:
-            raise ValueError("Object value not found")
-        return obj_value
+    @model_validator(mode="before")
+    @classmethod
+    def _map_data(cls, data: Dict[str, str]) -> Dict[str, str]:
+        value = data.get(data.get("type", ""))
+        if value:
+            data["value"] = value
+        return data
 
 
 class ImpactScope(BaseModel):
@@ -272,11 +271,23 @@ class MsData(BaseModel):
     status: int
     task_id: Optional[str] = None
 
-    def __init__(self, **data: Any):
-        super().__init__(
-            taskId=_get_task_id(data.pop("headers", {})),
-            **data,
-        )
+    @model_validator(mode="before")
+    @classmethod
+    def map_task_id(cls, data: Dict[str, Any]) -> Dict[str, Any]:
+        data["task_id"] = _get_task_id(data)
+        return data
+
+
+class MsDataApiKey(MsData):
+    id: str
+    value: str
+    expired_date_time: str
+
+    @model_validator(mode="before")
+    @classmethod
+    def map_data(cls, data: Dict[str, Any]) -> Dict[str, Any]:
+        data.update(data.pop("body", {}))
+        return data
 
 
 class MsDataUrl(MsData):
@@ -284,23 +295,27 @@ class MsDataUrl(MsData):
     id: Optional[str] = None
     digest: Optional[Digest] = None
 
-    def __init__(self, **data: Any):
+    @model_validator(mode="before")
+    @classmethod
+    def map_data(cls, data: Dict[str, Any]) -> Dict[str, Any]:
         data.update(data.pop("body", {}))
-        super().__init__(**data)
+        return data
 
 
 class MsError(Error):
     extra: Dict[str, str] = {}
     task_id: Optional[str] = None
 
-    def __init__(self, **data: Any):
+    @model_validator(mode="before")
+    @classmethod
+    def map_data(cls, data: Dict[str, Any]) -> Dict[str, Any]:
         data.update(data.pop("body", {}))
         data.update(data.pop("error", {}))
-        super().__init__(
-            extra={"url": data.pop("url", "")},
-            taskId=_get_task_id(data.pop("headers", {})),
-            **data,
-        )
+        data["task_id"] = _get_task_id(data)
+        url = data.pop("url", None)
+        if url:
+            data["extra"] = {"url": url}
+        return data
 
 
 class MsStatus(RootModel):
@@ -328,17 +343,14 @@ class SandboxSuspiciousObject(BaseModel):
     type: ObjectType
     value: str
 
-    def __init__(self, **data: Any):
-        obj: Tuple[str, str] = self._map(data)
-        super().__init__(type=obj[0], value=obj[1], **data)
-
-    @staticmethod
-    def _map(args: Dict[str, str]) -> Tuple[str, str]:
-        return {
-            (k, v)
-            for k, v in args.items()
-            if k in map(lambda ot: ot.value, ObjectType)
-        }.pop()
+    @model_validator(mode="before")
+    @classmethod
+    def map_data(cls, data: Dict[str, str]) -> Dict[str, str]:
+        obj = get_object(data)
+        if obj:
+            data["type"] = obj[0]
+            data["value"] = obj[1]
+        return data
 
 
 class Script(BaseConsumable):
@@ -371,3 +383,27 @@ class TiIndicator(Indicator):
     matched_indicator_pattern_ids: List[str]
     first_seen_date_times: List[str]
     last_seen_date_times: List[str]
+
+
+def _get_task_id(data: Dict[str, Any]) -> Optional[str]:
+    return next(
+        map(
+            lambda header: header.get("value", "").split("/")[-1],
+            filter(
+                lambda header: "Operation-Location" == header.get("name", ""),
+                data.pop("headers", []),
+            ),
+        ),
+        None,
+    )
+
+
+def get_object(data: Dict[str, str]) -> Optional[Tuple[str, str]]:
+    obj = next(
+        filter(
+            lambda item: item[0] in map(lambda ot: ot.value, ObjectType),
+            data.items(),
+        ),
+        None,
+    )
+    return obj

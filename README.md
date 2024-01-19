@@ -38,23 +38,24 @@ pip install pytmv1
 ```
 
 Usage
+
 ```python
->>> import pytmv1
->>> client = pytmv1.client("MyApplication", "Token", "https://api.xdr.trendmicro.com")
->>> result = client.get_exception_list()
->>> result.response
+>> > import pytmv1
+>> > client = pytmv1.init("MyApplication", "Token", "https://api.xdr.trendmicro.com")
+>> > result = client.object.list_exception()
+>> > result.response
 GetExceptionListResp(
     next_link=None,
     items=[
         ExceptionObject(
             url='https://*.example.com/path1/*',
-            type=<ObjectType.URL: 'url'>,
-            last_modified_date_time='2023-01-12T14:05:37Z',
-            description='object description'
-        )
-    ]
+            type= < ObjectType.URL: 'url' >,
+last_modified_date_time = '2023-01-12T14:05:37Z',
+description = 'object description'
 )
->>> result.result_code
+]
+)
+>> > result.result_code
 ResultCode.SUCCESS
 ```
 
@@ -86,64 +87,74 @@ pytest --mock-url="$url" --verbose ./tests/integration
 
 Supported APIs
 --------------
-| Python                                                        | Vision One                                                                                                                                                                         |
-|:--------------------------------------------------------------|:-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **Connectivity**                                              |                                                                                                                                                                                    |
-| `test_connectivity`                                           | [Check availability of service](https://automation.trendmicro.com/xdr/api-v3#tag/Connectivity/paths/~1v3.0~1healthcheck~1connectivity/get)                                         |
-| **Common**                                                    |                                                                                                                                                                                    |
-| `get_base_task_result`                                        | [Download response task results](https://automation.trendmicro.com/xdr/api-v3#tag/Common/paths/~1v3.0~1response~1tasks~1%7Bid%7D/get)                                              |
-| `get_task_result`                                             | [Download response task results](https://automation.trendmicro.com/xdr/api-v3#tag/Common/paths/~1v3.0~1response~1tasks~1{id}/get)                                                  |
-| **Custom Scripts**                                            |                                                                                                                                                                                    |
-| `get_custom_script_list`                                      | [List custom scripts](https://automation.trendmicro.com/xdr/api-v3#tag/Custom-Script/paths/~1v3.0~1response~1customScripts/get)                                                    |
-| `add_custom_script`                                           | [Add custom script](https://automation.trendmicro.com/xdr/api-v3#tag/Custom-Script/paths/~1v3.0~1response~1customScripts/post)                                                     |
-| `update_custom_script`                                        | [Update custom script](https://automation.trendmicro.com/xdr/api-v3#tag/Custom-Script/paths/~1v3.0~1response~1customScripts~1%7Bid%7D~1update/post)                                |
-| `download_custom_script`                                      | [Download custom script](https://automation.trendmicro.com/xdr/api-v3#tag/Custom-Script/paths/~1v3.0~1response~1customScripts~1%7Bid%7D/get)                                       |
-| `delete_custom_script`                                        | [Delete custom script](https://automation.trendmicro.com/xdr/api-v3#tag/Custom-Script/paths/~1v3.0~1response~1customScripts~1%7Bid%7D/delete)                                      |
-| `run_custom_script`                                           | [Run custom script](https://automation.trendmicro.com/xdr/api-v3#tag/Custom-Script/paths/~1v3.0~1response~1endpoints~1runScript/post)                                              |
-| **Domain Account**                                            |                                                                                                                                                                                    |
-| `disable_account`                                             | [Disable user account](https://automation.trendmicro.com/xdr/api-v3#tag/Domain-Account/paths/~1v3.0~1response~1domainAccounts~1disable/post)                                       |                                                                                                                   
-| `enable_account`                                              | [Enable user account](https://automation.trendmicro.com/xdr/api-v3#tag/Domain-Account/paths/~1v3.0~1response~1domainAccounts~1enable/post)                                         |
-| `reset_password_account`                                      | [Force password reset](https://automation.trendmicro.com/xdr/api-v3#tag/Domain-Account/paths/~1v3.0~1response~1domainAccounts~1resetPassword/post)                                 |
-| `sign_out_account`                                            | [Force sign out](https://automation.trendmicro.com/xdr/api-v3#tag/Domain-Account/paths/~1v3.0~1response~1domainAccounts~1signOut/post)                                             |
-| **Email**                                                     |                                                                                                                                                                                    |
-| `delete_email_message`                                        | [Delete email message](https://automation.trendmicro.com/xdr/api-v3#tag/Email/paths/~1v3.0~1response~1emails~1delete/post)                                                         |
-| `quarantine_email_message`                                    | [Quarantine email message](https://automation.trendmicro.com/xdr/api-v3#tag/Email/paths/~1v3.0~1response~1emails~1quarantine/post)                                                 |
-| `restore_email_message`                                       | [Restore email message](https://automation.trendmicro.com/xdr/api-v3#tag/Email/paths/~1v3.0~1response~1emails~1restore/post)                                                       |
-| **Endpoint**                                                  |                                                                                                                                                                                    |
-| `collect_file`                                                | [Collect file](https://automation.trendmicro.com/xdr/api-v3#tag/Endpoint/paths/~1v3.0~1response~1endpoints~1collectFile/post)                                                      |
-| `isolate_endpoint`                                            | [Isolate endpoint](https://automation.trendmicro.com/xdr/api-v3#tag/Endpoint/paths/~1v3.0~1response~1endpoints~1isolate/post)                                                      |
-| `restore_endpoint`                                            | [Restore endpoint](https://automation.trendmicro.com/xdr/api-v3#tag/Endpoint/paths/~1v3.0~1response~1endpoints~1restore/post)                                                      |
-| `terminate_process`                                           | [Terminate process](https://automation.trendmicro.com/xdr/api-v3#tag/Endpoint/paths/~1v3.0~1response~1endpoints~1terminateProcess/post)                                            |
-| **Sandbox Analysis**                                          |                                                                                                                                                                                    |
-| `download_sandbox_analysis_result`                            | [Download analysis results](https://automation.trendmicro.com/xdr/api-v3#tag/Sandbox-Analysis/paths/~1v3.0~1sandbox~1analysisResults~1{id}~1report/get)                            |
-| `download_sandbox_investigation_package`                      | [Download investigation package](https://automation.trendmicro.com/xdr/api-v3#tag/Sandbox-Analysis/paths/~1v3.0~1sandbox~1analysisResults~1{id}~1investigationPackage/get)         |
-| `get_sandbox_analysis_result`                                 | [Get analysis results](https://automation.trendmicro.com/xdr/api-v3#tag/Sandbox-Analysis/paths/~1v3.0~1sandbox~1analysisResults~1{id}/get)                                         |
-| `get_sandbox_submission_status`                               | [Get submission status](https://automation.trendmicro.com/xdr/api-v3#tag/Sandbox-Analysis/paths/~1v3.0~1sandbox~1tasks~1{id}/get)                                                  |
-| `get_sandbox_suspicious_list`                                 | [Download suspicious object list](https://automation.trendmicro.com/xdr/api-v3#tag/Sandbox-Analysis/paths/~1v3.0~1sandbox~1analysisResults~1{id}~1suspiciousObjects/get)           |
-| `submit_file_to_sandbox`                                      | [Submit file to sandbox](https://automation.trendmicro.com/xdr/api-v3#tag/Sandbox-Analysis/paths/~1v3.0~1sandbox~1files~1analyze/post)                                             |
-| `submit_urls_to_sandbox`                                      | [Submit URLs to sandbox](https://automation.trendmicro.com/xdr/api-v3#tag/Sandbox-Analysis/paths/~1v3.0~1sandbox~1urls~1analyze/post)                                              |
-| **Search**                                                    |                                                                                                                                                                                    |
-| `get_email_activity_data` `consume_email_activity_data`       | [Get email activity data](https://automation.trendmicro.com/xdr/api-v3#tag/Search/paths/~1v3.0~1search~1emailActivities/get)                                                       |
-| `get_email_activity_data_count`                               | [Get email activity data count](https://automation.trendmicro.com/xdr/api-v3#tag/Search/paths/~1v3.0~1search~1emailActivities/get)                                                 |
-| `get_endpoint_activity_data` `consume_endpoint_activity_data` | [Get endpoint activity data](https://automation.trendmicro.com/xdr/api-v3#tag/Search/paths/~1v3.0~1search~1endpointActivities/get)                                                 |
-| `get_endpoint_activity_data_count`                            | [Get endpoint activity data count](https://automation.trendmicro.com/xdr/api-v3#tag/Search/paths/~1v3.0~1search~1endpointActivities/get)                                           |
-| `get_endpoint_data` `consume_endpoint_data`                   | [Get endpoint data](https://automation.trendmicro.com/xdr/api-v3#tag/Search/paths/~1v3.0~1eiqs~1endpoints/get)                                                                     |
-| **Suspicious Objects**                                        |                                                                                                                                                                                    |
-| `add_to_block_list`                                           | [Add to block list](https://automation.trendmicro.com/xdr/api-v3#tag/Suspicious-Objects/paths/~1v3.0~1response~1suspiciousObjects/post)                                            | 
-| `remove_from_block_list`                                      | [Remove from block list](https://automation.trendmicro.com/xdr/api-v3#tag/Suspicious-Objects/paths/~1v3.0~1response~1suspiciousObjects~1delete/post)                               |
-| **Suspicious Object Exception List**                          |                                                                                                                                                                                    |
-| `add_to_exception_list`                                       | [Add to exception list](https://automation.trendmicro.com/xdr/api-v3#tag/Suspicious-Object-Exception-List/paths/~1v3.0~1threatintel~1suspiciousObjectExceptions/post)              |
-| `get_exception_list` `consume_exception_list`                 | [Get exception list](https://automation.trendmicro.com/xdr/api-v3#tag/Suspicious-Object-Exception-List/paths/~1v3.0~1threatintel~1suspiciousObjectExceptions/get)                  |
-| `remove_from_exception_list`                                  | [Remove from exception list](https://automation.trendmicro.com/xdr/api-v3#tag/Suspicious-Object-Exception-List/paths/~1v3.0~1threatintel~1suspiciousObjectExceptions~1delete/post) |
-| **Suspicious Object List**                                    |                                                                                                                                                                                    |
-| `add_to_suspicious_list`                                      | [Add to suspicious object list](https://automation.trendmicro.com/xdr/api-v3#tag/Suspicious-Object-List/paths/~1v3.0~1threatintel~1suspiciousObjects/post)                         |
-| `get_suspicious_list` `consume_suspicious_list`               | [List suspicious objects](https://automation.trendmicro.com/xdr/api-v3#tag/Suspicious-Object-List/paths/~1v3.0~1threatintel~1suspiciousObjects/get)                                |
-| `remove_from_suspicious_list`                                 | [Remove from suspicious object list](https://automation.trendmicro.com/xdr/api-v3#tag/Suspicious-Object-List/paths/~1v3.0~1threatintel~1suspiciousObjects~1delete/post)            |
-| **Workbench**                                                 |                                                                                                                                                                                    |
-| `add_alert_note`                                              | [Add alert note](https://automation.trendmicro.com/xdr/api-v3#tag/Workbench-notes/paths/~1v3.0~1workbench~1alerts~1{alertId}~1notes/post)                                          |
-| `edit_alert_status`                                           | [Modify alert status](https://automation.trendmicro.com/xdr/api-v3#tag/Workbench/paths/~1v3.0~1workbench~1alerts~1{id}/patch)                                                      |
-| `get_alert_details`                                           | [Get alert details](https://automation.trendmicro.com/xdr/api-v3#tag/Workbench/paths/~1v3.0~1workbench~1alerts/get)                                                                |
-| `get_alert_list` `consume_alert_list`                         | [Get alerts list](https://automation.trendmicro.com/xdr/api-v3#tag/Workbench/paths/~1v3.0~1workbench~1alerts/get)                                                                  |
+| Python                                         | Vision One                                                                                                                                                                         |
+|:-----------------------------------------------|:-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Connectivity**                               |                                                                                                                                                                                    |
+| `system.check_connectivity`                    | [Check availability of service](https://automation.trendmicro.com/xdr/api-v3#tag/Connectivity/paths/~1v3.0~1healthcheck~1connectivity/get)                                         |
+| **API Keys**                                   |                                                                                                                                                                                    |
+| `api_key.create`                               | [Create API Keys](https://automation.trendmicro.com/xdr/api-v3#tag/API-Keys/paths/~1v3.0~1iam~1apiKeys/post)                                                                       |
+| `api_key.delete`                               | [Delete API keys](https://automation.trendmicro.com/xdr/api-v3#tag/API-Keys/paths/~1v3.0~1iam~1apiKeys~1delete/post)                                                               |
+| `api_key.update`                               | [Update API key](https://automation.trendmicro.com/xdr/api-v3#tag/API-Keys/paths/~1v3.0~1iam~1apiKeys~1%7Bid%7D/patch)                                                             |
+| `api_key.get`                                  | [Get API key](https://automation.trendmicro.com/xdr/api-v3#tag/API-Keys/paths/~1v3.0~1iam~1apiKeys~1%7Bid%7D/get)                                                                  |
+| `api_key.[list/consume]`                       | [List API keys](https://automation.trendmicro.com/xdr/api-v3#tag/API-Keys/paths/~1v3.0~1iam~1apiKeys/get)                                                                          |
+| **Common**                                     |                                                                                                                                                                                    |
+| `task.get_result`                              | [Download response task results](https://automation.trendmicro.com/xdr/api-v3#tag/Common/paths/~1v3.0~1response~1tasks~1%7Bid%7D/get)                                              |
+| **Custom Scripts**                             |                                                                                                                                                                                    |
+| `script.add`                                   | [Add custom script](https://automation.trendmicro.com/xdr/api-v3#tag/Custom-Script/paths/~1v3.0~1response~1customScripts/post)                                                     |
+| `script.delete`                                | [Delete custom script](https://automation.trendmicro.com/xdr/api-v3#tag/Custom-Script/paths/~1v3.0~1response~1customScripts~1%7Bid%7D/delete)                                      |
+| `script.update`                                | [Update custom script](https://automation.trendmicro.com/xdr/api-v3#tag/Custom-Script/paths/~1v3.0~1response~1customScripts~1%7Bid%7D~1update/post)                                |
+| `script.download`                              | [Download custom script](https://automation.trendmicro.com/xdr/api-v3#tag/Custom-Script/paths/~1v3.0~1response~1customScripts~1%7Bid%7D/get)                                       |
+| `script.run`                                   | [Run custom script](https://automation.trendmicro.com/xdr/api-v3#tag/Custom-Script/paths/~1v3.0~1response~1endpoints~1runScript/post)                                              |
+| `script.list`                                  | [List custom scripts](https://automation.trendmicro.com/xdr/api-v3#tag/Custom-Script/paths/~1v3.0~1response~1customScripts/get)                                                    |
+| **Domain Account**                             |                                                                                                                                                                                    |
+| `account.disable`                              | [Disable user account](https://automation.trendmicro.com/xdr/api-v3#tag/Domain-Account/paths/~1v3.0~1response~1domainAccounts~1disable/post)                                       |                                                                                                                   
+| `account.enable`                               | [Enable user account](https://automation.trendmicro.com/xdr/api-v3#tag/Domain-Account/paths/~1v3.0~1response~1domainAccounts~1enable/post)                                         |
+| `account.reset`                                | [Force password reset](https://automation.trendmicro.com/xdr/api-v3#tag/Domain-Account/paths/~1v3.0~1response~1domainAccounts~1resetPassword/post)                                 |
+| `account.sign_out`                             | [Force sign out](https://automation.trendmicro.com/xdr/api-v3#tag/Domain-Account/paths/~1v3.0~1response~1domainAccounts~1signOut/post)                                             |
+| **Email**                                      |                                                                                                                                                                                    |
+| `email.delete`                                 | [Delete email message](https://automation.trendmicro.com/xdr/api-v3#tag/Email/paths/~1v3.0~1response~1emails~1delete/post)                                                         |
+| `email.quarantine`                             | [Quarantine email message](https://automation.trendmicro.com/xdr/api-v3#tag/Email/paths/~1v3.0~1response~1emails~1quarantine/post)                                                 |
+| `email.restore`                                | [Restore email message](https://automation.trendmicro.com/xdr/api-v3#tag/Email/paths/~1v3.0~1response~1emails~1restore/post)                                                       |
+| **Endpoint**                                   |                                                                                                                                                                                    |
+| `endpoint.collect_file`                        | [Collect file](https://automation.trendmicro.com/xdr/api-v3#tag/Endpoint/paths/~1v3.0~1response~1endpoints~1collectFile/post)                                                      |
+| `endpoint.isolate`                             | [Isolate endpoint](https://automation.trendmicro.com/xdr/api-v3#tag/Endpoint/paths/~1v3.0~1response~1endpoints~1isolate/post)                                                      |
+| `endpoint.restore`                             | [Restore endpoint](https://automation.trendmicro.com/xdr/api-v3#tag/Endpoint/paths/~1v3.0~1response~1endpoints~1restore/post)                                                      |
+| `endpoint.terminate_process`                   | [Terminate process](https://automation.trendmicro.com/xdr/api-v3#tag/Endpoint/paths/~1v3.0~1response~1endpoints~1terminateProcess/post)                                            |
+| **Sandbox Analysis**                           |                                                                                                                                                                                    |
+| `sandbox.download_analysis_result`             | [Download analysis results](https://automation.trendmicro.com/xdr/api-v3#tag/Sandbox-Analysis/paths/~1v3.0~1sandbox~1analysisResults~1{id}~1report/get)                            |
+| `sandbox.download_investigation_package`       | [Download investigation package](https://automation.trendmicro.com/xdr/api-v3#tag/Sandbox-Analysis/paths/~1v3.0~1sandbox~1analysisResults~1{id}~1investigationPackage/get)         |
+| `sandbox.get_analysis_result`                  | [Get analysis results](https://automation.trendmicro.com/xdr/api-v3#tag/Sandbox-Analysis/paths/~1v3.0~1sandbox~1analysisResults~1{id}/get)                                         |
+| `sandbox.get_submission_status`                | [Get submission status](https://automation.trendmicro.com/xdr/api-v3#tag/Sandbox-Analysis/paths/~1v3.0~1sandbox~1tasks~1{id}/get)                                                  |
+| `sandbox.submit_file`                          | [Submit file to sandbox](https://automation.trendmicro.com/xdr/api-v3#tag/Sandbox-Analysis/paths/~1v3.0~1sandbox~1files~1analyze/post)                                             |
+| `sandbox.submit_url`                           | [Submit URLs to sandbox](https://automation.trendmicro.com/xdr/api-v3#tag/Sandbox-Analysis/paths/~1v3.0~1sandbox~1urls~1analyze/post)                                              |
+| `sandbox.list_suspicious`                      | [Download suspicious object list](https://automation.trendmicro.com/xdr/api-v3#tag/Sandbox-Analysis/paths/~1v3.0~1sandbox~1analysisResults~1{id}~1suspiciousObjects/get)           |
+| **Search**                                     |                                                                                                                                                                                    |
+| `email.get_activity_count`                     | [Get email activity data count](https://automation.trendmicro.com/xdr/api-v3#tag/Search/paths/~1v3.0~1search~1emailActivities/get)                                                 |
+| `email.[list_activity, consume_activity]`      | [Get email activity data](https://automation.trendmicro.com/xdr/api-v3#tag/Search/paths/~1v3.0~1search~1emailActivities/get)                                                       |
+| `endpoint.get_activity_count`                  | [Get endpoint activity data count](https://automation.trendmicro.com/xdr/api-v3#tag/Search/paths/~1v3.0~1search~1endpointActivities/get)                                           |
+| `endpoint.[list_data, consume_data]`           | [Get endpoint data](https://automation.trendmicro.com/xdr/api-v3#tag/Search/paths/~1v3.0~1eiqs~1endpoints/get)                                                                     |
+| `endpoint.[list_activity, consume_activity]`   | [Get endpoint activity data](https://automation.trendmicro.com/xdr/api-v3#tag/Search/paths/~1v3.0~1search~1endpointActivities/get)                                                 |
+| **Suspicious Objects**                         |                                                                                                                                                                                    |
+| `object.add_block`                             | [Add to block list](https://automation.trendmicro.com/xdr/api-v3#tag/Suspicious-Objects/paths/~1v3.0~1response~1suspiciousObjects/post)                                            | 
+| `object.delete_block`                          | [Remove from block list](https://automation.trendmicro.com/xdr/api-v3#tag/Suspicious-Objects/paths/~1v3.0~1response~1suspiciousObjects~1delete/post)                               |
+| **Suspicious Object Exception List**           |                                                                                                                                                                                    |
+| `object.add_exception`                         | [Add to exception list](https://automation.trendmicro.com/xdr/api-v3#tag/Suspicious-Object-Exception-List/paths/~1v3.0~1threatintel~1suspiciousObjectExceptions/post)              |
+| `object.delete_exception`                      | [Remove from exception list](https://automation.trendmicro.com/xdr/api-v3#tag/Suspicious-Object-Exception-List/paths/~1v3.0~1threatintel~1suspiciousObjectExceptions~1delete/post) |
+| `object.[list_exception, consume_exception]`   | [Get exception list](https://automation.trendmicro.com/xdr/api-v3#tag/Suspicious-Object-Exception-List/paths/~1v3.0~1threatintel~1suspiciousObjectExceptions/get)                  |
+| **Suspicious Object List**                     |                                                                                                                                                                                    |
+| `object.add_suspicious`                        | [Add to suspicious object list](https://automation.trendmicro.com/xdr/api-v3#tag/Suspicious-Object-List/paths/~1v3.0~1threatintel~1suspiciousObjects/post)                         |
+| `object.delete_suspicious`                     | [Remove from suspicious object list](https://automation.trendmicro.com/xdr/api-v3#tag/Suspicious-Object-List/paths/~1v3.0~1threatintel~1suspiciousObjects~1delete/post)            |
+| `object.[list_suspicious, consume_suspicious]` | [List suspicious objects](https://automation.trendmicro.com/xdr/api-v3#tag/Suspicious-Object-List/paths/~1v3.0~1threatintel~1suspiciousObjects/get)                                |
+| **Workbench**                                  |                                                                                                                                                                                    |
+| `alert.update_status`                          | [Modify alert status](https://automation.trendmicro.com/xdr/api-v3#tag/Workbench/paths/~1v3.0~1workbench~1alerts~1{id}/patch)                                                      |
+| `alert.get`                                    | [Get alert details](https://automation.trendmicro.com/xdr/api-v3#tag/Workbench/paths/~1v3.0~1workbench~1alerts/get)                                                                |
+| `alert.[list, consume]`                        | [Get alerts list](https://automation.trendmicro.com/xdr/api-v3#tag/Workbench/paths/~1v3.0~1workbench~1alerts/get)                                                                  |
+| **Workbench Notes**                            |                                                                                                                                                                                    |
+| `note.add`                                     | [Add alert note](https://automation.trendmicro.com/xdr/api-v3#tag/Workbench-notes/paths/~1v3.0~1workbench~1alerts~1{alertId}~1notes/post)                                          |
+| `note.delete`                                  | [Delete alert notes](https://automation.trendmicro.com/xdr/api-v3#tag/Workbench-notes/paths/~1v3.0~1workbench~1alerts~1%7BalertId%7D~1notes~1delete/post)                          |
+| `note.update`                                  | [Edit alert note](https://automation.trendmicro.com/xdr/api-v3#tag/Workbench-notes/paths/~1v3.0~1workbench~1alerts~1%7BalertId%7D~1notes~1%7Bid%7D/patch)                          |
+| `note.get`                                     | [Get alert note](https://automation.trendmicro.com/xdr/api-v3#tag/Workbench-notes/paths/~1v3.0~1workbench~1alerts~1%7BalertId%7D~1notes~1%7Bid%7D/get)                             |
+| `note.[list, consume]`                         | [Get alerts notes](https://automation.trendmicro.com/xdr/api-v3#tag/Workbench-notes/paths/~1v3.0~1workbench~1alerts~1%7BalertId%7D~1notes/get)                                     |
 
 Contributing
 ------------

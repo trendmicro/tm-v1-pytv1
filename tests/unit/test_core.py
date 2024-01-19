@@ -10,31 +10,29 @@ from pytmv1 import (
     CollectFileTaskResp,
     Error,
     ExceptionObject,
-    GetExceptionListResp,
-    MsData,
+    ListExceptionsResp,
+    ListSandboxSuspiciousResp,
     MsError,
     MultiResp,
     NoContentResp,
     ResultCode,
     SandboxAnalysisResultResp,
     SandboxSubmissionStatusResp,
-    SandboxSuspiciousListResp,
-    SandboxSuspiciousObject,
     Status,
     __version__,
 )
 from pytmv1 import core as core_m
-from pytmv1 import results
+from pytmv1 import result
 from pytmv1.core import API_VERSION, USERAGENT_SUFFIX, Core
-from pytmv1.exceptions import (
+from pytmv1.exception import (
     ParseModelError,
     ServerHtmlError,
     ServerJsonError,
     ServerMultiJsonError,
     ServerTextError,
 )
-from pytmv1.model.enums import Api, RiskLevel
-from pytmv1.model.responses import BaseStatusResponse
+from pytmv1.model.enum import Api
+from pytmv1.model.response import BaseStatusResponse
 from tests.data import TextResponse
 
 API_URL = "https://dummy.com/v3.0"
@@ -45,23 +43,23 @@ def test_consume_linkable_with_next_link_multiple_items(mocker, core):
         core,
         "_process",
         side_effect=[
-            GetExceptionListResp(
+            ListExceptionsResp(
                 nextLink="not_empty",
                 items=[
-                    ExceptionObject.construct(),
-                    ExceptionObject.construct(),
+                    ExceptionObject.model_construct(),
+                    ExceptionObject.model_construct(),
                 ],
             ),
-            GetExceptionListResp(
+            ListExceptionsResp(
                 items=[
-                    ExceptionObject.construct(),
-                    ExceptionObject.construct(),
+                    ExceptionObject.model_construct(),
+                    ExceptionObject.model_construct(),
                 ]
             ),
         ],
     )
     total = core._consume_linkable(
-        lambda: core._process(GetExceptionListResp, Api.GET_EXCEPTION_LIST),
+        lambda: core._process(ListExceptionsResp, Api.GET_EXCEPTION_OBJECTS),
         lambda x: None,
         {},
     )
@@ -74,15 +72,15 @@ def test_consume_linkable_with_next_link_single_item(mocker, core):
         core,
         "_process",
         side_effect=[
-            GetExceptionListResp(
+            ListExceptionsResp(
                 nextLink="https://host/api/path?skipToken=c2tpcFRva2Vu",
                 items=[],
             ),
-            GetExceptionListResp(items=[ExceptionObject.construct()]),
+            ListExceptionsResp(items=[ExceptionObject.model_construct()]),
         ],
     )
     total = core._consume_linkable(
-        lambda: core._process(GetExceptionListResp, Api.GET_EXCEPTION_LIST),
+        lambda: core._process(ListExceptionsResp, Api.GET_EXCEPTION_OBJECTS),
         lambda x: None,
         {},
     )
@@ -92,10 +90,10 @@ def test_consume_linkable_with_next_link_single_item(mocker, core):
 
 def test_consume_linkable_without_next_link(mocker, core):
     mock_process = mocker.patch.object(
-        core, "_process", return_value=GetExceptionListResp(items=[])
+        core, "_process", return_value=ListExceptionsResp(items=[])
     )
     total = core._consume_linkable(
-        lambda: core._process(GetExceptionListResp, Api.GET_EXCEPTION_LIST),
+        lambda: core._process(ListExceptionsResp, Api.GET_EXCEPTION_OBJECTS),
         lambda x: None,
         {},
     )
@@ -104,7 +102,7 @@ def test_consume_linkable_without_next_link(mocker, core):
 
 
 def test_error():
-    error = results._error(
+    error = result._error(
         ServerJsonError(
             Error(status=500, code="X12", message="error", number=123)
         )
@@ -116,7 +114,7 @@ def test_error():
 
 
 def test_errors():
-    errors = results._errors(
+    errors = result._errors(
         ServerMultiJsonError(
             [
                 MsError(status=123, code="code", message="message"),
@@ -176,16 +174,16 @@ def test_parse_data_with_json():
     raw_response.headers = {"Content-Type": "application/json"}
     raw_response.json = lambda: {
         "items": [
-            SandboxSuspiciousObject(
-                riskLevel=RiskLevel.HIGH,
-                analysisCompletionDateTime="2021-05-07T03:08:40",
-                expiredDateTime="2021-06-07T03:08:40Z",
-                rootSha1="fb5608fa03de204a12fe1e9e5275e4a682107471",
-                ip="6.6.6.6",
-            )
+            {
+                "riskLevel": "high",
+                "analysisCompletionDateTime": "2021-05-07T03:08:40",
+                "expiredDateTime": "2021-06-07T03:08:40Z",
+                "rootSha1": "fb5608fa03de204a12fe1e9e5275e4a682107471",
+                "ip": "6.6.6.6",
+            }
         ]
     }
-    response = core_m._parse_data(raw_response, SandboxSuspiciousListResp)
+    response = core_m._parse_data(raw_response, ListSandboxSuspiciousResp)
     assert response.items[0].risk_level == "high"
     assert (
         response.items[0].analysis_completion_date_time
@@ -204,8 +202,8 @@ def test_parse_data_with_multi_and_wrong_model_is_failed():
     raw_response = Response()
     raw_response.headers = {"Content-Type": "application/json"}
     raw_response.status_code = 207
-    raw_response.json = lambda: MultiResp(items=[MsData(status=200)])
-    with pytest.raises(TypeError):
+    raw_response.json = lambda: {"items": [{"status": 200}]}
+    with pytest.raises(ValidationError):
         core_m._parse_data(raw_response, AddAlertNoteResp)
 
 
@@ -213,7 +211,7 @@ def test_parse_data_with_single_and_wrong_model_is_failed():
     raw_response = Response()
     raw_response.headers = {"Content-Type": "application/json"}
     raw_response.status_code = 200
-    raw_response.json = lambda: AddAlertNoteResp(location="test")
+    raw_response.json = lambda: {"location": "test"}
     with pytest.raises(ValidationError):
         core_m._parse_data(raw_response, MultiResp)
 
@@ -233,7 +231,7 @@ def test_parse_html():
 def test_poll_status_with_rejected_status_is_not_polling():
     start_time = time.time()
     core_m._poll_status(
-        lambda: BaseStatusResponse.construct(status=Status.REJECTED),
+        lambda: BaseStatusResponse.model_construct(status=Status.REJECTED),
         20,
     )
     assert time.time() - start_time < 20
@@ -242,7 +240,7 @@ def test_poll_status_with_rejected_status_is_not_polling():
 def test_poll_status_with_running_status_is_polling():
     start_time = time.time()
     core_m._poll_status(
-        lambda: BaseStatusResponse.construct(status=Status.RUNNING),
+        lambda: BaseStatusResponse.model_construct(status=Status.RUNNING),
         2,
     )
     assert time.time() - start_time >= 2
@@ -251,7 +249,7 @@ def test_poll_status_with_running_status_is_polling():
 def test_poll_status_with_succeeded_status():
     start_time = time.time()
     core_m._poll_status(
-        lambda: BaseStatusResponse.construct(status=Status.SUCCEEDED),
+        lambda: BaseStatusResponse.model_construct(status=Status.SUCCEEDED),
         20,
     )
     assert time.time() - start_time < 20
@@ -262,19 +260,30 @@ def test_send(core, mocker):
     raw_response.status_code = 204
     mock_request = mocker.patch.object(core, "_send_internal")
     mock_request.return_value = raw_response
-    result = core.send(NoContentResp, Api.EDIT_ALERT_STATUS)
+    result = core.send(NoContentResp, Api.UPDATE_ALERT_STATUS)
     mock_request.assert_called()
     assert result.result_code == ResultCode.SUCCESS
 
 
+def test_send_multi_failed(core, mocker):
+    mock_send_multi = mocker.patch.object(
+        core, "_process", side_effect=RuntimeError()
+    )
+    result = core.send_multi(NoContentResp, Api.GET_EXCEPTION_OBJECTS)
+    mock_send_multi.assert_called()
+    assert result.result_code == ResultCode.ERROR
+    assert result.errors[0].status == 500
+    assert result.errors[0].code == "RuntimeError"
+
+
 def test_send_linkable(mocker, core):
     mock_process = mocker.patch.object(core, "_process")
-    mock_process.return_value = GetExceptionListResp(
-        items=[ExceptionObject.construct()]
+    mock_process.return_value = ListExceptionsResp(
+        items=[ExceptionObject.model_construct()]
     )
     result = core.send_linkable(
-        GetExceptionListResp,
-        Api.GET_EXCEPTION_LIST,
+        ListExceptionsResp,
+        Api.GET_EXCEPTION_OBJECTS,
         lambda x: None,
     )
     mock_process.assert_called()
@@ -284,7 +293,7 @@ def test_send_linkable(mocker, core):
 
 def test_send_sandbox_result_with_polling(core, mocker):
     mock_poll = mocker.patch.object(core_m, "_poll_status")
-    mock_poll.return_value = SandboxSubmissionStatusResp.construct(
+    mock_poll.return_value = SandboxSubmissionStatusResp.model_construct(
         status=Status.SUCCEEDED
     )
     mock_send = mocker.patch.object(core, "_process")
@@ -380,7 +389,7 @@ def test_send_task_result_with_poll(core, mocker):
     mock_send = mocker.patch.object(core, "_process")
     result = core.send_task_result(CollectFileTaskResp, "123", True, 0)
     mock_poll.assert_called()
-    mock_send.assert_called()
+    mock_send.assert_not_called()
     assert result.result_code == ResultCode.SUCCESS
 
 
@@ -399,7 +408,7 @@ def test_send_task_result_with_poll_is_failed(core, mocker):
 
 def test_send_with_request_exception_is_failed(core, mocker):
     mocker.patch.object(core, "_send_internal", side_effect=RequestException())
-    result = core.send(GetExceptionListResp, Api.GET_EXCEPTION_LIST)
+    result = core.send(ListExceptionsResp, Api.GET_EXCEPTION_OBJECTS)
     assert result.result_code == ResultCode.ERROR
     assert result.error.status == 500
     assert result.error.code == "RequestException"
@@ -407,7 +416,7 @@ def test_send_with_request_exception_is_failed(core, mocker):
 
 def test_send_with_runtime_error_is_failed(core, mocker):
     mocker.patch.object(core, "_send_internal", side_effect=RuntimeError())
-    result = core.send(GetExceptionListResp, Api.GET_EXCEPTION_LIST)
+    result = core.send(ListExceptionsResp, Api.GET_EXCEPTION_OBJECTS)
     assert result.result_code == ResultCode.ERROR
     assert result.error.status == 500
     assert result.error.code == "RuntimeError"
@@ -419,14 +428,14 @@ def test_send_with_validation_error_is_failed(core, mocker):
         "_send_internal",
         side_effect=ValidationError.from_exception_data("Test", []),
     )
-    result = core.send(GetExceptionListResp, Api.GET_EXCEPTION_LIST)
+    result = core.send(ListExceptionsResp, Api.GET_EXCEPTION_OBJECTS)
     assert result.result_code == ResultCode.ERROR
     assert result.error.status == 500
     assert result.error.code == "ValidationError"
 
 
 def test_status():
-    status = results._status(ServerTextError(450, "error"))
+    status = result._status(ServerTextError(450, "error"))
     assert status == 450
 
 

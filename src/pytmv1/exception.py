@@ -4,7 +4,7 @@ from typing import List
 
 from requests import Response
 
-from .model.commons import Error, MsError
+from .model.common import Error, MsError
 
 
 class ServerCustError(Exception):

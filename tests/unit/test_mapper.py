@@ -44,7 +44,7 @@ def test_map_common():
 
 
 def test_map_entities_with_type_email():
-    entities = [Entity.construct(entity_value="email@email.com")]
+    entities = [Entity.model_construct(entity_value="email@email.com")]
     dictionary = {}
     mapper._map_entities(dictionary, entities)
     assert dictionary["duser"] == "email@email.com"
@@ -52,8 +52,8 @@ def test_map_entities_with_type_email():
 
 def test_map_entities_with_type_host_info():
     entities = [
-        Entity.construct(
-            entity_value=HostInfo.construct(
+        Entity.model_construct(
+            entity_value=HostInfo.model_construct(
                 name="host", ips=["1.1.1.1", "2.2.2.2"]
             )
         )
@@ -65,14 +65,16 @@ def test_map_entities_with_type_host_info():
 
 
 def test_map_entities_with_type_user():
-    entities = [Entity.construct(entity_value="username")]
+    entities = [Entity.model_construct(entity_value="username")]
     dictionary = {}
     mapper._map_entities(dictionary, entities)
     assert dictionary["duser"] == "username"
 
 
 def test_map_indicators_with_type_command_line():
-    indicators = [Indicator.construct(type="command_line", value="cmd.exe")]
+    indicators = [
+        Indicator.model_construct(type="command_line", value="cmd.exe")
+    ]
     dictionary = {}
     mapper._map_indicators(dictionary, indicators)
     assert dictionary["dproc"] == "cmd.exe"
@@ -80,8 +82,10 @@ def test_map_indicators_with_type_command_line():
 
 def test_map_indicators_with_type_host_info():
     indicators = [
-        Indicator.construct(
-            value=HostInfo.construct(name="host", ips=["1.1.1.1", "2.2.2.2"])
+        Indicator.model_construct(
+            value=HostInfo.model_construct(
+                name="host", ips=["1.1.1.1", "2.2.2.2"]
+            )
         )
     ]
     dictionary = {}
@@ -91,7 +95,9 @@ def test_map_indicators_with_type_host_info():
 
 
 def test_map_indicators_with_unknown_type():
-    indicators = [Indicator.construct(type="unknown_type", value="unknown")]
+    indicators = [
+        Indicator.model_construct(type="unknown_type", value="unknown")
+    ]
     dictionary = {}
     mapper._map_indicators(dictionary, indicators)
     assert dictionary["unknownType"] == "unknown"

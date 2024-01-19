@@ -35,7 +35,7 @@ def token(pytestconfig):
 
 @pytest.fixture(scope="package")
 def client(pytestconfig, token, url):
-    return pytmv1.client(
+    return pytmv1.init(
         "appname",
         token,
         url,

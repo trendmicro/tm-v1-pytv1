@@ -11,9 +11,9 @@ from typing import Any, Callable, Generic, List, Optional, TypeVar
 from pydantic import ValidationError
 from requests import RequestException
 
-from .exceptions import ServerCustError, ServerJsonError, ServerMultiJsonError
-from .model.commons import Error, MsError
-from .model.responses import MR, R
+from .exception import ServerCustError, ServerJsonError, ServerMultiJsonError
+from .model.common import Error, MsError
+from .model.response import MR, R
 
 E = TypeVar("E", bound=Error)
 F = TypeVar("F", bound=Callable[..., Any])

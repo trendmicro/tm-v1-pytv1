@@ -12,7 +12,10 @@ class HTTPConnectionPool(HTTPUrllib):
     @typing.no_type_check
     def urlopen(self, method, url, **kwargs):
         return super().urlopen(
-            method, url, pool_timeout=5, release_conn=True, **kwargs
+            method,
+            url,
+            pool_timeout=5,
+            **kwargs,
         )
 
 

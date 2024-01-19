@@ -3,8 +3,13 @@ from enum import Enum
 
 class Api(str, Enum):
     CONNECTIVITY = "/healthcheck/connectivity"
+    CREATE_API_KEYS = "/iam/apiKeys"
+    GET_API_KEY_LIST = "/iam/apiKeys"
+    GET_API_KEY = "/iam/apiKeys/{0}"
+    UPDATE_API_KEY = "/iam/apiKeys/{0}"
+    DELETE_API_KEYS = "/iam/apiKeys/delete"
     GET_ENDPOINT_DATA = "/eiqs/endpoints"
-    GET_CUSTOM_SCRIPT_LIST = "/response/customScripts"
+    GET_CUSTOM_SCRIPTS = "/response/customScripts"
     ADD_CUSTOM_SCRIPT = "/response/customScripts"
     DELETE_CUSTOM_SCRIPT = "/response/customScripts/{0}"
     DOWNLOAD_CUSTOM_SCRIPT = "/response/customScripts/{0}"
@@ -37,18 +42,35 @@ class Api(str, Enum):
     SUBMIT_URLS_TO_SANDBOX = "/sandbox/urls/analyze"
     GET_EMAIL_ACTIVITY_DATA = "/search/emailActivities"
     GET_ENDPOINT_ACTIVITY_DATA = "/search/endpointActivities"
-    GET_SUSPICIOUS_LIST = "/threatintel/suspiciousObjects"
+    GET_SUSPICIOUS_OBJECTS = "/threatintel/suspiciousObjects"
     ADD_TO_SUSPICIOUS_LIST = "/threatintel/suspiciousObjects"
     REMOVE_FROM_SUSPICIOUS_LIST = "/threatintel/suspiciousObjects/delete"
     ADD_TO_EXCEPTION_LIST = "/threatintel/suspiciousObjectExceptions"
-    GET_EXCEPTION_LIST = "/threatintel/suspiciousObjectExceptions"
+    GET_EXCEPTION_OBJECTS = "/threatintel/suspiciousObjectExceptions"
     REMOVE_FROM_EXCEPTION_LIST = (
         "/threatintel/suspiciousObjectExceptions/delete"
     )
     GET_ALERT_LIST = "/workbench/alerts"
-    EDIT_ALERT_STATUS = "/workbench/alerts/{0}"
-    GET_ALERT_DETAILS = "/workbench/alerts/{0}"
+    UPDATE_ALERT_STATUS = "/workbench/alerts/{0}"
+    GET_ALERT = "/workbench/alerts/{0}"
     ADD_ALERT_NOTE = "/workbench/alerts/{0}/notes"
+    GET_ALERT_NOTE_LIST = "/workbench/alerts/{0}/notes"
+    GET_ALERT_NOTE = "/workbench/alerts/{0}/notes/{1}"
+    UPDATE_ALERT_NOTE = "/workbench/alerts/{0}/notes/{1}"
+    DELETE_ALERT_NOTE = "/workbench/alerts/{0}/notes/delete"
+
+
+class ApiExpInMonths(int, Enum):
+    ONE = 1
+    THREE = 3
+    SIX = 6
+    TWELVE = 12
+    ZERO = 0
+
+
+class ApiStatus(str, Enum):
+    ENABLED = "enabled"
+    DISABLED = "disabled"
 
 
 class Iam(str, Enum):
@@ -195,17 +217,6 @@ class Provider(str, Enum):
     TI = "TI"
 
 
-class QueryField(str, Enum):
-    AGENT_GUID = "agentGuid"
-    LOGIN_ACCOUNT = "loginAccount"
-    ENDPOINT_NAME = "endpointName"
-    MAC_ADDRESS = "macAddress"
-    IP = "ip"
-    OS_NAME = "osName"
-    PRODUCT_CODE = "productCode"
-    INSTALLED_PRODUCT_CODES = "installedProductCodes"
-
-
 class QueryOp(str, Enum):
     AND = "and"
     OR = "or"
@@ -252,31 +263,3 @@ class Status(str, Enum):
     RUNNING = "running"
     SUCCEEDED = "succeeded"
     WAIT_FOR_APPROVAL = "waitForApproval"
-
-
-class TaskAction(str, Enum):
-    COLLECT_FILE = "collectFile"
-    COLLECT_EVIDENCE = "collectEvidence"
-    COLLECT_NETWORK_ANALYSIS_PACKAGE = "collectNetworkAnalysisPackage"
-    ISOLATE_ENDPOINT = "isolate"
-    ISOLATE_ENDPOINT_MULTIPLE = "isolateForMultiple"
-    RESTORE_ENDPOINT = "restoreIsolate"
-    RESTORE_ENDPOINT_MULTIPLE = "restoreIsolateForMultiple"
-    TERMINATE_PROCESS = "terminateProcess"
-    DUMP_PROCESS_MEMORY = "dumpProcessMemory"
-    QUARANTINE_MESSAGE = "quarantineMessage"
-    DELETE_MESSAGE = "deleteMessage"
-    RESTORE_MESSAGE = "restoreMessage"
-    BLOCK_SUSPICIOUS = "block"
-    REMOVE_SUSPICIOUS = "restoreBlock"
-    RESET_PASSWORD = "resetPassword"
-    SUBMIT_SANDBOX = "submitSandbox"
-    ENABLE_ACCOUNT = "enableAccount"
-    DISABLE_ACCOUNT = "disableAccount"
-    FORCE_SIGN_OUT = "forceSignOut"
-    REMOTE_SHELL = "remoteShell"
-    RUN_INVESTIGATION_KIT = "runInvestigationKit"
-    RUN_CUSTOM_SCRIPT = "runCustomScript"
-    RUN_CUSTOM_SCRIPT_MULTIPLE = "runCustomScriptForMultiple"
-    RUN_OS_QUERY = "runOsquery"
-    RUN_YARA_RULES = "runYaraRules"
