@@ -11,8 +11,8 @@ from pytmv1 import (
 )
 
 
-def test_add_note(client):
-    result = client.note.add("1", "dummy note")
+def test_create_note(client):
+    result = client.note.create("1", "dummy note")
     assert isinstance(result.response, AddAlertNoteResp)
     assert result.result_code == ResultCode.SUCCESS
     assert result.response.note_id.isdigit()
