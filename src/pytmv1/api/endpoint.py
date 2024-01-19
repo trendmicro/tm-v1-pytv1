@@ -13,7 +13,7 @@ from ..model.requests import (
 from ..model.responses import (
     ConsumeLinkableResp,
     GetEndpointActivitiesCountResp,
-    ListEndpointActivitiesResp,
+    ListEndpointActivityResp,
     ListEndpointDataResp,
     MultiResp,
 )
@@ -142,7 +142,7 @@ class Endpoint:
         top: int = 500,
         op: QueryOp = QueryOp.AND,
         **fields: str,
-    ) -> Result[ListEndpointActivitiesResp]:
+    ) -> Result[ListEndpointActivityResp]:
         """Retrieves endpoint activity data in a paginated list
          filtered by provided values.
 
@@ -167,7 +167,7 @@ class Endpoint:
         :rtype: Result[GetEndpointActivityDataResp]:
         """
         return self._core.send(
-            ListEndpointActivitiesResp,
+            ListEndpointActivityResp,
             Api.GET_ENDPOINT_ACTIVITY_DATA,
             params=utils.build_activity_request(
                 start_time,
@@ -239,7 +239,7 @@ class Endpoint:
         :rtype: Result[ConsumeLinkableResp]:
         """
         return self._core.send_linkable(
-            ListEndpointActivitiesResp,
+            ListEndpointActivityResp,
             Api.GET_ENDPOINT_ACTIVITY_DATA,
             consumer,
             params=utils.build_activity_request(

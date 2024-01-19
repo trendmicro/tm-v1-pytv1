@@ -1,7 +1,7 @@
 from typing import Optional
 
 from .commons import BaseModel
-from .enums import ObjectType, RiskLevel, ScanAction
+from .enums import ApiExpInMonths, ApiStatus, ObjectType, RiskLevel, ScanAction
 
 
 class AccountRequest(BaseModel):
@@ -20,7 +20,7 @@ class EndpointRequest(BaseModel):
     """Description of a response task."""
 
 
-class RunCustomScriptRequest(EndpointRequest):
+class CustomScriptRequest(EndpointRequest):
     file_name: str
     parameter: Optional[str] = None
     """Options passed to the script during execution"""
@@ -70,3 +70,11 @@ class TerminateProcessRequest(EndpointRequest):
     """SHA1 hash of the terminated process's executable file."""
     file_name: Optional[str] = None
     """File name of the target."""
+
+
+class ApiKeyRequest(BaseModel):
+    name: str
+    role: str
+    months_to_expiration: Optional[ApiExpInMonths] = ApiExpInMonths.ZERO
+    description: Optional[str] = None
+    status: Optional[ApiStatus] = ApiStatus.ENABLED

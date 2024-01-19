@@ -8,6 +8,7 @@ from pydantic import Field, model_validator
 from .commons import (
     Account,
     AlertNote,
+    ApiKey,
     BaseConsumable,
     BaseModel,
     Digest,
@@ -17,6 +18,7 @@ from .commons import (
     EndpointActivity,
     ExceptionObject,
     MsData,
+    MsDataApiKey,
     MsDataUrl,
     SaeAlert,
     SandboxSuspiciousObject,
@@ -44,11 +46,18 @@ class BaseResponse(BaseModel):
 
 class BaseLinkableResp(BaseResponse, Generic[C]):
     next_link: Optional[str] = None
-    items: List[C] = []
+    items: List[C]
+
+    @model_validator(mode="before")
+    @classmethod
+    def map_data(cls, data: Dict[str, Any]) -> Dict[str, Any]:
+        if not data["items"]:
+            data["items"] = []
+        return data
 
 
 class BaseMultiResponse(BaseResponse, Generic[M]):
-    items: List[M] = []
+    items: List[M]
 
 
 class BaseStatusResponse(BaseResponse):
@@ -151,6 +160,11 @@ class GetAlertNoteResp(BaseResponse):
     etag: str
 
 
+class GetApiKeyResp(BaseResponse):
+    data: ApiKey
+    etag: str
+
+
 class ListAlertsResp(BaseLinkableResp[Union[SaeAlert, TiAlert]]):
     total_count: int
     count: int
@@ -160,11 +174,16 @@ class ListAlertNoteResp(BaseLinkableResp[AlertNote]):
     ...
 
 
+class ListApiKeyResp(BaseLinkableResp[ApiKey]):
+    total_count: int
+    count: int
+
+
 class ListCustomScriptsResp(BaseLinkableResp[Script]):
     ...
 
 
-class ListEndpointActivitiesResp(BaseLinkableResp[EndpointActivity]):
+class ListEndpointActivityResp(BaseLinkableResp[EndpointActivity]):
     progress_rate: int
 
 
@@ -172,7 +191,7 @@ class GetEndpointActivitiesCountResp(BaseResponse):
     total_count: int
 
 
-class ListEmailActivityDataResp(BaseLinkableResp[EmailActivity]):
+class ListEmailActivityResp(BaseLinkableResp[EmailActivity]):
     progress_rate: int
 
 
@@ -197,6 +216,10 @@ class MultiResp(BaseMultiResponse[MsData]):
 
 
 class MultiUrlResp(BaseMultiResponse[MsDataUrl]):
+    ...
+
+
+class MultiApiKeyResp(BaseMultiResponse[MsDataApiKey]):
     ...
 
 

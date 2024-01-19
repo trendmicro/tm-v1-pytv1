@@ -8,7 +8,7 @@ from ..model.requests import EmailMessageIdRequest, EmailMessageUIdRequest
 from ..model.responses import (
     ConsumeLinkableResp,
     GetEmailActivitiesCountResp,
-    ListEmailActivityDataResp,
+    ListEmailActivityResp,
     MultiResp,
 )
 from ..results import MultiResult, Result
@@ -127,7 +127,7 @@ class Email:
         top: int = 500,
         op: QueryOp = QueryOp.AND,
         **fields: str,
-    ) -> Result[ListEmailActivityDataResp]:
+    ) -> Result[ListEmailActivityResp]:
         """Retrieves email activity data in a paginated list
          filtered by provided values.
 
@@ -152,7 +152,7 @@ class Email:
         :rtype: Result[GetEmailActivityDataResp]:
         """
         return self._core.send(
-            ListEmailActivityDataResp,
+            ListEmailActivityResp,
             Api.GET_EMAIL_ACTIVITY_DATA,
             params=utils.build_activity_request(
                 start_time,
@@ -200,7 +200,7 @@ class Email:
         :rtype: Result[ConsumeLinkableResp]:
         """
         return self._core.send_linkable(
-            ListEmailActivityDataResp,
+            ListEmailActivityResp,
             Api.GET_EMAIL_ACTIVITY_DATA,
             consumer,
             params=utils.build_activity_request(

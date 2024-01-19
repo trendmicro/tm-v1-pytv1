@@ -1,5 +1,6 @@
 from .account import Account
 from .alert import Alert
+from .api_key import ApiKey
 from .custom_script import CustomScript
 from .email import Email
 from .endpoint import Endpoint
@@ -10,6 +11,7 @@ from .sandbox import Sandbox
 __all__ = [
     "Account",
     "Alert",
+    "ApiKey",
     "CustomScript",
     "Email",
     "Endpoint",
