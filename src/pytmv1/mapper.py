@@ -2,14 +2,7 @@ from typing import Dict, List
 
 from pydantic.alias_generators import to_camel
 
-from .model.commons import (
-    Alert,
-    Entity,
-    HostInfo,
-    Indicator,
-    SaeAlert,
-    TiAlert,
-)
+from .model.common import Alert, Entity, HostInfo, Indicator, SaeAlert, TiAlert
 
 INDICATOR_CEF_MAP: Dict[str, str] = {
     "command_line": "dproc",

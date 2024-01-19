@@ -2,10 +2,10 @@ from typing import Callable, Optional
 
 from .. import utils
 from ..core import Core
-from ..model.commons import Script
-from ..model.enums import Api, FileType, HttpMethod, QueryOp
-from ..model.requests import CustomScriptRequest
-from ..model.responses import (
+from ..model.common import Script
+from ..model.enum import Api, FileType, HttpMethod, QueryOp
+from ..model.request import CustomScriptRequest
+from ..model.response import (
     AddCustomScriptResp,
     ConsumeLinkableResp,
     ListCustomScriptsResp,
@@ -13,7 +13,7 @@ from ..model.responses import (
     NoContentResp,
     TextResp,
 )
-from ..results import MultiResult, Result
+from ..result import MultiResult, Result
 
 
 class CustomScript:

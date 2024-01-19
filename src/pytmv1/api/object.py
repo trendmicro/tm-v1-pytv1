@@ -2,16 +2,16 @@ from typing import Callable
 
 from .. import utils
 from ..core import Core
-from ..model.commons import ExceptionObject, SuspiciousObject
-from ..model.enums import Api
-from ..model.requests import ObjectRequest, SuspiciousObjectRequest
-from ..model.responses import (
+from ..model.common import ExceptionObject, SuspiciousObject
+from ..model.enum import Api
+from ..model.request import ObjectRequest, SuspiciousObjectRequest
+from ..model.response import (
     ConsumeLinkableResp,
     ListExceptionsResp,
     ListSuspiciousResp,
     MultiResp,
 )
-from ..results import MultiResult, Result
+from ..result import MultiResult, Result
 
 
 class Object:
@@ -106,7 +106,7 @@ class Object:
             json=utils.build_object_request(*objects),
         )
 
-    def list_exceptions(self) -> Result[ListExceptionsResp]:
+    def list_exception(self) -> Result[ListExceptionsResp]:
         """Retrieves exception objects in a paginated list.
 
         :rtype: Result[GetExceptionListResp]:
@@ -122,7 +122,7 @@ class Object:
         """
         return self._core.send(ListSuspiciousResp, Api.GET_SUSPICIOUS_OBJECTS)
 
-    def consume_exceptions(
+    def consume_exception(
         self, consumer: Callable[[ExceptionObject], None]
     ) -> Result[ConsumeLinkableResp]:
         """Retrieves and consume exception objects.

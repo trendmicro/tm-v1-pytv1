@@ -7,6 +7,8 @@ from .endpoint import Endpoint
 from .note import Note
 from .object import Object
 from .sandbox import Sandbox
+from .system import System
+from .task import Task
 
 __all__ = [
     "Account",
@@ -18,4 +20,6 @@ __all__ = [
     "Note",
     "Object",
     "Sandbox",
+    "System",
+    "Task",
 ]

@@ -2,8 +2,8 @@ from typing import Optional
 
 from .. import utils
 from ..core import Core
-from ..model.enums import Api, HttpMethod
-from ..model.responses import (
+from ..model.enum import Api, HttpMethod
+from ..model.response import (
     BytesResp,
     ListSandboxSuspiciousResp,
     MultiUrlResp,
@@ -11,7 +11,7 @@ from ..model.responses import (
     SandboxSubmissionStatusResp,
     SubmitFileToSandboxResp,
 )
-from ..results import MultiResult, Result
+from ..result import MultiResult, Result
 
 
 class Sandbox:

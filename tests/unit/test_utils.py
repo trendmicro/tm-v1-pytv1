@@ -1,5 +1,5 @@
 from pytmv1 import ObjectRequest, QueryOp, SuspiciousObjectRequest, utils
-from pytmv1.model.enums import ObjectType, ScanAction, SearchMode
+from pytmv1.model.enum import ObjectType, ScanAction, SearchMode
 
 
 def test_build_activity_request():
