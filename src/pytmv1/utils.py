@@ -23,6 +23,18 @@ def _build_query(
     )
 
 
+def _build_activity_query(
+    op: QueryOp, fields: Dict[str, str]
+) -> Dict[str, str]:
+    return filter_none(
+        {
+            "TMV1-Query": (" " + op + " ").join(
+                [f'{k}:"{v}"' for k, v in fields.items()]
+            )
+        }
+    )
+
+
 def _b64_encode(value: Optional[str]) -> Optional[str]:
     return base64.b64encode(value.encode()).decode() if value else None
 
@@ -102,6 +114,10 @@ def tmv1_filter(op: QueryOp, fields: Dict[str, str]) -> Dict[str, str]:
 
 def tmv1_query(op: QueryOp, fields: Dict[str, str]) -> Dict[str, str]:
     return _build_query(op, "TMV1-Query", fields)
+
+
+def tmv1_activity_query(op: QueryOp, fields: Dict[str, str]) -> Dict[str, str]:
+    return _build_activity_query(op, fields)
 
 
 def filter_query(op: QueryOp, fields: Dict[str, str]) -> Dict[str, str]:
