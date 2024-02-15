@@ -171,7 +171,7 @@ class EventSubID(int, Enum):
     TELEMETRY_BM_INVOKE_API = 1102
 
 
-class FileType(str, Enum):
+class ScriptType(str, Enum):
     POWERSHELL = "powershell"
     BASH = "bash"
 

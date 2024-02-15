@@ -72,6 +72,13 @@ def test_build_query():
     assert result == {"TMV1-Query": "dpt eq '443' and src eq '1.1.1.1'"}
 
 
+def test__build_activity_query():
+    result = utils._build_activity_query(
+        QueryOp.AND, {"dpt": "443", "src": "1.1.1.1"}
+    )
+    assert result == {"TMV1-Query": 'dpt:"443" and src:"1.1.1.1"'}
+
+
 def test_filter_query():
     assert utils.filter_query(
         QueryOp.AND, {"fileName": "test.sh", "fileType": "bash"}

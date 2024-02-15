@@ -2,20 +2,20 @@ from pytmv1 import (
     AddCustomScriptResp,
     ConsumeLinkableResp,
     CustomScriptRequest,
-    FileType,
     ListCustomScriptsResp,
     MultiResp,
     NoContentResp,
     ResultCode,
+    ScriptType,
     TextResp,
 )
 
 
 def test_add_custom_script(client):
-    result = client.script.add(
-        file_type=FileType.BASH,
-        file_name="add_script.sh",
-        file_content="#!/bin/sh\necho 'Add script'",
+    result = client.script.create(
+        script_type=ScriptType.BASH,
+        script_name="add_script.sh",
+        script_content="#!/bin/sh\necho 'Add script'",
     )
     assert isinstance(result.response, AddCustomScriptResp)
     assert result.result_code == ResultCode.SUCCESS
@@ -48,9 +48,9 @@ def test_run_custom_scripts(client):
 def test_update_custom_script(client):
     result = client.script.update(
         script_id="123",
-        file_type=FileType.BASH,
-        file_name="update_script.sh",
-        file_content="#!/bin/sh Update script",
+        script_type=ScriptType.BASH,
+        script_name="update_script.sh",
+        script_content="#!/bin/sh Update script",
     )
     assert isinstance(result.response, NoContentResp)
     assert result.result_code == ResultCode.SUCCESS
