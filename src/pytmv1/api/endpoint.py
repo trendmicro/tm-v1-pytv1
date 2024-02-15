@@ -113,7 +113,7 @@ class Endpoint:
                 top,
                 SearchMode.COUNT_ONLY,
             ),
-            headers=utils.tmv1_query(op, fields),
+            headers=utils.tmv1_activity_query(op, fields),
         )
 
     def list_data(
@@ -176,7 +176,7 @@ class Endpoint:
                 top,
                 SearchMode.DEFAULT,
             ),
-            headers=utils.tmv1_query(op, fields),
+            headers=utils.tmv1_activity_query(op, fields),
         )
 
     def consume_data(
@@ -249,5 +249,5 @@ class Endpoint:
                 top,
                 SearchMode.DEFAULT,
             ),
-            headers=utils.tmv1_query(op, fields),
+            headers=utils.tmv1_activity_query(op, fields),
         )

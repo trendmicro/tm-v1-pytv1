@@ -116,7 +116,7 @@ class Email:
                 top,
                 SearchMode.COUNT_ONLY,
             ),
-            headers=utils.tmv1_query(op, fields),
+            headers=utils.tmv1_activity_query(op, fields),
         )
 
     def list_activity(
@@ -161,7 +161,7 @@ class Email:
                 top,
                 SearchMode.DEFAULT,
             ),
-            headers=utils.tmv1_query(op, fields),
+            headers=utils.tmv1_activity_query(op, fields),
         )
 
     def consume_activity(
@@ -210,5 +210,5 @@ class Email:
                 top,
                 SearchMode.DEFAULT,
             ),
-            headers=utils.tmv1_query(op, fields),
+            headers=utils.tmv1_activity_query(op, fields),
         )
