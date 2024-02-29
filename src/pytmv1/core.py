@@ -1,8 +1,9 @@
 import logging
+import os
 import re
 import time
 from logging import Logger
-from typing import Any, Callable, Dict, List, Type, Union
+from typing import Any, Callable, Dict, List, Optional, Type, Union
 from urllib.parse import SplitResult, urlsplit
 
 from bs4 import BeautifulSoup
@@ -71,6 +72,9 @@ class Core:
             "Authorization": f"Bearer {self._token}",
             "User-Agent": f"{self._appname}-{USERAGENT_SUFFIX}/{__version__}",
         }
+        self._proxies: Optional[Dict[str, str]] = _proxy(
+            os.getenv("HTTP_PROXY"), os.getenv("HTTPS_PROXY")
+        )
 
     @result
     def send(
@@ -244,7 +248,9 @@ class Core:
             _hide_binary(request),
         )
         response: Response = self._adapter.send(
-            request, timeout=(self._c_timeout, self._r_timeout)
+            request,
+            timeout=(self._c_timeout, self._r_timeout),
+            proxies=self._proxies,
         )
         log.info(
             "Received response [Status=%s, Headers=%s, Body=%s]",
@@ -253,6 +259,18 @@ class Core:
             _hide_binary(response),
         )
         return response
+
+
+def _proxy(
+    http: Optional[str], https: Optional[str]
+) -> Optional[Dict[str, str]]:
+    proxies = {}
+    if http:
+        proxies["http"] = http
+    if https:
+        proxies["https"] = https
+    log.debug("Proxy settings: %s", proxies)
+    return proxies if len(proxies.items()) > 0 else None
 
 
 def _format(url: str) -> str:

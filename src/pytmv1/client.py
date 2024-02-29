@@ -19,7 +19,7 @@ def init(
     url: str,
     pool_connections: int = 1,
     pool_maxsize: int = 1,
-    connect_timeout: int = 30,
+    connect_timeout: int = 10,
     read_timeout: int = 30,
 ) -> Client:
     """Synchronized Helper function to initialize a :class:`Client`.
