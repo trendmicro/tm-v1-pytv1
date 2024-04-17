@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "pytmv1"
-description = "Python library for Trend Micro Vision One"
+description = "Python library for Trend Vision One"
 license = "Apache-2.0"
 readme = "README.md"
 dynamic = ["version"]
@@ -13,7 +13,7 @@ authors = [
     { name = "Thomas Legros", email = "thomas_legros@trendmicro.com" }
 ]
 maintainers = [
-    { name = "TrendATI", email = "ati-integration@trendmicro.com"},
+    { name = "Trend Micro", email = "integrations@trendmicro.com"},
 ]
 classifiers = [
     "Development Status :: 2 - Pre-Alpha",
@@ -45,11 +45,11 @@ dev = [
 ]
 
 [project.urls]
-"Source" = "https://github.com/TrendATI/pytmv1"
-"Issues" = "https://github.com/TrendATI/pytmv1/issues"
+"Source" = "https://github.com/trendmicro/tm-v1-pytv1/"
+"Issues" = "https://github.com/trendmicro/tm-v1-pytv1/issues"
 
 [tool.hatch.build.targets.sdist]
-exclude = [".github", "template", "tests"]
+exclude = [".github", "tests"]
 
 [tool.hatch.version]
 path = "src/pytmv1/__about__.py"
@@ -67,7 +67,7 @@ color_output = true
 
 [tool.mypy]
 python_version = "3.7"
-exclude = ["dist", "template", "tests", "venv"]
+exclude = ["dist", "tests", "venv"]
 show_column_numbers = true
 warn_unused_configs = true
 pretty = true
