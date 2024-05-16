@@ -20,6 +20,7 @@ from .common import (
     MsData,
     MsDataApiKey,
     MsDataUrl,
+    OatEvent,
     SaeAlert,
     SandboxSuspiciousObject,
     Script,
@@ -205,6 +206,11 @@ class ListEndpointDataResp(BaseLinkableResp[Endpoint]):
 
 class ListExceptionsResp(BaseLinkableResp[ExceptionObject]):
     ...
+
+
+class ListOatsResp(BaseLinkableResp[OatEvent]):
+    total_count: int
+    count: int
 
 
 class ListSuspiciousResp(BaseLinkableResp[SuspiciousObject]):

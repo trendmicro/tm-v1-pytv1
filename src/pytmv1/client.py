@@ -73,6 +73,7 @@ class Client:
         self.email = api.Email(self._core)
         self.endpoint = api.Endpoint(self._core)
         self.note = api.Note(self._core)
+        self.oat = api.Oat(self._core)
         self.object = api.Object(self._core)
         self.sandbox = api.Sandbox(self._core)
         self.script = api.CustomScript(self._core)
