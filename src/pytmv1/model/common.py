@@ -16,6 +16,9 @@ from .enum import (
     Iam,
     IntegrityLevel,
     InvestigationStatus,
+    OatDataSource,
+    OatEntityType,
+    OatRiskLevel,
     ObjectType,
     OperatingSystem,
     ProductCode,
@@ -323,6 +326,41 @@ class MsStatus(RootModel):
 
     def values(self) -> List[int]:
         return self.root
+
+
+class OatEndpoint(BaseModel):
+    endpoint_name: str
+    agent_guid: str
+    ips: List[str]
+
+
+class OatObject(BaseModel):
+    type: str
+    field: str
+    value: Union[int, str, List[str]]
+
+
+class OatFilter(BaseModel):
+    id: str
+    name: str
+    description: Optional[str] = None
+    mitre_tactic_ids: List[str]
+    mitre_technique_ids: List[str]
+    highlighted_objects: List[OatObject]
+    risk_level: OatRiskLevel
+    type: str
+
+
+class OatEvent(BaseConsumable):
+    source: OatDataSource
+    uuid: str
+    filters: List[OatFilter]
+    endpoint: Optional[OatEndpoint] = None
+    entity_type: OatEntityType
+    entity_name: str
+    detected_date_time: str
+    ingested_date_time: Optional[str] = None
+    detail: Union[EndpointActivity, EmailActivity]
 
 
 class SaeAlert(Alert):

@@ -58,6 +58,7 @@ class Api(str, Enum):
     GET_ALERT_NOTE = "/workbench/alerts/{0}/notes/{1}"
     UPDATE_ALERT_NOTE = "/workbench/alerts/{0}/notes/{1}"
     DELETE_ALERT_NOTE = "/workbench/alerts/{0}/notes/delete"
+    GET_OAT_LIST = "/oat/detections"
 
 
 class ApiExpInMonths(int, Enum):
@@ -182,6 +183,40 @@ class HttpMethod(str, Enum):
     POST = "POST"
     PUT = "PUT"
     DELETE = "DELETE"
+
+
+class OatDataSource(str, Enum):
+    DETECTIONS = "detections"
+    ENDPOINT_ACTIVITY_DATA = "endpointActivityData"
+    CLOUD_ACTIVITY_DATA = "cloudActivityData"
+    EMAIL_ACTIVITY_DATA = "emailActivityData"
+    MOBILE_ACTIVITY_DATA = "mobileActivityData"
+    NETWORK_ACTIVITY_DATA = "networkActivityData"
+    CONTAINER_ACTIVITY_DATA = "containerActivityData"
+
+
+class OatEntityType(str, Enum):
+    ENDPOINT = "endpoint"
+    MAILBOX = "mailbox"
+    CLOUDTRAIL = "cloudtrail"
+    MESSAGING = "messaging"
+    NETWORK = "network"
+    ICS = "ics"
+    CONTAINER = "container"
+
+
+class OatRiskLevel(str, Enum):
+    UNDEFINED = "undefined"
+    INFO = "info"
+    LOW = "low"
+    MEDIUM = "medium"
+    HIGH = "high"
+    CRITICAL = "critical"
+
+
+class OatType(str, Enum):
+    CUSTOM = "custom"
+    PRESET = "preset"
 
 
 class ObjectType(str, Enum):

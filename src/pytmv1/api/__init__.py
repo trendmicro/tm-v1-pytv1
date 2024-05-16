@@ -4,6 +4,7 @@ from .api_key import ApiKey
 from .email import Email
 from .endpoint import Endpoint
 from .note import Note
+from .oat import Oat
 from .object import Object
 from .sandbox import Sandbox
 from .script import CustomScript
@@ -18,6 +19,7 @@ __all__ = [
     "Email",
     "Endpoint",
     "Note",
+    "Oat",
     "Object",
     "Sandbox",
     "System",
