@@ -19,8 +19,7 @@ class HTTPConnectionPool(HTTPUrllib):
         )
 
 
-class HTTPSConnectionPool(HTTPSUrllib, HTTPConnectionPool):
-    ...
+class HTTPSConnectionPool(HTTPSUrllib, HTTPConnectionPool): ...
 
 
 class PoolManager(ManagerUrllib):

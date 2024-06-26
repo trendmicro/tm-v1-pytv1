@@ -13,7 +13,7 @@
 
 
 #### Prerequisites
-Using this project requires at least [Python 3.7](https://www.python.org/downloads/).
+Using this project requires at least [Python 3.8](https://www.python.org/downloads/).
 
 #### Features
 

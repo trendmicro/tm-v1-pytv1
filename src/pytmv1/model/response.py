@@ -171,8 +171,7 @@ class ListAlertsResp(BaseLinkableResp[Union[SaeAlert, TiAlert]]):
     count: int
 
 
-class ListAlertNoteResp(BaseLinkableResp[AlertNote]):
-    ...
+class ListAlertNoteResp(BaseLinkableResp[AlertNote]): ...
 
 
 class ListApiKeyResp(BaseLinkableResp[ApiKey]):
@@ -180,8 +179,7 @@ class ListApiKeyResp(BaseLinkableResp[ApiKey]):
     count: int
 
 
-class ListCustomScriptsResp(BaseLinkableResp[Script]):
-    ...
+class ListCustomScriptsResp(BaseLinkableResp[Script]): ...
 
 
 class ListEndpointActivityResp(BaseLinkableResp[EndpointActivity]):
@@ -200,12 +198,10 @@ class GetEmailActivitiesCountResp(BaseResponse):
     total_count: int
 
 
-class ListEndpointDataResp(BaseLinkableResp[Endpoint]):
-    ...
+class ListEndpointDataResp(BaseLinkableResp[Endpoint]): ...
 
 
-class ListExceptionsResp(BaseLinkableResp[ExceptionObject]):
-    ...
+class ListExceptionsResp(BaseLinkableResp[ExceptionObject]): ...
 
 
 class ListOatsResp(BaseLinkableResp[OatEvent]):
@@ -213,24 +209,19 @@ class ListOatsResp(BaseLinkableResp[OatEvent]):
     count: int
 
 
-class ListSuspiciousResp(BaseLinkableResp[SuspiciousObject]):
-    ...
+class ListSuspiciousResp(BaseLinkableResp[SuspiciousObject]): ...
 
 
-class MultiResp(BaseMultiResponse[MsData]):
-    ...
+class MultiResp(BaseMultiResponse[MsData]): ...
 
 
-class MultiUrlResp(BaseMultiResponse[MsDataUrl]):
-    ...
+class MultiUrlResp(BaseMultiResponse[MsDataUrl]): ...
 
 
-class MultiApiKeyResp(BaseMultiResponse[MsDataApiKey]):
-    ...
+class MultiApiKeyResp(BaseMultiResponse[MsDataApiKey]): ...
 
 
-class NoContentResp(BaseResponse):
-    ...
+class NoContentResp(BaseResponse): ...
 
 
 class EmailMessageTaskResp(BaseTaskResp):
