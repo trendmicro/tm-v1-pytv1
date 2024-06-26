@@ -8,7 +8,7 @@ description = "Python library for Trend Micro Vision One"
 license = "Apache-2.0"
 readme = "README.md"
 dynamic = ["version"]
-requires-python = ">=3.7"
+requires-python = ">=3.8"
 authors = [
     { name = "Thomas Legros", email = "thomas_legros@trendmicro.com" }
 ]
@@ -21,7 +21,6 @@ classifiers = [
     "License :: OSI Approved :: Apache Software License",
     "Natural Language :: English",
     "Operating System :: OS Independent",
-    "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
@@ -31,7 +30,7 @@ classifiers = [
 ]
 dependencies = [
     "beautifulsoup4 ~= 4.11.1",
-    "requests ~= 2.31.0",
+    "requests ~= 2.32.3",
     "pydantic ~= 2.5.3",
 ]
 
@@ -66,7 +65,7 @@ line_length = 79
 color_output = true
 
 [tool.mypy]
-python_version = "3.7"
+python_version = "3.8"
 exclude = ["dist", "template", "tests", "venv"]
 show_column_numbers = true
 warn_unused_configs = true

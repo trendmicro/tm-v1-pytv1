@@ -41,8 +41,7 @@ class RootModel(PydanticRootModel[List[int]]):
     model_config = CFG
 
 
-class BaseConsumable(BaseModel):
-    ...
+class BaseConsumable(BaseModel): ...
 
 
 class Account(BaseModel):
