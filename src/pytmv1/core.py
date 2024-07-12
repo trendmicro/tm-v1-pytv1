@@ -281,10 +281,10 @@ def _hide_binary(http_object: Union[PreparedRequest, Response]) -> str:
     content_type = http_object.headers.get("Content-Type", "")
     if "json" not in content_type and "application" in content_type:
         return "***binary content***"
+    if "multipart/form-data" in content_type:
+        return "***file content***"
     if isinstance(http_object, Response):
         return http_object.text
-    if isinstance(http_object.body, bytes):
-        return str(http_object.body, encoding="utf-8")
     return str(http_object.body)
 
 
