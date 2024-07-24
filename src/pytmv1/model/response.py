@@ -10,6 +10,8 @@ from .common import (
     ApiKey,
     BaseConsumable,
     BaseModel,
+    Case,
+    CaseContent,
     Digest,
     EmailActivity,
     EmailMessage,
@@ -89,9 +91,7 @@ class AddAlertNoteResp(BaseResponse):
     @model_validator(mode="before")
     @classmethod
     def map_data(cls, data: Dict[str, str]) -> Dict[str, str]:
-        location = data.get("Location")
-        if location:
-            data["note_id"] = location.split("/")[-1]
+        data["note_id"] = _get_id(data)
         return data
 
 
@@ -101,9 +101,7 @@ class AddCustomScriptResp(BaseResponse):
     @model_validator(mode="before")
     @classmethod
     def map_data(cls, data: Dict[str, str]) -> Dict[str, str]:
-        location = data.get("Location")
-        if location:
-            data["script_id"] = location.split("/")[-1]
+        data["script_id"] = _get_id(data)
         return data
 
 
@@ -123,6 +121,36 @@ class BlockListTaskResp(BaseTaskResp):
 
 class BytesResp(BaseResponse):
     content: bytes
+
+
+class CaseAttachmentResp(BaseResponse):
+    attachment_id: str
+
+    @model_validator(mode="before")
+    @classmethod
+    def map_data(cls, data: Dict[str, str]) -> Dict[str, str]:
+        data["attachment_id"] = _get_id(data)
+        return data
+
+
+class CaseContentResp(BaseResponse):
+    content_id: str
+
+    @model_validator(mode="before")
+    @classmethod
+    def map_data(cls, data: Dict[str, str]) -> Dict[str, str]:
+        data["content_id"] = _get_id(data)
+        return data
+
+
+class CaseResp(BaseResponse):
+    case_id: str
+
+    @model_validator(mode="before")
+    @classmethod
+    def map_data(cls, data: Dict[str, str]) -> Dict[str, str]:
+        data["case_id"] = _get_id(data)
+        return data
 
 
 class CollectFileTaskResp(BaseTaskResp):
@@ -165,6 +193,16 @@ class GetApiKeyResp(BaseResponse):
     etag: str
 
 
+class GetCaseResp(BaseResponse):
+    data: Case
+    etag: str
+
+
+class GetCaseContentResp(BaseResponse):
+    data: CaseContent
+    etag: str
+
+
 class ListAlertsResp(BaseLinkableResp[Union[SaeAlert, TiAlert]]):
     total_count: int
     count: int
@@ -174,6 +212,16 @@ class ListAlertNoteResp(BaseLinkableResp[AlertNote]): ...
 
 
 class ListApiKeyResp(BaseLinkableResp[ApiKey]):
+    total_count: int
+    count: int
+
+
+class ListCaseResp(BaseLinkableResp[Case]):
+    total_count: int
+    count: int
+
+
+class ListCaseContentResp(BaseLinkableResp[CaseContent]):
     total_count: int
     count: int
 
@@ -281,3 +329,8 @@ class TerminateProcessTaskResp(BaseTaskResp):
 
 class TextResp(BaseResponse):
     text: str
+
+
+def _get_id(data: Dict[str, str]) -> str:
+    location = data.get("Location")
+    return location.split("/")[-1] if location else "NOT_FOUND"

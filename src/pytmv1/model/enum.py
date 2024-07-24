@@ -59,6 +59,18 @@ class Api(str, Enum):
     UPDATE_ALERT_NOTE = "/workbench/alerts/{0}/notes/{1}"
     DELETE_ALERT_NOTE = "/workbench/alerts/{0}/notes/delete"
     GET_OAT_LIST = "/oat/detections"
+    CREATE_CASE = "/caseManagement/cases"
+    GET_CASE_LIST = "/caseManagement/cases"
+    GET_CASE = "/caseManagement/cases/{0}"
+    UPDATE_CASE = "/caseManagement/cases/{0}"
+    ADD_CASE_ATTACHMENT = "/caseManagement/cases/{0}/attachments"
+    DOWNLOAD_CASE_ATTACHMENT = "/caseManagement/cases/{0}/attachments/{1}"
+    DELETE_CASE_ATTACHMENT = "/caseManagement/cases/{0}/attachments/{1}"
+    ADD_CASE_CONTENT = "/caseManagement/cases/{0}/contents"
+    GET_CASE_CONTENT_LIST = "/caseManagement/cases/{0}/contents"
+    GET_CASE_CONTENT = "/caseManagement/cases/{0}/contents/{1}"
+    UPDATE_CASE_CONTENT = "/caseManagement/cases/{0}/contents/{1}"
+    DELETE_CASE_CONTENT = "/caseManagement/cases/{0}/contents/{1}"
 
 
 class ApiExpInMonths(int, Enum):
@@ -72,6 +84,40 @@ class ApiExpInMonths(int, Enum):
 class ApiStatus(str, Enum):
     ENABLED = "enabled"
     DISABLED = "disabled"
+
+
+class CaseFindings(str, Enum):
+    NO_FINDINGS = "NoFindings"
+    NOTE_WORTHY = "Noteworthy"
+    BENIGN_TRUE_POSITIVE = "BenignTruePositive"
+    TRUE_POSITIVE = "TruePositive"
+    FALSE_POSITIVE = "FalsePositive"
+
+
+class CaseHolder(str, Enum):
+    ANALYST = "Analyst"
+    CUSTOMER = "Customer"
+
+
+class CasePriority(str, Enum):
+    P0 = "P0"
+    P1 = "P1"
+    P2 = "P2"
+    P3 = "P3"
+
+
+class CaseStatus(str, Enum):
+    OPEN = "Open"
+    IN_PROGRESS = "In-progress"
+    CLOSED = "Closed"
+
+
+class CaseType(str, Enum):
+    WORKBENCH = "Workbench"
+    FORENSICS = "Forensics"
+    MANAGED_SERVICES = "ManagedServices"
+    TPI_SERVICE_NOW = "TPIServiceNow"
+    OTHERS = "Others"
 
 
 class Iam(str, Enum):
