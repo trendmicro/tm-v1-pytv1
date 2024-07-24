@@ -64,6 +64,7 @@ from .model.enum import (
     ScriptType,
     Severity,
     Status,
+    TaskAction,
 )
 from .model.request import (
     AccountRequest,
@@ -114,7 +115,6 @@ from .model.response import (
     SandboxSubmissionStatusResp,
     SandboxSubmitUrlTaskResp,
     SubmitFileToSandboxResp,
-    TaskAction,
     TerminateProcessTaskResp,
     TextResp,
 )
