@@ -70,6 +70,7 @@ class Client:
         self.account = api.Account(self._core)
         self.alert = api.Alert(self._core)
         self.api_key = api.ApiKey(self._core)
+        self.case_mgmt = api.CaseMgmt(self._core)
         self.email = api.Email(self._core)
         self.endpoint = api.Endpoint(self._core)
         self.note = api.Note(self._core)

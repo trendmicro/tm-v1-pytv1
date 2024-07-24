@@ -119,8 +119,8 @@ class ApiKey:
         :param op: Query operator to apply.
         :type op: QueryOp
         :param fields: Field/value used to filter result (ie: id="...")
-        :type fields: Dict[str, str]
         check Vision One API documentation for full list of supported fields.
+        :type fields: Dict[str, str]
         :return: Result[GetApiKeyListResp]
         """
         return self._core.send(
@@ -146,9 +146,9 @@ class ApiKey:
         :param op: Query operator to apply.
         :type op: QueryOp
         :param fields: Field/value used to filter result (ie: id="...")
-        :type fields: Dict[str, str]
         check Vision One API documentation for full list of supported fields.
-        :return: Result[GetApiKeyListResp]
+        :type fields: Dict[str, str]
+        :return: Result[ConsumeLinkableResp]
         """
         return self._core.send_linkable(
             ListApiKeyResp,

@@ -33,6 +33,8 @@ from .model.response import (
     GetAlertNoteResp,
     GetAlertResp,
     GetApiKeyResp,
+    GetCaseContentResp,
+    GetCaseResp,
     MultiApiKeyResp,
     MultiResp,
     MultiUrlResp,
@@ -294,11 +296,21 @@ def _is_http_success(status_codes: List[int]) -> bool:
 
 def _parse_data(raw_response: Response, class_: Type[R]) -> R:
     content_type = raw_response.headers.get("Content-Type", "")
+    if raw_response.status_code == 201:
+        return class_(**raw_response.headers)
+    if raw_response.status_code == 204 and class_ == NoContentResp:
+        return class_()
     if "json" in content_type:
         log.debug("Parsing json response [Class=%s]", class_.__name__)
         if class_ in [MultiResp, MultiUrlResp, MultiApiKeyResp]:
             return class_(items=raw_response.json())
-        if class_ in [GetAlertResp, GetApiKeyResp, GetAlertNoteResp]:
+        if class_ in [
+            GetAlertResp,
+            GetApiKeyResp,
+            GetAlertNoteResp,
+            GetCaseResp,
+            GetCaseContentResp,
+        ]:
             return class_(
                 data=raw_response.json(),
                 etag=raw_response.headers.get("ETag", ""),
@@ -314,10 +326,6 @@ def _parse_data(raw_response: Response, class_: Type[R]) -> R:
         return class_.model_construct(content=raw_response.content)
     if "text" in content_type and class_ == TextResp:
         return class_.model_construct(text=raw_response.text)
-    if raw_response.status_code == 201:
-        return class_(**raw_response.headers)
-    if raw_response.status_code == 204 and class_ == NoContentResp:
-        return class_()
     raise ParseModelError(class_.__name__, raw_response)
 
 
