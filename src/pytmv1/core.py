@@ -10,6 +10,7 @@ from bs4 import BeautifulSoup
 from pydantic import AnyHttpUrl, TypeAdapter
 from requests import PreparedRequest, Request, Response
 
+from . import utils
 from .__about__ import __version__
 from .adapter import HTTPAdapter
 from .exception import (
@@ -20,7 +21,7 @@ from .exception import (
     ServerTextError,
 )
 from .model.common import Error, MsError, MsStatus
-from .model.enum import Api, HttpMethod, Status
+from .model.enum import Api, HttpMethod, Status, TaskAction
 from .model.request import EndpointRequest
 from .model.response import (
     MR,
@@ -40,7 +41,6 @@ from .model.response import (
     S,
     SandboxSubmissionStatusResp,
     T,
-    TaskAction,
     TextResp,
 )
 from .result import multi_result, result
@@ -304,8 +304,10 @@ def _parse_data(raw_response: Response, class_: Type[R]) -> R:
                 etag=raw_response.headers.get("ETag", ""),
             )
         if class_ == BaseTaskResp:
-            resp_class = task_action(raw_response.json()["action"]).class_
-            class_ = resp_class if resp_class else class_
+            resp_class: Type[BaseTaskResp] = utils.task_action_resp_class(
+                TaskAction(raw_response.json()["action"])
+            )
+            class_ = resp_class if issubclass(resp_class, class_) else class_
         return class_(**raw_response.json())
     if "application" in content_type and class_ == BytesResp:
         log.debug("Parsing binary response")
@@ -317,10 +319,6 @@ def _parse_data(raw_response: Response, class_: Type[R]) -> R:
     if raw_response.status_code == 204 and class_ == NoContentResp:
         return class_()
     raise ParseModelError(class_.__name__, raw_response)
-
-
-def task_action(action_name: str) -> TaskAction:
-    return next(filter(lambda ta: action_name == ta.action, TaskAction))
 
 
 def _parse_html(html: str) -> str:
