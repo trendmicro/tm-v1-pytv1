@@ -1,14 +1,43 @@
 import base64
 import re
-from typing import Any, Dict, List, Optional, Pattern
+from typing import Any, Dict, List, Optional, Pattern, Type
 
-from .model.enum import QueryOp, SearchMode
+from .model.enum import QueryOp, SearchMode, TaskAction
 from .model.request import ObjectRequest, SuspiciousObjectRequest
+from .model.response import (
+    AccountTaskResp,
+    BaseTaskResp,
+    BlockListTaskResp,
+    CollectFileTaskResp,
+    CustomScriptTaskResp,
+    EmailMessageTaskResp,
+    EndpointTaskResp,
+    SandboxSubmitUrlTaskResp,
+    TerminateProcessTaskResp,
+)
 
 MAC_ADDRESS_PATTERN: Pattern[str] = re.compile(
     "^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$"
 )
 GUID_PATTERN: Pattern[str] = re.compile("^(\\w+-+){1,5}\\w+$")
+
+TASK_ACTION_MAP: Dict[TaskAction, Type[BaseTaskResp]] = {
+    TaskAction.COLLECT_FILE: CollectFileTaskResp,
+    TaskAction.ISOLATE_ENDPOINT: EndpointTaskResp,
+    TaskAction.RESTORE_ENDPOINT: EndpointTaskResp,
+    TaskAction.TERMINATE_PROCESS: TerminateProcessTaskResp,
+    TaskAction.QUARANTINE_MESSAGE: EmailMessageTaskResp,
+    TaskAction.DELETE_MESSAGE: EmailMessageTaskResp,
+    TaskAction.RESTORE_MESSAGE: EmailMessageTaskResp,
+    TaskAction.BLOCK_SUSPICIOUS: BlockListTaskResp,
+    TaskAction.REMOVE_SUSPICIOUS: BlockListTaskResp,
+    TaskAction.RESET_PASSWORD: AccountTaskResp,
+    TaskAction.SUBMIT_SANDBOX: SandboxSubmitUrlTaskResp,
+    TaskAction.ENABLE_ACCOUNT: AccountTaskResp,
+    TaskAction.DISABLE_ACCOUNT: AccountTaskResp,
+    TaskAction.FORCE_SIGN_OUT: AccountTaskResp,
+    TaskAction.RUN_CUSTOM_SCRIPT: CustomScriptTaskResp,
+}
 
 
 def _build_query(
@@ -122,3 +151,9 @@ def tmv1_activity_query(op: QueryOp, fields: Dict[str, str]) -> Dict[str, str]:
 
 def filter_query(op: QueryOp, fields: Dict[str, str]) -> Dict[str, str]:
     return _build_query(op, "filter", fields)
+
+
+def task_action_resp_class(
+    task_action: TaskAction,
+) -> Type[BaseTaskResp]:
+    return TASK_ACTION_MAP.get(task_action, BaseTaskResp)
