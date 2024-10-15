@@ -10,6 +10,11 @@ from pydantic.alias_generators import to_camel
 
 from .enum import (
     ApiStatus,
+    CaseFindings,
+    CaseHolder,
+    CasePriority,
+    CaseStatus,
+    CaseType,
     EntityType,
     EventID,
     EventSubID,
@@ -84,6 +89,51 @@ class ApiKey(BaseConsumable):
     expired_date_time: str
     last_used_date_time: str
     description: Optional[str]
+
+
+class CaseAttachment(BaseModel):
+    id: str
+    etag: str
+    name: str
+    size: int
+    uploaded_date_time: str
+
+
+class CaseUser(BaseModel):
+    id: str
+    name: str
+    email: str
+
+
+class Case(BaseConsumable):
+    id: str
+    name: str
+    case_url: str
+    priority: CasePriority
+    status: CaseStatus
+    type: CaseType
+    created_date_time: str
+    updated_date_time: str
+    creator: CaseUser
+    findings: CaseFindings
+    description: Optional[str]
+    holder: Optional[CaseHolder]
+    owners: List[CaseUser] = Field(default=[])
+    last_updater: Optional[CaseUser]
+    closed_date_time: Optional[str]
+    associated_item_ids: List[str] = Field(default=[])
+    related_case_ids: List[str] = Field(default=[])
+    external_ticket_created_date_time: Optional[str]
+    external_ticket_updated_date_time: Optional[str]
+
+
+class CaseContent(BaseConsumable):
+    id: str
+    creator: CaseUser
+    comment: str
+    created_date_time: str
+    updated_date_time: str
+    attachments: List[CaseAttachment] = Field(default=[])
 
 
 class Digest(BaseModel):
