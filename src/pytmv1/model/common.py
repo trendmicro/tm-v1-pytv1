@@ -33,7 +33,9 @@ from .enum import (
     Status,
 )
 
-CFG = ConfigDict(alias_generator=to_camel, populate_by_name=True)
+CFG = ConfigDict(
+    alias_generator=to_camel, populate_by_name=True, protected_namespaces=()
+)
 
 
 class BaseModel(PydanticBaseModel):
