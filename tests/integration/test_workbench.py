@@ -1,7 +1,7 @@
 from pytmv1 import (
     AddAlertNoteResp,
+    AlertStatus,
     GetAlertNoteResp,
-    InvestigationStatus,
     ListAlertNoteResp,
     ListAlertsResp,
     NoContentResp,
@@ -70,8 +70,8 @@ def test_consume_alerts_with_next_link(client):
 def test_update_alert_status(client):
     result = client.alert.update_status(
         "1",
-        InvestigationStatus.IN_PROGRESS,
         "d41d8cd98f00b204e9800998ecf8427e",
+        AlertStatus.IN_PROGRESS,
     )
     assert isinstance(result.response, NoContentResp)
     assert result.result_code == ResultCode.SUCCESS
@@ -79,7 +79,9 @@ def test_update_alert_status(client):
 
 def test_update_alert_status_is_precondition_failed(client):
     result = client.alert.update_status(
-        "1", InvestigationStatus.IN_PROGRESS, "precondition_failed"
+        "1",
+        "precondition_failed",
+        AlertStatus.IN_PROGRESS,
     )
     assert not result.response
     assert result.result_code == ResultCode.ERROR
@@ -89,7 +91,7 @@ def test_update_alert_status_is_precondition_failed(client):
 
 def test_update_alert_status_is_not_found(client):
     result = client.alert.update_status(
-        "1", InvestigationStatus.IN_PROGRESS, "not_found"
+        "1", "not_found", AlertStatus.IN_PROGRESS
     )
     assert not result.response
     assert result.result_code == ResultCode.ERROR
@@ -100,8 +102,24 @@ def test_update_alert_status_is_not_found(client):
 def test_get_alert(client):
     result = client.alert.get("12345")
     assert result.result_code == ResultCode.SUCCESS
-    assert result.response.data.alert_provider == Provider.SAE
     assert result.response.etag == "33a64df551425fcc55e4d42a148795d9f25f89d4"
+    assert result.response.data.alert_provider == Provider.SAE
+    assert result.response.data.incident_id == "IC-1-20230706-00001"
+    assert result.response.data.impact_scope.container_count == 1
+    assert result.response.data.impact_scope.cloud_identity_count == 1
+    assert result.response.data.indicators[0].field == "objectCmd"
+
+
+def test_get_alert_ti(client):
+    result = client.alert.get("TI_ALERT")
+    assert result.result_code == ResultCode.SUCCESS
+    assert result.response.data.alert_provider == Provider.TI
+    assert result.response.etag == "33a64df551425fcc55e4d42a148795d9f25f89d4"
+    assert result.response.data.campaign == "campaign"
+    assert (
+        result.response.data.indicators[0].fields[0][0]
+        == "processFileHashSha1"
+    )
 
 
 def test_list_alerts(client):

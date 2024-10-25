@@ -9,12 +9,15 @@ from pydantic import model_validator
 from pydantic.alias_generators import to_camel
 
 from .enum import (
+    AlertStatus,
     ApiStatus,
+    DetectionType,
     EntityType,
     EventID,
     EventSubID,
     Iam,
     IntegrityLevel,
+    InvestigationResult,
     InvestigationStatus,
     OatDataSource,
     OatEntityType,
@@ -54,16 +57,24 @@ class Account(BaseModel):
 class Alert(BaseConsumable):
     id: str
     schema_version: str
+    status: AlertStatus
+    # Deprecated
     investigation_status: InvestigationStatus
+    investigation_result: InvestigationResult
     workbench_link: str
     alert_provider: Provider
     model: str
+    model_type: DetectionType
     score: int
     severity: Severity
     impact_scope: ImpactScope
     created_date_time: str
     updated_date_time: str
-    indicators: List[Indicator]
+    first_investigated_date_time: Optional[str] = None
+    incident_id: Optional[str] = None
+    case_id: Optional[str] = None
+    owner_ids: List[str] = Field(default=[])
+    model_id: str
 
 
 class AlertNote(BaseConsumable):
@@ -123,6 +134,11 @@ class Endpoint(BaseConsumable):
     os_description: str
     product_code: ProductCode
     installed_product_codes: List[ProductCode]
+    componentUpdatePolicy: Optional[str] = None
+    componentUpdateStatus: Optional[str] = None
+    componentVersion: Optional[str] = None
+    policyName: Optional[str] = None
+    protectionManager: Optional[str] = None
 
 
 class EmailActivity(BaseConsumable):
@@ -199,9 +215,12 @@ class Entity(BaseModel):
     entity_id: str
     entity_type: EntityType
     entity_value: Union[str, HostInfo]
-    related_entities: List[str]
+    related_entities: Union[List[str], List[List[str]]]
     related_indicator_ids: List[int]
     provenance: List[str]
+    management_scope_group_id: Optional[str] = None
+    management_scope_instance_id: Optional[str] = None
+    management_scope_partition_key: Optional[str] = None
 
 
 class Error(BaseModel):
@@ -231,6 +250,8 @@ class ImpactScope(BaseModel):
     server_count: int
     account_count: int
     email_address_count: int
+    container_count: int
+    cloud_identity_count: int
     entities: List[Entity]
 
 
@@ -238,7 +259,7 @@ class Indicator(BaseModel):
     id: int
     type: str
     value: Union[str, HostInfo]
-    related_entities: List[str]
+    related_entities: Union[List[str], List[List[str]]]
     provenance: List[str]
 
 
@@ -362,14 +383,15 @@ class OatEvent(BaseConsumable):
     detail: Union[EndpointActivity, EmailActivity]
 
 
-class SaeAlert(Alert):
-    description: str
-    matched_rules: List[MatchedRule]
-
-
 class SaeIndicator(Indicator):
     field: str
     filter_ids: List[str]
+
+
+class SaeAlert(Alert):
+    description: str
+    matched_rules: List[MatchedRule]
+    indicators: List[SaeIndicator]
 
 
 class SandboxSuspiciousObject(BaseModel):
@@ -404,6 +426,19 @@ class SuspiciousObject(ExceptionObject):
     expired_date_time: str
 
 
+class TaskError(BaseModel):
+    code: str
+    message: str
+    number: int
+
+
+class TiIndicator(Indicator):
+    fields: List[List[str]]
+    matched_indicator_pattern_ids: List[str]
+    first_seen_date_times: List[str]
+    last_seen_date_times: List[str]
+
+
 class TiAlert(Alert):
     campaign: Optional[str] = None
     industry: Optional[str] = None
@@ -413,13 +448,7 @@ class TiAlert(Alert):
     matched_indicator_count: int
     report_link: str
     matched_indicator_patterns: List[MatchedIndicatorPattern]
-
-
-class TiIndicator(Indicator):
-    fields: List[List[str]]
-    matched_indicator_pattern_ids: List[str]
-    first_seen_date_times: List[str]
-    last_seen_date_times: List[str]
+    indicators: List[TiIndicator]
 
 
 def _get_task_id(data: Dict[str, Any]) -> Optional[str]:
