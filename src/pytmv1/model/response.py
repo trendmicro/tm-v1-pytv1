@@ -24,6 +24,7 @@ from .common import (
     SandboxSuspiciousObject,
     Script,
     SuspiciousObject,
+    TaskError,
     TiAlert,
     get_object,
 )
@@ -71,6 +72,7 @@ class BaseTaskResp(BaseStatusResponse):
     action: str
     description: Optional[str] = None
     account: Optional[str] = None
+    error: Optional[TaskError] = None
 
 
 MR = TypeVar("MR", bound=BaseMultiResponse[Any])
