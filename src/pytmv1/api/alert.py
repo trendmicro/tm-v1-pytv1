@@ -121,6 +121,8 @@ class Alert:
         consumer: Callable[[Union[SaeAlert, TiAlert]], None],
         start_time: Optional[str] = None,
         end_time: Optional[str] = None,
+        op: QueryOp = QueryOp.AND,
+        **fields: str,
     ) -> Result[ConsumeLinkableResp]:
         """Retrieves and consume workbench alerts.
 
@@ -134,6 +136,11 @@ class Alert:
         time range (yyyy-MM-ddThh:mm:ssZ).
         Defaults to the time the request is made.
         :type end_time: Optional[str]
+        :param op: Operator to apply between fields (ie: ... OR ...).
+        :type op: QueryOp
+        :param fields: Field/value used to filter result (i.e:fileName="1.sh"),
+        check Vision One API documentation for full list of supported fields.
+        :type fields: Dict[str, str]
         :rtype: Result[ConsumeLinkableResp]:
         """
         return self._core.send_linkable(
@@ -147,4 +154,5 @@ class Alert:
                     "orderBy": "createdDateTime desc",
                 }
             ),
+            headers=utils.tmv1_filter(op, fields),
         )
