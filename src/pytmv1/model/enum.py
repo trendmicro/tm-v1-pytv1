@@ -65,6 +65,13 @@ class Api(str, Enum):
     UPDATE_ALERT_NOTE = "/workbench/alerts/{0}/notes/{1}"
     DELETE_ALERT_NOTE = "/workbench/alerts/{0}/notes/delete"
     GET_OAT_LIST = "/oat/detections"
+    CREATE_OAT_PIPELINE = "/oat/dataPipelines"
+    GET_OAT_PIPELINE = "/oat/dataPipelines/{0}"
+    UPDATE_OAT_PIPELINE = "/oat/dataPipelines/{0}"
+    DELETE_OAT_PIPELINE = "/oat/dataPipelines/delete"
+    LIST_OAT_PIPELINE = "/oat/dataPipelines"
+    DOWNLOAD_OAT_PACKAGE = "/oat/dataPipelines/{0}/packages/{1}"
+    LIST_OAT_PACKAGE = "/oat/dataPipelines/{0}/packages"
 
 
 class ApiExpInMonths(int, Enum):

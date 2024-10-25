@@ -20,6 +20,8 @@ from .common import (
     MsDataApiKey,
     MsDataUrl,
     OatEvent,
+    OatPackage,
+    OatPipeline,
     SaeAlert,
     SandboxSuspiciousObject,
     Script,
@@ -90,10 +92,10 @@ class AddAlertNoteResp(BaseResponse):
 
     @model_validator(mode="before")
     @classmethod
-    def map_data(cls, data: Dict[str, str]) -> Dict[str, str]:
-        location = data.get("Location")
-        if location:
-            data["note_id"] = location.split("/")[-1]
+    def map_data(
+        cls, data: Dict[str, Optional[str]]
+    ) -> Dict[str, Optional[str]]:
+        data["note_id"] = _get_id(data)
         return data
 
 
@@ -102,10 +104,10 @@ class AddCustomScriptResp(BaseResponse):
 
     @model_validator(mode="before")
     @classmethod
-    def map_data(cls, data: Dict[str, str]) -> Dict[str, str]:
-        location = data.get("Location")
-        if location:
-            data["script_id"] = location.split("/")[-1]
+    def map_data(
+        cls, data: Dict[str, Optional[str]]
+    ) -> Dict[str, Optional[str]]:
+        data["script_id"] = _get_id(data)
         return data
 
 
@@ -167,6 +169,11 @@ class GetApiKeyResp(BaseResponse):
     etag: str
 
 
+class GetPipelineResp(BaseResponse):
+    data: OatPipeline
+    etag: str
+
+
 class ListAlertsResp(BaseLinkableResp[Union[SaeAlert, TiAlert]]):
     total_count: int
     count: int
@@ -210,6 +217,18 @@ class ListOatsResp(BaseLinkableResp[OatEvent]):
     count: int
 
 
+class ListOatPipelinesResp(BaseResponse):
+    items: List[OatPipeline]
+    count: int
+
+
+class ListOatPackagesResp(BaseLinkableResp[OatPackage]):
+    total_count: int
+    count: int
+    requested_date_time: str
+    latest_package_created_date_time: Optional[str] = None
+
+
 class ListSuspiciousResp(BaseLinkableResp[SuspiciousObject]): ...
 
 
@@ -237,6 +256,18 @@ class CustomScriptTaskResp(BaseTaskResp):
     resource_location: Optional[str] = None
     expired_date_time: Optional[str] = None
     password: Optional[str] = None
+
+
+class OatPipelineResp(BaseResponse):
+    pipeline_id: str
+
+    @model_validator(mode="before")
+    @classmethod
+    def map_data(
+        cls, data: Dict[str, Optional[str]]
+    ) -> Dict[str, Optional[str]]:
+        data["pipeline_id"] = _get_id(data)
+        return data
 
 
 class SubmitFileToSandboxResp(BaseResponse):
@@ -283,3 +314,8 @@ class TerminateProcessTaskResp(BaseTaskResp):
 
 class TextResp(BaseResponse):
     text: str
+
+
+def _get_id(data: Dict[str, Optional[str]]) -> Optional[str]:
+    location = data.get("Location")
+    return location.split("/")[-1] if location else None

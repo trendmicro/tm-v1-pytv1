@@ -383,6 +383,19 @@ class OatEvent(BaseConsumable):
     detail: Union[EndpointActivity, EmailActivity]
 
 
+class OatPackage(BaseConsumable):
+    id: str
+    created_date_time: str
+
+
+class OatPipeline(BaseModel):
+    has_detail: bool
+    registered_date_time: str
+    risk_levels: List[OatRiskLevel]
+    id: Optional[str] = None
+    description: Optional[str] = None
+
+
 class SaeIndicator(Indicator):
     field: str
     filter_ids: List[str]
