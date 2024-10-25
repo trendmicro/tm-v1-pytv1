@@ -3,7 +3,14 @@ from typing import Callable, Optional, Union
 from .. import utils
 from ..core import Core
 from ..model.common import SaeAlert, TiAlert
-from ..model.enum import Api, HttpMethod, InvestigationStatus, QueryOp
+from ..model.enum import (
+    AlertStatus,
+    Api,
+    HttpMethod,
+    InvestigationResult,
+    InvestigationStatus,
+    QueryOp,
+)
 from ..model.response import (
     ConsumeLinkableResp,
     GetAlertResp,
@@ -22,30 +29,40 @@ class Alert:
     def update_status(
         self,
         alert_id: str,
-        status: InvestigationStatus,
-        if_match: str,
+        etag: str,
+        status: Optional[AlertStatus] = None,
+        inv_result: Optional[InvestigationResult] = None,
+        inv_status: Optional[InvestigationStatus] = None,
     ) -> Result[NoContentResp]:
         """Edit the status of an alert or investigation triggered in Workbench.
 
         :param alert_id: Workbench alert id.
         :type alert_id: str
-        :param status: Status to be updated.
-        :type status: InvestigationStatus
-        :param if_match: Target resource will be updated only if
+        :param status: Status of a case or investigation.
+        :type status: Optional[AlertStatus]
+        :param inv_result: Findings of a case or investigation.
+        :type inv_result: Optional[InvestigationResult]
+        :param inv_status: (deprecated) Status of an investigation.
+        :type inv_status: Optional[InvestigationStatus]
+        :param etag: Target resource will be updated only if
          it matches ETag of the target one.
-        :type if_match: str
+        :type etag: str
         :rtype: Result[NoContentResp]:
         """
         return self._core.send(
             NoContentResp,
             Api.UPDATE_ALERT_STATUS.value.format(alert_id),
             HttpMethod.PATCH,
-            json={"investigationStatus": status},
+            json=utils.filter_none(
+                {
+                    "status": status,
+                    "investigationResult": inv_result,
+                    "investigationStatus": inv_status,
+                }
+            ),
             headers={
                 "If-Match": (
-                    if_match
-                    if if_match.startswith('"')
-                    else '"' + if_match + '"'
+                    etag if etag.startswith('"') else '"' + etag + '"'
                 )
             },
         )

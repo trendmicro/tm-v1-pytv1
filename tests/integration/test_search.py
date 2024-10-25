@@ -69,3 +69,6 @@ def test_list_endpoint_data(client):
     assert result.result_code == ResultCode.SUCCESS
     assert isinstance(result.response, ListEndpointDataResp)
     assert len(result.response.items) > 0
+    assert result.response.items[0].componentUpdatePolicy == "N-2"
+    assert result.response.items[0].componentUpdateStatus == "pause"
+    assert result.response.items[0].componentVersion == "outdatedVersion"

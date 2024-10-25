@@ -1,6 +1,12 @@
 from enum import Enum
 
 
+class AlertStatus(str, Enum):
+    OPEN = "Open"
+    IN_PROGRESS = "In Progress"
+    CLOSED = "Closed"
+
+
 class Api(str, Enum):
     CONNECTIVITY = "/healthcheck/connectivity"
     CREATE_API_KEYS = "/iam/apiKeys"
@@ -87,6 +93,14 @@ class IntegrityLevel(int, Enum):
     MEDIUM = 8192
     HIGH = 12288
     SYSTEM = 16384
+
+
+class InvestigationResult(str, Enum):
+    NO_FINDINGS = "No Findings"
+    NOTEWORTHY = "Noteworthy"
+    TRUE_POSITIVE = "True Positive"
+    FALSE_POSITIVE = "False Positive"
+    BENIGN_TRUE_POSITIVE = "Benign True Positive"
 
 
 class InvestigationStatus(str, Enum):
@@ -187,6 +201,7 @@ class HttpMethod(str, Enum):
 
 class OatDataSource(str, Enum):
     DETECTIONS = "detections"
+    IDENTITY_ACTIVITY_DATA = "identityActivityData"
     ENDPOINT_ACTIVITY_DATA = "endpointActivityData"
     CLOUD_ACTIVITY_DATA = "cloudActivityData"
     EMAIL_ACTIVITY_DATA = "emailActivityData"
@@ -214,7 +229,7 @@ class OatRiskLevel(str, Enum):
     CRITICAL = "critical"
 
 
-class OatType(str, Enum):
+class DetectionType(str, Enum):
     CUSTOM = "custom"
     PRESET = "preset"
 
@@ -296,9 +311,10 @@ class Status(str, Enum):
     FAILED = "failed"
     QUEUED = "queued"
     REJECTED = "rejected"
+    CANCELED = "canceled"
     RUNNING = "running"
     SUCCEEDED = "succeeded"
-    WAIT_FOR_APPROVAL = "waitForApproval"
+    PENDING_APPROVAL = "pendingApproval"
 
 
 class TaskAction(str, Enum):

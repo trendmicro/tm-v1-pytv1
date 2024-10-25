@@ -1,9 +1,10 @@
 from pytmv1 import (
     Entity,
     HostInfo,
-    Indicator,
     InvestigationStatus,
+    SaeIndicator,
     Severity,
+    TiIndicator,
     mapper,
 )
 from tests import data
@@ -39,8 +40,6 @@ def test_map_common():
     assert dictionary["cn3Label"] == "Account Count"
     assert dictionary["cn4"] == "0"
     assert dictionary["cn4Label"] == "Email Address Count"
-    assert dictionary["cs1"] == "Alert"
-    assert dictionary["cs1Label"] == "Provenance"
 
 
 def test_map_entities_with_type_email():
@@ -73,7 +72,7 @@ def test_map_entities_with_type_user():
 
 def test_map_indicators_with_type_command_line():
     indicators = [
-        Indicator.model_construct(type="command_line", value="cmd.exe")
+        TiIndicator.model_construct(type="command_line", value="cmd.exe")
     ]
     dictionary = {}
     mapper._map_indicators(dictionary, indicators)
@@ -82,7 +81,7 @@ def test_map_indicators_with_type_command_line():
 
 def test_map_indicators_with_type_host_info():
     indicators = [
-        Indicator.model_construct(
+        SaeIndicator.model_construct(
             value=HostInfo.model_construct(
                 name="host", ips=["1.1.1.1", "2.2.2.2"]
             )
@@ -96,7 +95,7 @@ def test_map_indicators_with_type_host_info():
 
 def test_map_indicators_with_unknown_type():
     indicators = [
-        Indicator.model_construct(type="unknown_type", value="unknown")
+        SaeIndicator.model_construct(type="unknown_type", value="unknown")
     ]
     dictionary = {}
     mapper._map_indicators(dictionary, indicators)

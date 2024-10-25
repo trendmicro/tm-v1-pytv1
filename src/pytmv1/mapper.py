@@ -1,8 +1,16 @@
-from typing import Dict, List
+from typing import Dict, List, Union
 
 from pydantic.alias_generators import to_camel
 
-from .model.common import Alert, Entity, HostInfo, Indicator, SaeAlert, TiAlert
+from .model.common import (
+    Alert,
+    Entity,
+    HostInfo,
+    SaeAlert,
+    SaeIndicator,
+    TiAlert,
+    TiIndicator,
+)
 
 INDICATOR_CEF_MAP: Dict[str, str] = {
     "command_line": "dproc",
@@ -29,7 +37,6 @@ INDICATOR_CEF_MAP: Dict[str, str] = {
 def map_cef(alert: Alert) -> Dict[str, str]:
     data: Dict[str, str] = _map_common(alert)
     _map_entities(data, alert.impact_scope.entities)
-    _map_indicators(data, alert.indicators)
     if isinstance(alert, SaeAlert):
         _map_sae(data, alert)
     if isinstance(alert, TiAlert):
@@ -55,8 +62,6 @@ def _map_common(alert: Alert) -> Dict[str, str]:
         cn3Label="Account Count",
         cn4=str(alert.impact_scope.email_address_count),
         cn4Label="Email Address Count",
-        cs1=", ".join(alert.indicators[0].provenance),
-        cs1Label="Provenance",
     )
 
 
@@ -69,7 +74,10 @@ def _map_entities(data: Dict[str, str], entities: List[Entity]) -> None:
             data["duser"] = entity.entity_value
 
 
-def _map_indicators(data: Dict[str, str], indicators: List[Indicator]) -> None:
+def _map_indicators(
+    data: Dict[str, str],
+    indicators: Union[List[TiIndicator], List[SaeIndicator]],
+) -> None:
     for indicator in indicators:
         if isinstance(indicator.value, HostInfo):
             data["shost"] = indicator.value.name
@@ -81,6 +89,8 @@ def _map_indicators(data: Dict[str, str], indicators: List[Indicator]) -> None:
 
 
 def _map_sae(data: Dict[str, str], alert: SaeAlert) -> None:
+    data["cs1"] = ", ".join(alert.indicators[0].provenance)
+    data["cs1Label"] = "Provenance"
     data["cs2"] = alert.matched_rules[0].matched_filters[0].name
     data["cs2Label"] = "Matched Filter"
     data["cs3"] = ", ".join(
@@ -89,9 +99,12 @@ def _map_sae(data: Dict[str, str], alert: SaeAlert) -> None:
     data["cs3Label"] = "Matched Techniques"
     data["reason"] = alert.matched_rules[0].name
     data["msg"] = data.get("msg", "") + f"\nDescription: {alert.description}"
+    _map_indicators(data, alert.indicators)
 
 
 def _map_ti(data: Dict[str, str], alert: TiAlert) -> None:
+    data["cs1"] = ", ".join(alert.indicators[0].provenance)
+    data["cs1Label"] = "Provenance"
     data["cs2"] = ", ".join(alert.matched_indicator_patterns[0].tags)
     data["cs2Label"] = "Matched Pattern Tags"
     data["cs3"] = alert.matched_indicator_patterns[0].pattern
@@ -104,3 +117,4 @@ def _map_ti(data: Dict[str, str], alert: TiAlert) -> None:
         data["industry"] = alert.industry
     if alert.region_and_country:
         data["regionAndCountry"] = alert.region_and_country
+    _map_indicators(data, alert.indicators)
