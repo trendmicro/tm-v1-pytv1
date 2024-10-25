@@ -33,6 +33,7 @@ from .model.response import (
     GetAlertNoteResp,
     GetAlertResp,
     GetApiKeyResp,
+    GetPipelineResp,
     MultiApiKeyResp,
     MultiResp,
     MultiUrlResp,
@@ -294,11 +295,20 @@ def _is_http_success(status_codes: List[int]) -> bool:
 
 def _parse_data(raw_response: Response, class_: Type[R]) -> R:
     content_type = raw_response.headers.get("Content-Type", "")
+    if raw_response.status_code == 201:
+        return class_(**raw_response.headers)
+    if raw_response.status_code == 204 and class_ == NoContentResp:
+        return class_()
     if "json" in content_type:
         log.debug("Parsing json response [Class=%s]", class_.__name__)
         if class_ in [MultiResp, MultiUrlResp, MultiApiKeyResp]:
             return class_(items=raw_response.json())
-        if class_ in [GetAlertResp, GetApiKeyResp, GetAlertNoteResp]:
+        if class_ in [
+            GetAlertResp,
+            GetApiKeyResp,
+            GetAlertNoteResp,
+            GetPipelineResp,
+        ]:
             return class_(
                 data=raw_response.json(),
                 etag=raw_response.headers.get("ETag", ""),
@@ -309,15 +319,14 @@ def _parse_data(raw_response: Response, class_: Type[R]) -> R:
             )
             class_ = resp_class if issubclass(resp_class, class_) else class_
         return class_(**raw_response.json())
-    if "application" in content_type and class_ == BytesResp:
+    if (
+        "application" in content_type
+        or "gzip" == raw_response.headers.get("Content-Encoding")
+    ) and class_ == BytesResp:
         log.debug("Parsing binary response")
         return class_.model_construct(content=raw_response.content)
     if "text" in content_type and class_ == TextResp:
         return class_.model_construct(text=raw_response.text)
-    if raw_response.status_code == 201:
-        return class_(**raw_response.headers)
-    if raw_response.status_code == 204 and class_ == NoContentResp:
-        return class_()
     raise ParseModelError(class_.__name__, raw_response)
 
 
@@ -349,16 +358,16 @@ def _poll_status(
 def _validate(raw_response: Response) -> None:
     log.debug("Validating response [%s]", raw_response)
     content_type: str = raw_response.headers.get("Content-Type", "")
-    if "text/html" in content_type:
-        raise ServerHtmlError(
-            raw_response.status_code, _parse_html(raw_response.text)
-        )
     if not _is_http_success([raw_response.status_code]):
         if "application/json" in content_type:
             error: Dict[str, Any] = raw_response.json().get("error")
             error["status"] = raw_response.status_code
             raise ServerJsonError(
                 Error(**error),
+            )
+        if "text/html" in content_type:
+            raise ServerHtmlError(
+                raw_response.status_code, _parse_html(raw_response.text)
             )
         raise ServerTextError(raw_response.status_code, raw_response.text)
     if raw_response.status_code == 207:

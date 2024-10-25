@@ -451,7 +451,7 @@ def test_url_without_trailing_slash(core):
 
 def test_validate_with_html_is_failed():
     raw_response = Response()
-    raw_response.status_code = 200
+    raw_response.status_code = 404
     raw_response.headers = {"Content-Type": "text/html"}
     with pytest.raises(ServerHtmlError):
         core_m._validate(raw_response)
