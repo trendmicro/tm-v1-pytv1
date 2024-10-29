@@ -5,8 +5,8 @@ from ..core import Core
 from ..model.common import OatEvent, OatPackage
 from ..model.enum import Api, HttpMethod, OatRiskLevel, QueryOp
 from ..model.response import (
-    BytesResp,
     ConsumeLinkableResp,
+    GetOatPackageResp,
     GetPipelineResp,
     ListOatPackagesResp,
     ListOatPipelinesResp,
@@ -230,19 +230,19 @@ class Oat:
         """
         return self._core.send(ListOatPipelinesResp, Api.LIST_OAT_PIPELINE)
 
-    def download_package(
+    def get_package(
         self, pipeline_id: str, package_id: str
-    ) -> Result[BytesResp]:
+    ) -> Result[GetOatPackageResp]:
         """Retrieves the specified Observed Attack Techniques package.
 
         :param pipeline_id: Pipeline ID.
         :type pipeline_id: str
         :param package_id: Package ID.
         :type package_id: str
-        :return: Result[BytesResp]
+        :return: Result[GetOatPackageResp]
         """
         return self._core.send(
-            BytesResp,
+            GetOatPackageResp,
             Api.DOWNLOAD_OAT_PACKAGE.value.format(pipeline_id, package_id),
         )
 

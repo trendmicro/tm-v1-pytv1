@@ -33,6 +33,7 @@ from .model.response import (
     GetAlertNoteResp,
     GetAlertResp,
     GetApiKeyResp,
+    GetOatPackageResp,
     GetPipelineResp,
     MultiApiKeyResp,
     MultiResp,
@@ -299,10 +300,14 @@ def _parse_data(raw_response: Response, class_: Type[R]) -> R:
         return class_(**raw_response.headers)
     if raw_response.status_code == 204 and class_ == NoContentResp:
         return class_()
-    if "json" in content_type:
+    if "text" in content_type and class_ == TextResp:
+        return class_.model_construct(text=raw_response.text)
+    if "json" in content_type or "text" in content_type:
         log.debug("Parsing json response [Class=%s]", class_.__name__)
         if class_ in [MultiResp, MultiUrlResp, MultiApiKeyResp]:
             return class_(items=raw_response.json())
+        if class_ == GetOatPackageResp:
+            return class_(package=raw_response.json())
         if class_ in [
             GetAlertResp,
             GetApiKeyResp,
@@ -325,8 +330,6 @@ def _parse_data(raw_response: Response, class_: Type[R]) -> R:
     ) and class_ == BytesResp:
         log.debug("Parsing binary response")
         return class_.model_construct(content=raw_response.content)
-    if "text" in content_type and class_ == TextResp:
-        return class_.model_construct(text=raw_response.text)
     raise ParseModelError(class_.__name__, raw_response)
 
 
