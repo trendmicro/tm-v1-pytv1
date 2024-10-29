@@ -1,6 +1,7 @@
 from pytmv1 import (
     GetEmailActivitiesCountResp,
     GetEndpointActivitiesCountResp,
+    IntegrityLevel,
     ListEmailActivityResp,
     ListEndpointActivityResp,
     ListEndpointDataResp,
@@ -45,6 +46,10 @@ def test_list_endpoint_activities(client):
     assert result.result_code == ResultCode.SUCCESS
     assert isinstance(result.response, ListEndpointActivityResp)
     assert len(result.response.items) > 0
+    assert (
+        result.response.items[0].object_integrity_level
+        == IntegrityLevel.MEDIUM
+    )
 
 
 def test_get_endpoint_activities_count(client):
