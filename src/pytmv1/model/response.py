@@ -169,6 +169,10 @@ class GetApiKeyResp(BaseResponse):
     etag: str
 
 
+class GetOatPackageResp(BaseResponse):
+    package: OatEvent
+
+
 class GetPipelineResp(BaseResponse):
     data: OatPipeline
     etag: str

@@ -1,6 +1,6 @@
 from pytmv1 import (
-    BytesResp,
     EndpointActivity,
+    GetOatPackageResp,
     NoContentResp,
     OatRiskLevel,
     ResultCode,
@@ -95,14 +95,28 @@ def test_list_pipelines(client):
     assert result.response.items[0].description == "siemhost1"
 
 
-def test_download_package(client):
-    result = client.oat.download_package(
+def test_get_package(client):
+    result = client.oat.get_package(
         "83df1ed3-84e7-4e6d-98b5-d79468cccba1",
         "2024073012-774c3fb6-f777-4ce1-8564-39885e7d41a4",
     )
-    assert isinstance(result.response, BytesResp)
+    assert isinstance(result.response, GetOatPackageResp)
     assert result.result_code == ResultCode.SUCCESS
-    assert result.response.content
+    assert result.response.package.detection_time == "2024-07-30T12:01:01Z"
+    assert (
+        result.response.package.endpoint.guid
+        == "ab673395-9bf9-49fc-b8ac-7fa15467d20a"
+    )
+    assert result.response.package.filters[0].tactics == ["TA0002"]
+    assert result.response.package.filters[0].techniques == ["T1059.004"]
+    assert (
+        result.response.package.detail.event_source_type
+        == "EVENT_SOURCE_TELEMETRY"
+    )
+    assert (
+        result.response.package.detail.uuid
+        == "eb5b2977-3bde-45ea-b493-05984bab5d0f"
+    )
 
 
 def test_list_packages(client):

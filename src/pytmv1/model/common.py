@@ -13,8 +13,6 @@ from .enum import (
     ApiStatus,
     DetectionType,
     EntityType,
-    EventID,
-    EventSubID,
     Iam,
     IntegrityLevel,
     InvestigationResult,
@@ -33,9 +31,8 @@ from .enum import (
     Status,
 )
 
-CFG = ConfigDict(
-    alias_generator=to_camel, populate_by_name=True, protected_namespaces=()
-)
+CFG = ConfigDict(alias_generator=to_camel, populate_by_name=True)
+CFG_NAMESPACE = ConfigDict(**CFG, protected_namespaces=())
 
 
 class BaseModel(PydanticBaseModel):
@@ -57,6 +54,8 @@ class Account(BaseModel):
 
 
 class Alert(BaseConsumable):
+    model_config = CFG_NAMESPACE
+
     id: str
     schema_version: str
     status: AlertStatus
@@ -151,9 +150,10 @@ class Endpoint(BaseConsumable):
 
 
 class EmailActivity(BaseConsumable):
+    event_source_type: Optional[str] = None
     mail_msg_subject: Optional[str] = None
     mail_msg_id: Optional[str] = None
-    msg_uuid: Optional[str] = None
+    msg_uuid: str
     mailbox: Optional[str] = None
     mail_sender_ip: Optional[str] = None
     mail_from_addresses: List[str] = Field(default=[])
@@ -171,11 +171,12 @@ class EmailActivity(BaseConsumable):
 class EndpointActivity(BaseConsumable):
     dpt: Optional[int] = None
     dst: Optional[str] = None
-    endpoint_guid: Optional[str] = None
+    endpoint_guid: str
     endpoint_host_name: Optional[str] = None
     endpoint_ip: List[str] = Field(default=[])
-    event_id: Optional[EventID] = None
-    event_sub_id: Optional[EventSubID] = None
+    event_id: Optional[str] = None
+    event_source_type: Optional[str] = None
+    event_sub_id: Optional[str] = None
     object_integrity_level: Optional[IntegrityLevel] = None
     object_true_type: Optional[int] = None
     object_sub_true_type: Optional[int] = None
@@ -212,6 +213,15 @@ class EndpointActivity(BaseConsumable):
     src_file_path: Optional[str] = None
     tags: List[str] = Field(default=[])
     uuid: Optional[str] = None
+
+    @field_validator("event_sub_id", mode="before")
+    @classmethod
+    def map_event_sub_id(
+        cls, value: Optional[Union[int, str]]
+    ) -> Optional[str]:
+        if value is not None and isinstance(value, int):
+            return str(value)
+        return value
 
     @field_validator("object_integrity_level", mode="before")
     @classmethod
@@ -375,36 +385,45 @@ class MsStatus(RootModel):
 
 
 class OatEndpoint(BaseModel):
-    endpoint_name: str
-    agent_guid: str
+    endpoint_name: Optional[str] = None
+    name: Optional[str] = None
+    agent_guid: Optional[str] = None
+    guid: Optional[str] = None
     ips: List[str]
 
 
 class OatObject(BaseModel):
-    type: str
     field: str
+    type: str
     value: Union[int, str, List[str]]
+    master: Optional[bool] = None
+    risk_level: Optional[OatRiskLevel] = None
 
 
 class OatFilter(BaseModel):
     id: str
+    unique_id: Optional[str] = None
     name: str
     description: Optional[str] = None
-    mitre_tactic_ids: List[str]
-    mitre_technique_ids: List[str]
+    mitre_tactic_ids: Optional[List[str]] = None
+    tactics: Optional[List[str]] = None
+    mitre_technique_ids: Optional[List[str]] = None
+    techniques: Optional[List[str]] = None
     highlighted_objects: List[OatObject]
-    risk_level: OatRiskLevel
-    type: str
+    risk_level: Optional[OatRiskLevel] = None
+    level: Optional[OatRiskLevel] = None
+    type: DetectionType
 
 
 class OatEvent(BaseConsumable):
-    source: OatDataSource
-    uuid: str
+    source: Optional[OatDataSource] = None
+    uuid: Optional[str] = None
     filters: List[OatFilter]
     endpoint: Optional[OatEndpoint] = None
     entity_type: OatEntityType
     entity_name: str
-    detected_date_time: str
+    detected_date_time: Optional[str] = None
+    detection_time: Optional[str] = None
     ingested_date_time: Optional[str] = None
     detail: Union[EndpointActivity, EmailActivity]
 
