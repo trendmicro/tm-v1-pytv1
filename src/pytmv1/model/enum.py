@@ -261,7 +261,6 @@ class ProductCode(str, Enum):
     SAO = "sao"
     SDS = "sds"
     XES = "xes"
-    NOT_FOUND = ""
 
 
 class Provenance(str, Enum):
