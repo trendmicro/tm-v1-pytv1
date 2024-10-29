@@ -1,6 +1,7 @@
 from pytmv1 import (
     GetEmailActivitiesCountResp,
     GetEndpointActivitiesCountResp,
+    IntegrityLevel,
     ListEmailActivityResp,
     ListEndpointActivityResp,
     ListEndpointDataResp,
@@ -45,6 +46,10 @@ def test_list_endpoint_activities(client):
     assert result.result_code == ResultCode.SUCCESS
     assert isinstance(result.response, ListEndpointActivityResp)
     assert len(result.response.items) > 0
+    assert (
+        result.response.items[0].object_integrity_level
+        == IntegrityLevel.MEDIUM
+    )
 
 
 def test_get_endpoint_activities_count(client):
@@ -72,3 +77,14 @@ def test_list_endpoint_data(client):
     assert result.response.items[0].componentUpdatePolicy == "N-2"
     assert result.response.items[0].componentUpdateStatus == "pause"
     assert result.response.items[0].componentVersion == "outdatedVersion"
+
+
+def test_list_endpoint_data_optional_fields(client):
+    result = client.endpoint.list_data(endpointName="optional_fields")
+    assert result.result_code == ResultCode.SUCCESS
+    assert isinstance(result.response, ListEndpointDataResp)
+    assert len(result.response.items) > 0
+    assert not result.response.items[0].product_code
+    assert not result.response.items[0].os_name
+    assert not result.response.items[0].os_version
+    assert not result.response.items[0].os_description

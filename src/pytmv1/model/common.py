@@ -5,7 +5,7 @@ from typing import Any, Dict, List, Optional, Tuple, Union
 from pydantic import BaseModel as PydanticBaseModel
 from pydantic import ConfigDict, Field
 from pydantic import RootModel as PydanticRootModel
-from pydantic import model_validator
+from pydantic import field_validator, model_validator
 from pydantic.alias_generators import to_camel
 
 from .enum import (
@@ -13,8 +13,6 @@ from .enum import (
     ApiStatus,
     DetectionType,
     EntityType,
-    EventID,
-    EventSubID,
     Iam,
     IntegrityLevel,
     InvestigationResult,
@@ -34,6 +32,7 @@ from .enum import (
 )
 
 CFG = ConfigDict(alias_generator=to_camel, populate_by_name=True)
+CFG_NAMESPACE = ConfigDict(**CFG, protected_namespaces=())
 
 
 class BaseModel(PydanticBaseModel):
@@ -55,6 +54,8 @@ class Account(BaseModel):
 
 
 class Alert(BaseConsumable):
+    model_config = CFG_NAMESPACE
+
     id: str
     schema_version: str
     status: AlertStatus
@@ -129,22 +130,30 @@ class Endpoint(BaseConsumable):
     endpoint_name: Value
     mac_address: ValueList
     ip: ValueList
-    os_name: OperatingSystem
-    os_version: str
-    os_description: str
-    product_code: ProductCode
-    installed_product_codes: List[ProductCode]
+    os_name: Optional[OperatingSystem] = None
+    os_version: Optional[str] = None
+    os_description: Optional[str] = None
+    product_code: Optional[ProductCode] = None
+    installed_product_codes: List[ProductCode] = Field(default=[])
     componentUpdatePolicy: Optional[str] = None
     componentUpdateStatus: Optional[str] = None
     componentVersion: Optional[str] = None
     policyName: Optional[str] = None
     protectionManager: Optional[str] = None
 
+    @field_validator("os_name", "product_code", mode="before")
+    @classmethod
+    def allow_empty_enum_string(cls, value: Any) -> Union[Any, None]:
+        if value == "":
+            return None
+        return value
+
 
 class EmailActivity(BaseConsumable):
+    event_source_type: Optional[str] = None
     mail_msg_subject: Optional[str] = None
     mail_msg_id: Optional[str] = None
-    msg_uuid: Optional[str] = None
+    msg_uuid: str
     mailbox: Optional[str] = None
     mail_sender_ip: Optional[str] = None
     mail_from_addresses: List[str] = Field(default=[])
@@ -162,11 +171,12 @@ class EmailActivity(BaseConsumable):
 class EndpointActivity(BaseConsumable):
     dpt: Optional[int] = None
     dst: Optional[str] = None
-    endpoint_guid: Optional[str] = None
+    endpoint_guid: str
     endpoint_host_name: Optional[str] = None
     endpoint_ip: List[str] = Field(default=[])
-    event_id: Optional[EventID] = None
-    event_sub_id: Optional[EventSubID] = None
+    event_id: Optional[str] = None
+    event_source_type: Optional[str] = None
+    event_sub_id: Optional[str] = None
     object_integrity_level: Optional[IntegrityLevel] = None
     object_true_type: Optional[int] = None
     object_sub_true_type: Optional[int] = None
@@ -203,6 +213,32 @@ class EndpointActivity(BaseConsumable):
     src_file_path: Optional[str] = None
     tags: List[str] = Field(default=[])
     uuid: Optional[str] = None
+
+    @field_validator("event_sub_id", mode="before")
+    @classmethod
+    def map_event_sub_id(
+        cls, value: Optional[Union[int, str]]
+    ) -> Optional[str]:
+        if value is not None and isinstance(value, int):
+            return str(value)
+        return value
+
+    @field_validator("object_integrity_level", mode="before")
+    @classmethod
+    def map_object_integrity_level(
+        cls, value: Optional[int]
+    ) -> Optional[IntegrityLevel]:
+        if value:
+            if IntegrityLevel.UNTRUSTED <= value < IntegrityLevel.LOW:
+                return IntegrityLevel.UNTRUSTED
+            if IntegrityLevel.LOW <= value < IntegrityLevel.MEDIUM:
+                return IntegrityLevel.LOW
+            if IntegrityLevel.MEDIUM <= value < IntegrityLevel.HIGH:
+                return IntegrityLevel.MEDIUM
+            if IntegrityLevel.HIGH <= value < IntegrityLevel.SYSTEM:
+                return IntegrityLevel.HIGH
+            return IntegrityLevel.SYSTEM
+        return None
 
 
 class HostInfo(BaseModel):
@@ -349,38 +385,60 @@ class MsStatus(RootModel):
 
 
 class OatEndpoint(BaseModel):
-    endpoint_name: str
-    agent_guid: str
+    endpoint_name: Optional[str] = None
+    name: Optional[str] = None
+    agent_guid: Optional[str] = None
+    guid: Optional[str] = None
     ips: List[str]
 
 
 class OatObject(BaseModel):
-    type: str
     field: str
+    type: str
     value: Union[int, str, List[str]]
+    master: Optional[bool] = None
+    risk_level: Optional[OatRiskLevel] = None
 
 
 class OatFilter(BaseModel):
     id: str
+    unique_id: Optional[str] = None
     name: str
     description: Optional[str] = None
-    mitre_tactic_ids: List[str]
-    mitre_technique_ids: List[str]
+    mitre_tactic_ids: Optional[List[str]] = None
+    tactics: Optional[List[str]] = None
+    mitre_technique_ids: Optional[List[str]] = None
+    techniques: Optional[List[str]] = None
     highlighted_objects: List[OatObject]
-    risk_level: OatRiskLevel
-    type: str
+    risk_level: Optional[OatRiskLevel] = None
+    level: Optional[OatRiskLevel] = None
+    type: DetectionType
 
 
 class OatEvent(BaseConsumable):
-    source: OatDataSource
-    uuid: str
+    source: Optional[OatDataSource] = None
+    uuid: Optional[str] = None
     filters: List[OatFilter]
     endpoint: Optional[OatEndpoint] = None
     entity_type: OatEntityType
     entity_name: str
-    detected_date_time: str
+    detected_date_time: Optional[str] = None
+    detection_time: Optional[str] = None
     ingested_date_time: Optional[str] = None
     detail: Union[EndpointActivity, EmailActivity]
+
+
+class OatPackage(BaseConsumable):
+    id: str
+    created_date_time: str
+
+
+class OatPipeline(BaseModel):
+    has_detail: bool
+    registered_date_time: str
+    risk_levels: List[OatRiskLevel]
+    id: Optional[str] = None
+    description: Optional[str] = None
 
 
 class SaeIndicator(Indicator):

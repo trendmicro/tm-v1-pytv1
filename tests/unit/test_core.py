@@ -164,9 +164,9 @@ def test_parse_data_with_bytes():
 
 def test_parse_data_with_html_is_failed():
     raw_response = Response()
-    raw_response.headers = {"Content-Type": "text/html"}
+    raw_response.status_code = 204
     with pytest.raises(ParseModelError):
-        core_m._parse_data(raw_response, NoContentResp)
+        core_m._parse_data(raw_response, AddAlertNoteResp)
 
 
 def test_parse_data_with_json():
@@ -451,7 +451,7 @@ def test_url_without_trailing_slash(core):
 
 def test_validate_with_html_is_failed():
     raw_response = Response()
-    raw_response.status_code = 200
+    raw_response.status_code = 404
     raw_response.headers = {"Content-Type": "text/html"}
     with pytest.raises(ServerHtmlError):
         core_m._validate(raw_response)
