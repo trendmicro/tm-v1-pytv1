@@ -5,7 +5,7 @@ from typing import Any, Dict, List, Optional, Tuple, Union
 from pydantic import BaseModel as PydanticBaseModel
 from pydantic import ConfigDict, Field
 from pydantic import RootModel as PydanticRootModel
-from pydantic import model_validator
+from pydantic import field_validator, model_validator
 from pydantic.alias_generators import to_camel
 
 from .enum import (
@@ -131,16 +131,23 @@ class Endpoint(BaseConsumable):
     endpoint_name: Value
     mac_address: ValueList
     ip: ValueList
-    os_name: OperatingSystem
-    os_version: str
-    os_description: str
-    product_code: ProductCode
-    installed_product_codes: List[ProductCode]
+    os_name: Optional[OperatingSystem] = None
+    os_version: Optional[str] = None
+    os_description: Optional[str] = None
+    product_code: Optional[ProductCode] = None
+    installed_product_codes: List[ProductCode] = Field(default=[])
     componentUpdatePolicy: Optional[str] = None
     componentUpdateStatus: Optional[str] = None
     componentVersion: Optional[str] = None
     policyName: Optional[str] = None
     protectionManager: Optional[str] = None
+
+    @field_validator("os_name", "product_code", mode="before")
+    @classmethod
+    def allow_empty_enum_string(cls, value: Any) -> Union[Any, None]:
+        if value == "":
+            return None
+        return value
 
 
 class EmailActivity(BaseConsumable):
