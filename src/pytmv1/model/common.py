@@ -213,6 +213,23 @@ class EndpointActivity(BaseConsumable):
     tags: List[str] = Field(default=[])
     uuid: Optional[str] = None
 
+    @field_validator("object_integrity_level", mode="before")
+    @classmethod
+    def map_object_integrity_level(
+        cls, value: Optional[int]
+    ) -> Optional[IntegrityLevel]:
+        if value:
+            if IntegrityLevel.UNTRUSTED <= value < IntegrityLevel.LOW:
+                return IntegrityLevel.UNTRUSTED
+            if IntegrityLevel.LOW <= value < IntegrityLevel.MEDIUM:
+                return IntegrityLevel.LOW
+            if IntegrityLevel.MEDIUM <= value < IntegrityLevel.HIGH:
+                return IntegrityLevel.MEDIUM
+            if IntegrityLevel.HIGH <= value < IntegrityLevel.SYSTEM:
+                return IntegrityLevel.HIGH
+            return IntegrityLevel.SYSTEM
+        return None
+
 
 class HostInfo(BaseModel):
     name: str
