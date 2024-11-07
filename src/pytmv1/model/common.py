@@ -135,11 +135,11 @@ class Endpoint(BaseConsumable):
     os_description: Optional[str] = None
     product_code: Optional[ProductCode] = None
     installed_product_codes: List[ProductCode] = Field(default=[])
-    componentUpdatePolicy: Optional[str] = None
-    componentUpdateStatus: Optional[str] = None
-    componentVersion: Optional[str] = None
-    policyName: Optional[str] = None
-    protectionManager: Optional[str] = None
+    component_update_policy: Optional[str] = None
+    component_update_status: Optional[str] = None
+    component_version: Optional[str] = None
+    policy_name: Optional[str] = None
+    protection_manager: Optional[str] = None
 
     @field_validator("os_name", "product_code", mode="before")
     @classmethod
