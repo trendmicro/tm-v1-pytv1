@@ -150,7 +150,7 @@ class Endpoint(BaseConsumable):
 
 
 class EmailActivity(BaseConsumable):
-    event_source_type: Optional[str] = None
+    event_source_type: Optional[int] = None
     mail_msg_subject: Optional[str] = None
     mail_msg_id: Optional[str] = None
     msg_uuid: str
