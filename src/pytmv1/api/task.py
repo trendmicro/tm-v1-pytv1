@@ -1,8 +1,10 @@
 from typing import Type
 
 from ..core import Core
-from ..model.response import BaseTaskResp, T
+from ..model.response import BaseTaskResp, T, GetTaskListResp
 from ..result import Result
+
+from ..model.enum import Api
 
 
 class Task:
@@ -32,6 +34,16 @@ class Task:
         return self.get_result_class(
             task_id, BaseTaskResp, poll, poll_time_sec
         )
+
+
+    def list_result(
+        self
+    ) -> Result[GetTaskListResp]:
+        """
+         Retrieves  response task list
+        """
+        return self._core.send(GetTaskListResp, Api.TASK_RESULT)
+
 
     def get_result_class(
         self,

@@ -35,6 +35,8 @@ class Api(str, Enum):
     ADD_TO_BLOCK_LIST = "/response/suspiciousObjects"
     REMOVE_FROM_BLOCK_LIST = "/response/suspiciousObjects/delete"
     GET_TASK_RESULT = "/response/tasks/{0}"
+    TASK_RESULT = "/response/tasks"
+    GET_DAILY_RESERVE = "/sandbox/submissionUsage"
     GET_SANDBOX_ANALYSIS_RESULT = "/sandbox/analysisResults/{0}"
     DOWNLOAD_SANDBOX_INVESTIGATION_PACKAGE = (
         "/sandbox/analysisResults/{0}/investigationPackage"
