@@ -1,7 +1,12 @@
 from typing import Type, Callable, List, Optional
 
 from ..core import Core
-from ..model.response import BaseTaskResp, T, GetTaskListResp, ConsumeLinkableResp
+from ..model.response import (
+    BaseTaskResp,
+    T,
+    GetTaskListResp,
+    ConsumeLinkableResp,
+)
 from ..result import Result
 from .. import utils
 from ..model.enum import Api, QueryOp
@@ -35,7 +40,6 @@ class Task:
             task_id, BaseTaskResp, poll, poll_time_sec
         )
 
-
     def list_result(
         self,
         start_date_time: Optional[str] = None,
@@ -44,25 +48,23 @@ class Task:
         top: int = 50,
         op: QueryOp = QueryOp.AND,
         **fields: str,
-
     ) -> Result[GetTaskListResp]:
         """
-         Retrieves  response task list
+        Retrieves  response task list
         """
         return self._core.send(
-             GetTaskListResp, 
-             Api.TASK_RESULT, 
-             params=utils.filter_none(
+            GetTaskListResp,
+            Api.TASK_RESULT,
+            params=utils.filter_none(
                 {
-                    "startDateTime": start_date_time, 
+                    "startDateTime": start_date_time,
                     "endDateTime": end_date_time,
                     "dateTimeTarget": date_time_target,
                     "top": top,
                 }
-             ),
-             headers=utils.tmv1_filter(op, fields),
+            ),
+            headers=utils.tmv1_filter(op, fields),
         )
-
 
     def consume(
         self,
@@ -107,7 +109,7 @@ class Task:
             consumer,
             params=utils.filter_none(
                 {
-                    "startDateTime": start_date_time, 
+                    "startDateTime": start_date_time,
                     "endDateTime": end_date_time,
                     "dateTimeTarget": date_time_target,
                     "top": top,
@@ -115,10 +117,6 @@ class Task:
             ),
             headers=utils.tmv1_filter(op, fields),
         )
-
-
-
-
 
     def get_result_class(
         self,

@@ -77,8 +77,7 @@ class BaseTaskResp(BaseStatusResponse):
     error: Optional[TaskError] = None
 
 
-class GetTaskListResp(BaseLinkableResp[BaseTaskResp]):
-    ...
+class GetTaskListResp(BaseLinkableResp[BaseTaskResp]): ...
 
 
 MR = TypeVar("MR", bound=BaseMultiResponse[Any])
@@ -243,11 +242,12 @@ class MultiUrlResp(BaseMultiResponse[MsDataUrl]): ...
 class MultiApiKeyResp(BaseMultiResponse[MsDataApiKey]): ...
 
 
-class SubmissionCountResp(BaseResponse): 
+class SubmissionCountResp(BaseResponse):
     fileCount: int
     fileExemptionCount: int
     urlCount: int
     urlExemptionCount: int
+
 
 class SubmissionUsageResp(BaseResponse):
     submissionReserveCount: int

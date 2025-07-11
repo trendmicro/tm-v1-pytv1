@@ -10,7 +10,7 @@ from ..model.response import (
     SandboxAnalysisResultResp,
     SandboxSubmissionStatusResp,
     SubmitFileToSandboxResp,
-    SubmissionUsageResp
+    SubmissionUsageResp,
 )
 from ..result import MultiResult, Result
 
@@ -188,24 +188,9 @@ class Sandbox:
             poll_time_sec,
         )
 
-    def get_daily_reserve(
-        self 
-    ) -> Result[SubmissionUsageResp]:
-        """Retrieves the maximum number of samples your company can submit 
-        to the sandbox per day. Note: Samples marked as "Not analyzed" do 
+    def get_daily_reserve(self) -> Result[SubmissionUsageResp]:
+        """Retrieves the maximum number of samples your company can submit
+        to the sandbox per day. Note: Samples marked as "Not analyzed" do
         not count towards the daily reserve
         """
-        return self._core.send(
-            SubmissionUsageResp,
-            Api.GET_DAILY_RESERVE
-        )
-        
-
-
-
-
-
-
-
-
-
+        return self._core.send(SubmissionUsageResp, Api.GET_DAILY_RESERVE)
