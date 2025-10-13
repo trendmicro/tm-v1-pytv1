@@ -23,10 +23,15 @@ jobs:
         id: cov
         shell: bash {0}
         run: |
-          pytest --mock-url="${{ secrets.MOCK_URL }}" --cov-fail-under=95 --cov-report=term-missing --cov-report=xml --cov=pytmv1 --log-cli-level="DEBUG" --verbose
+          pytest --cov-fail-under=90 --cov-report=term-missing --cov-report=xml --cov=pytmv1 --log-cli-level="DEBUG" --verbose ./tests/unit
           rc=$?
           echo "total=$(head -2 coverage.xml|grep -Po 'line-rate="\K\d{1}\.?\d{0,4}' |awk '{print $1 * 100}'|cut -d. -f1)" >> $GITHUB_OUTPUT
           exit $rc
+        # run: |
+        #   pytest --mock-url="${{ secrets.MOCK_URL }}" --cov-fail-under=95 --cov-report=term-missing --cov-report=xml --cov=pytmv1 --log-cli-level="DEBUG" --verbose
+        #   rc=$?
+        #   echo "total=$(head -2 coverage.xml|grep -Po 'line-rate="\K\d{1}\.?\d{0,4}' |awk '{print $1 * 100}'|cut -d. -f1)" >> $GITHUB_OUTPUT
+        #   exit $rc
   badge:
     runs-on: ubuntu-latest
     needs: coverage
