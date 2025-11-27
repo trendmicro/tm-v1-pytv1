@@ -104,7 +104,6 @@ jobs:
           # 选项1: 如果想用真实构建（从已有tag）
           pip install --upgrade hatch
           git checkout v${VERSION}
-          hatch version ${VERSION}
           hatch build
           
           # 选项2: 或者用mock文件测试
@@ -212,4 +211,5 @@ jobs:
         uses: actions/attest-build-provenance@v1
         with:
           subject-path: 'dist/*'
+
 
