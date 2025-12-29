@@ -7,9 +7,20 @@ on:
         description: "Release version"
         required: true
         type: string
+      test_release_only:
+        description: "只测试GitHub Release (不执行release流程)"
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  id-token: write
 
 jobs:
   release:
+    # 测试模式下跳过这个job
+    if: ${{ github.event.inputs.test_release_only == 'false' }}
     runs-on: ubuntu-latest
     env:
         VERSION: ${{ github.event.inputs.version }}
@@ -42,14 +53,163 @@ jobs:
           git checkout main
           git merge --no-ff ${{ env.BRANCH }}
           git tag -a v${{ env.VERSION }} -m "Release ${{ env.VERSION }}"
-          # Try to merge back release branch
           git checkout ${{ env.BRANCH }}
           git merge --ff-only main
           git checkout develop
           git merge --no-ff ${{ env.BRANCH }}
           git push --atomic origin main develop refs/tags/v${{ env.VERSION }} :${{ env.BRANCH }}
+      
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+          retention-days: 5
+      
       - name: Publish package to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           password: ${{ secrets.PYPI_TOKEN }}
           verbose: true
+
+  # 测试模式：创建mock构建产物
+  mock-build:
+    if: ${{ github.event.inputs.test_release_only == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.8"
+
+      - name: Build or mock artifacts
+        run: |
+          VERSION="${{ github.event.inputs.version }}"
+          
+          # 检查tag是否存在
+          if ! git tag | grep -q "^v${VERSION}$"; then
+            echo "❌ Tag v${VERSION} 不存在，无法测试"
+            echo "可用的tags:"
+            git tag | tail -5
+            exit 1
+          fi
+          
+          echo "✅ 使用已存在的tag: v${VERSION}"
+          
+          # 选项1: 如果想用真实构建（从已有tag）
+          pip install --upgrade hatch
+          git checkout v${VERSION}
+          hatch build
+          
+          # 选项2: 或者用mock文件测试
+          # mkdir -p dist
+          # echo "test" > dist/package-${VERSION}.tar.gz
+          # echo "test" > dist/package-${VERSION}-py3-none-any.whl
+          
+          ls -lh dist/
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+  create-github-release:
+    name: Create GitHub Release
+    # 等待release或mock-build完成
+    needs: [release, mock-build]
+    if: always() && (needs.release.result == 'success' || needs.mock-build.result == 'success')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+      - name: Generate release notes
+        run: |
+          VERSION="${{ github.event.inputs.version }}"
+          PREV_TAG=$(git describe --tags --abbrev=0 v${VERSION}^ 2>/dev/null || echo "")
+          
+          # 测试模式标记
+          if [ "${{ github.event.inputs.test_release_only }}" = "true" ]; then
+            echo "🧪 **TEST MODE**" > release_notes.md
+            echo "" >> release_notes.md
+          fi
+          
+          echo "## 📦 Installation" >> release_notes.md
+          echo "" >> release_notes.md
+          echo '```bash' >> release_notes.md
+          echo "pip install YOUR_PACKAGE_NAME==${VERSION}" >> release_notes.md
+          echo '```' >> release_notes.md
+          echo "" >> release_notes.md
+          
+          if [ -n "$PREV_TAG" ]; then
+            echo "## 📝 Changes since ${PREV_TAG}" >> release_notes.md
+            echo "" >> release_notes.md
+            git log ${PREV_TAG}..v${VERSION} --pretty=format:"- %s (%h)" >> release_notes.md
+            echo "" >> release_notes.md
+          fi
+          
+          echo "" >> release_notes.md
+          echo "## 🔐 Verification" >> release_notes.md
+          echo "" >> release_notes.md
+          echo '```bash' >> release_notes.md
+          echo "gh attestation verify <file> --owner=YOUR_ORG --repo=YOUR_REPO" >> release_notes.md
+          echo '```' >> release_notes.md
+          
+          cat release_notes.md
+
+      - name: Create GitHub Release (using gh CLI)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          VERSION="${{ github.event.inputs.version }}"
+          IS_TEST="${{ github.event.inputs.test_release_only }}"
+        
+          # 构建 gh release create 命令
+          CMD="gh release create v${VERSION}"
+          CMD="$CMD --title 'Release ${VERSION}'"
+          CMD="$CMD --notes-file release_notes.md"
+        
+          # 添加所有构建产物
+          for file in dist/*; do
+            CMD="$CMD $file"
+          done
+        
+          # 测试模式：创建draft
+          if [ "$IS_TEST" = "true" ]; then
+            CMD="$CMD --draft"
+            echo "🧪 Creating DRAFT release..."
+          else
+            echo "✅ Creating PUBLISHED release..."
+          fi
+        
+          # 执行命令
+          echo "Running: $CMD"
+          eval $CMD
+        
+          echo ""
+          echo "✅ Release created: https://github.com/${{ github.repository }}/releases/tag/v${VERSION}"
+
+      - name: Generate build attestations
+        if: ${{ github.event.inputs.test_release_only == 'false' }}
+        uses: actions/attest-build-provenance@v1
+        with:
+          subject-path: 'dist/*'
+
+
