@@ -104,7 +104,6 @@ jobs:
           # 选项1: 如果想用真实构建（从已有tag）
           pip install --upgrade hatch
           git checkout v${VERSION}
-          hatch version ${VERSION}
           hatch build
           
           # 选项2: 或者用mock文件测试
@@ -175,21 +174,42 @@ jobs:
           
           cat release_notes.md
 
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: v${{ github.event.inputs.version }}
-          name: Release ${{ github.event.inputs.version }}
-          body_path: release_notes.md
-          files: dist/*
-          # 测试模式创建draft
-          draft: ${{ github.event.inputs.test_release_only }}
-          prerelease: false
-          make_latest: ${{ github.event.inputs.test_release_only == 'false' }}
+      - name: Create GitHub Release (using gh CLI)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          VERSION="${{ github.event.inputs.version }}"
+          IS_TEST="${{ github.event.inputs.test_release_only }}"
+        
+          # 构建 gh release create 命令
+          CMD="gh release create v${VERSION}"
+          CMD="$CMD --title 'Release ${VERSION}'"
+          CMD="$CMD --notes-file release_notes.md"
+        
+          # 添加所有构建产物
+          for file in dist/*; do
+            CMD="$CMD $file"
+          done
+        
+          # 测试模式：创建draft
+          if [ "$IS_TEST" = "true" ]; then
+            CMD="$CMD --draft"
+            echo "🧪 Creating DRAFT release..."
+          else
+            echo "✅ Creating PUBLISHED release..."
+          fi
+        
+          # 执行命令
+          echo "Running: $CMD"
+          eval $CMD
+        
+          echo ""
+          echo "✅ Release created: https://github.com/${{ github.repository }}/releases/tag/v${VERSION}"
 
-      - name: Generate attestations
-        # 只在正式发布时生成
+      - name: Generate build attestations
         if: ${{ github.event.inputs.test_release_only == 'false' }}
         uses: actions/attest-build-provenance@v1
         with:
           subject-path: 'dist/*'
+
+
