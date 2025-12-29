@@ -121,6 +121,7 @@ class Alert:
         consumer: Callable[[Union[SaeAlert, TiAlert]], None],
         start_time: Optional[str] = None,
         end_time: Optional[str] = None,
+        date_time_target: Optional[str] = "createdDateTime",
         op: QueryOp = QueryOp.AND,
         **fields: str,
     ) -> Result[ConsumeLinkableResp]:
@@ -151,6 +152,7 @@ class Alert:
                 {
                     "startDateTime": start_time,
                     "endDateTime": end_time,
+                    "dateTimeTarget": date_time_target,
                     "orderBy": "createdDateTime desc",
                 }
             ),
