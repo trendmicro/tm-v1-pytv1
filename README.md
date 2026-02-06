@@ -1,4 +1,4 @@
-## PyTMV1: Python Library for Trend Vision One
+## PyTMV1: Python Library for TrendAI Vision One™
 [![Build](https://github.com/trendmicro/tm-v1-pytv1/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/trendmicro/tm-v1-pytv1/actions/workflows/build.yml)
 [![Lint](https://github.com/trendmicro/tm-v1-pytv1/actions/workflows/lint.yml/badge.svg?branch=main)](https://github.com/trendmicro/tm-v1-pytv1/actions/workflows/lint.yml)
 [![Test](https://github.com/trendmicro/tm-v1-pytv1/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/trendmicro/tm-v1-pytv1/actions/workflows/test.yml)
@@ -19,7 +19,7 @@ Using this project requires at least [Python 3.8](https://www.python.org/downloa
 
 - A thread-safe client for your application.
 - HTTP pooling capabilities.
-- Easy integration with Trend Vision One APIs.
+- Easy integration with TrendAI Vision One APIs.
 
 
 #### Configuration
@@ -170,12 +170,13 @@ Supported APIs
 
 Contributing
 ------------
-Read our [contributing guide](https://github.com/trendmicro/tm-v1/blob/main/CONTRIBUTING.md) to learn about our development process, how to propose bug fixes and improvements, and how to build and test your changes to Trend Vision One.
+Read our [contributing guide](https://github.com/trendmicro/tm-v1/blob/main/CONTRIBUTING.md) to learn about our development process, how to propose bug fixes and improvements, and how to build and test your changes to TrendAI Vision One.
 
 Code of conduct
 ---------------
-Trend Micro has adopted a [Code of Conduct](https://github.com/trendmicro/tm-v1/blob/main/CODE_OF_CONDUCT.md) that we expect project participants to adhere to. Please read the [full text](https://github.com/trendmicro/tm-v1/blob/main/CODE_OF_CONDUCT.md) to understand what actions will and will not be tolerated.
+TrendAI™ has adopted a [Code of Conduct](https://github.com/trendmicro/tm-v1/blob/main/CODE_OF_CONDUCT.md) that we expect project participants to adhere to. Please read the [full text](https://github.com/trendmicro/tm-v1/blob/main/CODE_OF_CONDUCT.md) to understand what actions will and will not be tolerated.
 
 License
 -------
 Project distributed under the [Apache 2.0](https://spdx.org/licenses/Apache-2.0.html) license.
+
