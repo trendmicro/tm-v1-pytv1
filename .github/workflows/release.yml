@@ -16,6 +16,7 @@ on:
 permissions:
   contents: write
   id-token: write
+  attestations: write
 
 jobs:
   release:
@@ -211,5 +212,6 @@ jobs:
         uses: actions/attest-build-provenance@v1
         with:
           subject-path: 'dist/*'
+
 
 
