@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "pytmv1"
-description = "Python library for Trend Micro Vision One"
+description = "Python library for Trend Micro Vision One™"
 license = "Apache-2.0"
 readme = "README.md"
 dynamic = ["version"]
@@ -73,4 +73,5 @@ pretty = true
 strict = true
 
 [tool.pytest.ini_options]
+
 addopts = "--show-capture=log -s"
