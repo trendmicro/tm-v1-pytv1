@@ -32,10 +32,10 @@ jobs:
           ref: releases/${{ github.event.inputs.version }}
           ssh-key: ${{ secrets.USER_SSH_KEY }}
           fetch-depth: 0
-      - name: Set up Python 3.8
+      - name: Set up Python 3.9
         uses: actions/setup-python@v4
         with:
-          python-version: "3.8"
+          python-version: "3.9"
       - name: Set up Git
         run: |
           echo "${{ secrets.USER_GPG_KEY }}" | gpg --import
@@ -85,7 +85,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.8"
+          python-version: "3.9"
 
       - name: Build or mock artifacts
         run: |
