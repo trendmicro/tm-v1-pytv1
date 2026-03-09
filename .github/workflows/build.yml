@@ -16,6 +16,6 @@ jobs:
         with:
           python-version: "3.9"
       - name: Install hatch
-        run: pip install --upgrade hatch
+        run: pip install --no-cache-dir hatch==1.14.0
       - name: Run hatch build
         run: hatch --verbose build
