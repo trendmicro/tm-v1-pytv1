@@ -45,7 +45,7 @@ jobs:
           git config commit.gpgsign true
       - name: Run build
         run: |
-          pip install --no-cache-dir hatch==1.14.0
+          pip install --no-cache-dir hatch==1.14.0 "virtualenv<21"
           hatch version ${{ env.VERSION }}
           hatch --verbose build
       - name: Merge release branch
@@ -98,7 +98,7 @@ jobs:
             exit 1
           fi
 
-          pip install --no-cache-dir hatch==1.14.0
+          pip install --no-cache-dir hatch==1.14.0 "virtualenv<21"
           git checkout v${VERSION}
           hatch build
 
