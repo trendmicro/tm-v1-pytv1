@@ -45,8 +45,10 @@ def _build_query(
 ) -> Dict[str, str]:
     return filter_none(
         {
-            header: (" " + op + " ").join(
-                [f"{k} eq '{v}'" for k, v in fields.items()]
+            header: (
+                (" " + op + " ").join(
+                    [f"{k} eq '{v}'" for k, v in fields.items()]
+                )
             )
         }
     )
@@ -57,8 +59,10 @@ def _build_activity_query(
 ) -> Dict[str, str]:
     return filter_none(
         {
-            "TMV1-Query": (" " + op + " ").join(
-                [f'{k}:"{v}"' for k, v in fields.items()]
+            "TMV1-Query": (
+                (" " + op + " ").join(
+                    [f'{k}:"{v}"' for k, v in fields.items()]
+                )
             )
         }
     )

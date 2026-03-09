@@ -61,9 +61,7 @@ class Alert:
                 }
             ),
             headers={
-                "If-Match": (
-                    etag if etag.startswith('"') else '"' + etag + '"'
-                )
+                "If-Match": etag if etag.startswith('"') else '"' + etag + '"'
             },
         )
 
