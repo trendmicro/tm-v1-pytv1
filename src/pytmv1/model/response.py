@@ -15,6 +15,7 @@ from .common import (
     EmailMessage,
     Endpoint,
     EndpointActivity,
+    EndpointSecurityEndpoint,
     ExceptionObject,
     MsData,
     MsDataApiKey,
@@ -205,6 +206,11 @@ class GetEmailActivitiesCountResp(BaseResponse):
 
 
 class ListEndpointDataResp(BaseLinkableResp[Endpoint]): ...
+
+
+class ListEndpointSecurityResp(BaseLinkableResp[EndpointSecurityEndpoint]):
+    total_count: int
+    count: int
 
 
 class ListExceptionsResp(BaseLinkableResp[ExceptionObject]): ...

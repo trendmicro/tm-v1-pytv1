@@ -15,6 +15,7 @@ class Api(str, Enum):
     UPDATE_API_KEY = "/iam/apiKeys/{0}"
     DELETE_API_KEYS = "/iam/apiKeys/delete"
     GET_ENDPOINT_DATA = "/eiqs/endpoints"
+    GET_ENDPOINT_SECURITY_ENDPOINTS = "/endpointSecurity/endpoints"
     GET_CUSTOM_SCRIPTS = "/response/customScripts"
     ADD_CUSTOM_SCRIPT = "/response/customScripts"
     DELETE_CUSTOM_SCRIPT = "/response/customScripts/{0}"

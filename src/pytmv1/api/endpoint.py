@@ -3,7 +3,7 @@ from typing import Callable, List, Optional
 from .. import utils
 from ..core import Core
 from ..model.common import Endpoint as Ept
-from ..model.common import EndpointActivity
+from ..model.common import EndpointActivity, EndpointSecurityEndpoint
 from ..model.enum import Api, QueryOp, SearchMode
 from ..model.request import (
     CollectFileRequest,
@@ -15,6 +15,7 @@ from ..model.response import (
     GetEndpointActivitiesCountResp,
     ListEndpointActivityResp,
     ListEndpointDataResp,
+    ListEndpointSecurityResp,
     MultiResp,
 )
 from ..result import MultiResult, Result
@@ -250,4 +251,86 @@ class Endpoint:
                 SearchMode.DEFAULT,
             ),
             headers=utils.tmv1_activity_query(op, fields),
+        )
+
+    def list_security(
+        self,
+        select: Optional[List[str]] = None,
+        top: int = 100,
+        order_by: Optional[str] = None,
+        op: QueryOp = QueryOp.AND,
+        **fields: str,
+    ) -> Result[ListEndpointSecurityResp]:
+        """Displays a detailed list of your endpoints.
+
+        :param select: List of endpoint information fields to include
+        in the response; if no fields are specified, all fields are returned.
+        :type select: Optional[List[str]]
+        :param top: Number of records displayed on a page.
+        :type top: int
+        :param order_by: Field by which the results are sorted
+        (e.g. "agentGuid desc").
+        :type order_by: Optional[str]
+        :param op: Query operator to apply.
+        :type op: QueryOp
+        :param fields: Field/value used to filter result
+        (i.e: osPlatform="windows"),
+        check Vision One API documentation for full list of supported fields.
+        :type fields: Dict[str, str]
+        :rtype: Result[ListEndpointSecurityResp]
+        """
+        return self._core.send(
+            ListEndpointSecurityResp,
+            Api.GET_ENDPOINT_SECURITY_ENDPOINTS,
+            params=utils.filter_none(
+                {
+                    "select": ",".join(select) if select else None,
+                    "top": top,
+                    "orderBy": order_by,
+                }
+            ),
+            headers=utils.tmv1_filter(op, fields),
+        )
+
+    def consume_security(
+        self,
+        consumer: Callable[[EndpointSecurityEndpoint], None],
+        select: Optional[List[str]] = None,
+        top: int = 100,
+        order_by: Optional[str] = None,
+        op: QueryOp = QueryOp.AND,
+        **fields: str,
+    ) -> Result[ConsumeLinkableResp]:
+        """Retrieves and consume endpoint security endpoints.
+
+        :param consumer: Function which will consume every record in result.
+        :type consumer: Callable[[EndpointSecurityEndpoint], None]
+        :param select: List of endpoint information fields to include
+        in the response; if no fields are specified, all fields are returned.
+        :type select: Optional[List[str]]
+        :param top: Number of records displayed on a page.
+        :type top: int
+        :param order_by: Field by which the results are sorted
+        (e.g. "agentGuid desc").
+        :type order_by: Optional[str]
+        :param op: Query operator to apply.
+        :type op: QueryOp
+        :param fields: Field/value used to filter result
+        (i.e: osPlatform="windows"),
+        check Vision One API documentation for full list of supported fields.
+        :type fields: Dict[str, str]
+        :rtype: Result[ConsumeLinkableResp]
+        """
+        return self._core.send_linkable(
+            ListEndpointSecurityResp,
+            Api.GET_ENDPOINT_SECURITY_ENDPOINTS,
+            consumer,
+            params=utils.filter_none(
+                {
+                    "select": ",".join(select) if select else None,
+                    "top": top,
+                    "orderBy": order_by,
+                }
+            ),
+            headers=utils.tmv1_filter(op, fields),
         )

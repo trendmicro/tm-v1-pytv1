@@ -8,8 +8,10 @@ from pytmv1 import (
     AddAlertNoteResp,
     BytesResp,
     CollectFileTaskResp,
+    EndpointSecurityEndpoint,
     Error,
     ExceptionObject,
+    ListEndpointSecurityResp,
     ListExceptionsResp,
     ListSandboxSuspiciousResp,
     MsError,
@@ -504,3 +506,127 @@ def test_validate_multi_with_single_data_is_failed():
     ]
     with pytest.raises(ServerMultiJsonError, match="400"):
         core_m._validate(raw_response)
+
+
+def test_parse_data_with_endpoint_security():
+    raw_response = Response()
+    raw_response.headers = {"Content-Type": "application/json"}
+    raw_response.status_code = 200
+    raw_response.json = lambda: {
+        "items": [
+            {
+                "endpointName": "test-host",
+                "agentGuid": "abc-123",
+                "type": "desktop",
+                "osPlatform": "windows",
+                "osName": "Windows 11",
+                "ipAddresses": ["192.168.1.1"],
+                "isolationStatus": "off",
+                "eppAgent": {
+                    "status": "on",
+                    "protectionManager": "A1-US",
+                    "version": "1.2.3.4",
+                    "componentVersion": "latestVersion",
+                },
+                "edrSensor": {
+                    "connectivity": "connected",
+                    "status": "enabled",
+                    "version": "1.0.0",
+                },
+            }
+        ],
+        "count": 1,
+        "totalCount": 1,
+    }
+    response = core_m._parse_data(raw_response, ListEndpointSecurityResp)
+    assert response.count == 1
+    assert response.total_count == 1
+    assert len(response.items) == 1
+    assert response.items[0].endpoint_name == "test-host"
+    assert response.items[0].agent_guid == "abc-123"
+    assert response.items[0].type == "desktop"
+    assert response.items[0].os_platform == "windows"
+    assert response.items[0].ip_addresses == ["192.168.1.1"]
+    assert response.items[0].epp_agent.status == "on"
+    assert response.items[0].epp_agent.protection_manager == "A1-US"
+    assert response.items[0].epp_agent.component_version == "latestVersion"
+    assert response.items[0].edr_sensor.connectivity == "connected"
+    assert response.items[0].edr_sensor.status == "enabled"
+
+
+def test_send_endpoint_security_list(core, mocker):
+    mock_process = mocker.patch.object(
+        core,
+        "_process",
+        return_value=ListEndpointSecurityResp(
+            items=[
+                EndpointSecurityEndpoint.model_construct(
+                    endpointName="host1",
+                    agentGuid="guid-1",
+                )
+            ],
+            count=1,
+            totalCount=1,
+        ),
+    )
+    result = core.send(
+        ListEndpointSecurityResp,
+        Api.GET_ENDPOINT_SECURITY_ENDPOINTS,
+    )
+    mock_process.assert_called()
+    assert result.result_code == ResultCode.SUCCESS
+    assert result.response.count == 1
+    assert len(result.response.items) == 1
+
+
+def test_send_linkable_endpoint_security(mocker, core):
+    mock_process = mocker.patch.object(
+        core,
+        "_process",
+        return_value=ListEndpointSecurityResp(
+            items=[EndpointSecurityEndpoint.model_construct()],
+            count=1,
+            totalCount=1,
+        ),
+    )
+    result = core.send_linkable(
+        ListEndpointSecurityResp,
+        Api.GET_ENDPOINT_SECURITY_ENDPOINTS,
+        lambda x: None,
+    )
+    mock_process.assert_called()
+    assert result.result_code == ResultCode.SUCCESS
+    assert result.response.total_consumed == 1
+
+
+def test_consume_linkable_endpoint_security_with_next_link(mocker, core):
+    mock_process = mocker.patch.object(
+        core,
+        "_process",
+        side_effect=[
+            ListEndpointSecurityResp(
+                nextLink="https://host/api/path?skipToken=token",
+                items=[
+                    EndpointSecurityEndpoint.model_construct(),
+                    EndpointSecurityEndpoint.model_construct(),
+                ],
+                count=2,
+                totalCount=3,
+            ),
+            ListEndpointSecurityResp(
+                items=[EndpointSecurityEndpoint.model_construct()],
+                count=1,
+                totalCount=3,
+            ),
+        ],
+    )
+    total = core._consume_linkable(
+        lambda: core._process(
+            ListEndpointSecurityResp,
+            Api.GET_ENDPOINT_SECURITY_ENDPOINTS,
+        ),
+        lambda x: None,
+        {},
+    )
+    assert mock_process.call_count == 2
+    assert total == 3

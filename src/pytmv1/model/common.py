@@ -149,6 +149,82 @@ class Endpoint(BaseConsumable):
         return value
 
 
+class EppAgentVirtualMachineDetails(BaseModel):
+    cloud_instance_id: Optional[str] = None
+    cloud_provider: Optional[str] = None
+    cloud_account_id: Optional[str] = None
+    power_state: Optional[str] = None
+
+
+class EppAgentPattern(BaseModel):
+    id: str
+    name: str
+
+
+class EppAgent(BaseModel):
+    endpoint_group: Optional[str] = None
+    protection_manager: Optional[str] = None
+    product_names: List[str] = Field(default=[])
+    policy_name: Optional[str] = None
+    status: Optional[str] = None
+    last_connected_date_time: Optional[str] = None
+    version: Optional[str] = None
+    last_scanned_date_time: Optional[str] = None
+    component_version: Optional[str] = None
+    component_update_policy: Optional[str] = None
+    component_update_status: Optional[str] = None
+    kernel_support_package_version: Optional[str] = None
+    installed_component_ids: List[str] = Field(default=[])
+    patterns: List[EppAgentPattern] = Field(default=[])
+    virtual_machine_details: Optional[EppAgentVirtualMachineDetails] = None
+
+
+class EdrSensorPattern(BaseModel):
+    id: str
+    name: str
+
+
+class EdrSensor(BaseModel):
+    endpoint_group: Optional[str] = None
+    product_names: List[str] = Field(default=[])
+    connectivity: Optional[str] = None
+    version: Optional[str] = None
+    last_connected_date_time: Optional[str] = None
+    status: Optional[str] = None
+    advanced_risk_telemetry_status: Optional[str] = None
+    component_update_policy: Optional[str] = None
+    component_update_status: Optional[str] = None
+    kernel_support_package_version: Optional[str] = None
+    patterns: List[EdrSensorPattern] = Field(default=[])
+
+
+class EndpointSecurityEndpoint(BaseConsumable):
+    endpoint_name: Optional[str] = None
+    agent_guid: Optional[str] = None
+    type: Optional[str] = None
+    display_name: Optional[str] = None
+    os_name: Optional[str] = None
+    os_platform: Optional[str] = None
+    os_version: Optional[str] = None
+    os_kernel_version: Optional[str] = None
+    os_architecture: Optional[str] = None
+    last_used_ip: Optional[str] = None
+    service_gateway_or_proxy: Optional[str] = None
+    cpu_architecture: Optional[str] = None
+    last_logged_on_user: Optional[str] = None
+    isolation_status: Optional[str] = None
+    ip_addresses: List[str] = Field(default=[])
+    serial_number: Optional[str] = None
+    version_control_policy: Optional[str] = None
+    agent_update_policy: Optional[str] = None
+    agent_update_status: Optional[str] = None
+    credit_allocated_licenses: List[str] = Field(default=[])
+    security_policy: Optional[str] = None
+    security_policy_overridden_status: Optional[str] = None
+    epp_agent: Optional[EppAgent] = None
+    edr_sensor: Optional[EdrSensor] = None
+
+
 class EmailActivity(BaseConsumable):
     event_source_type: Optional[int] = None
     mail_msg_subject: Optional[str] = None
