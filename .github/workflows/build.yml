@@ -16,6 +16,8 @@ jobs:
         with:
           python-version: "3.9"
       - name: Install hatch
-        run: pip install --no-cache-dir hatch==1.14.0 "virtualenv<21"
+        run: pip install --no-cache-dir "virtualenv<21" hatch==1.14.0
       - name: Run hatch build
-        run: hatch --verbose build
+        run: |
+          hatch env prune
+          hatch --verbose build
