@@ -225,6 +225,127 @@ class EndpointSecurityEndpoint(BaseConsumable):
     edr_sensor: Optional[EdrSensor] = None
 
 
+class EndpointOs(BaseModel):
+    name: Optional[str] = None
+    platform: Optional[str] = None
+    architecture: Optional[str] = None
+    version: Optional[str] = None
+    kernel_version: Optional[str] = None
+    linux_distribution: Optional[str] = None
+
+
+class EndpointInterface(BaseModel):
+    ip_addresses: List[str] = Field(default=[])
+    mac_address: Optional[str] = None
+
+
+class EndpointDetailPattern(BaseModel):
+    id: Optional[str] = None
+    name: Optional[str] = None
+    version: Optional[str] = None
+    updated_date_time: Optional[str] = None
+
+
+class EndpointDetailEngine(BaseModel):
+    id: Optional[str] = None
+    name: Optional[str] = None
+    version: Optional[str] = None
+    updated_date_time: Optional[str] = None
+
+
+class EppAgentSubFeature(BaseModel):
+    name: Optional[str] = None
+    status: Optional[str] = None
+
+
+class EppAgentFeature(BaseModel):
+    name: Optional[str] = None
+    status: Optional[str] = None
+    outdated_pattern_ids: List[str] = Field(default=[])
+    not_compliant_sub_features: List[EppAgentSubFeature] = Field(default=[])
+
+
+class EndpointDetailVmDetail(BaseModel):
+    key: Optional[str] = None
+    value: Optional[str] = None
+
+
+class EndpointDetailEppAgent(BaseModel):
+    endpoint_group: Optional[str] = None
+    protection_manager: Optional[str] = None
+    product_names: List[str] = Field(default=[])
+    policy_name: Optional[str] = None
+    status: Optional[str] = None
+    last_connected_date_time: Optional[str] = None
+    tags: List[str] = Field(default=[])
+    version: Optional[str] = None
+    last_scanned_date_time: Optional[str] = None
+    component_version: Optional[str] = None
+    component_update_policy: Optional[str] = None
+    component_update_status: Optional[str] = None
+    kernel_support_package_version: Optional[str] = None
+    installed_component_ids: List[str] = Field(default=[])
+    domain_hierarchy: Optional[str] = None
+    virtual_machine_details: List[EndpointDetailVmDetail] = Field(default=[])
+    dsa_component_update_status: Optional[str] = None
+    dsa_agent_update_status: Optional[str] = None
+    dsa_component_updated_date_time: Optional[str] = None
+    gcp_network_tags: List[str] = Field(default=[])
+    docker_engine_version: Optional[str] = None
+    patterns: List[EndpointDetailPattern] = Field(default=[])
+    engines: List[EndpointDetailEngine] = Field(default=[])
+    features: List[EppAgentFeature] = Field(default=[])
+
+
+class DeepfakeDetector(BaseModel):
+    status: Optional[str] = None
+
+
+class EdrSettings(BaseModel):
+    monitoring_level: Optional[str] = None
+    deepfake_detector: Optional[DeepfakeDetector] = None
+
+
+class EndpointDetailEdrSensor(BaseModel):
+    endpoint_group: Optional[str] = None
+    product_names: List[str] = Field(default=[])
+    connectivity: Optional[str] = None
+    last_connected_date_time: Optional[str] = None
+    version: Optional[str] = None
+    status: Optional[str] = None
+    edr_settings: Optional[EdrSettings] = None
+    advanced_risk_telemetry_status: Optional[str] = None
+    component_update_policy: Optional[str] = None
+    component_update_status: Optional[str] = None
+    kernel_support_package_version: Optional[str] = None
+    patterns: List[EndpointDetailPattern] = Field(default=[])
+
+
+class EndpointDetail(BaseModel):
+    endpoint_name: Optional[str] = None
+    agent_guid: Optional[str] = None
+    display_name: Optional[str] = None
+    description: Optional[str] = None
+    type: Optional[str] = None
+    os: Optional[EndpointOs] = None
+    last_used_ip: Optional[str] = None
+    service_gateway_or_proxy: Optional[str] = None
+    cpu_architecture: Optional[str] = None
+    last_logged_on_user: Optional[str] = None
+    isolation_status: Optional[str] = None
+    recommended_actions: List[str] = Field(default=[])
+    interfaces: List[EndpointInterface] = Field(default=[])
+    serial_number: Optional[str] = None
+    version_control_policy: Optional[str] = None
+    agent_update_policy: Optional[str] = None
+    agent_update_status: Optional[str] = None
+    credit_allocated_licenses: List[str] = Field(default=[])
+    security_policy: Optional[str] = None
+    security_policy_overridden_status: Optional[str] = None
+    epp_agent: Optional[EndpointDetailEppAgent] = None
+    edr_sensor: Optional[EndpointDetailEdrSensor] = None
+
+
 class EmailActivity(BaseConsumable):
     event_source_type: Optional[int] = None
     mail_msg_subject: Optional[str] = None

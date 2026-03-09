@@ -8,9 +8,11 @@ from pytmv1 import (
     AddAlertNoteResp,
     BytesResp,
     CollectFileTaskResp,
+    EndpointDetail,
     EndpointSecurityEndpoint,
     Error,
     ExceptionObject,
+    GetEndpointDetailsResp,
     ListEndpointSecurityResp,
     ListExceptionsResp,
     ListSandboxSuspiciousResp,
@@ -571,7 +573,7 @@ def test_send_endpoint_security_list(core, mocker):
     )
     result = core.send(
         ListEndpointSecurityResp,
-        Api.GET_ENDPOINT_SECURITY_ENDPOINTS,
+        Api.GET_ENDPOINT_LIST,
     )
     mock_process.assert_called()
     assert result.result_code == ResultCode.SUCCESS
@@ -591,7 +593,7 @@ def test_send_linkable_endpoint_security(mocker, core):
     )
     result = core.send_linkable(
         ListEndpointSecurityResp,
-        Api.GET_ENDPOINT_SECURITY_ENDPOINTS,
+        Api.GET_ENDPOINT_LIST,
         lambda x: None,
     )
     mock_process.assert_called()
@@ -623,10 +625,142 @@ def test_consume_linkable_endpoint_security_with_next_link(mocker, core):
     total = core._consume_linkable(
         lambda: core._process(
             ListEndpointSecurityResp,
-            Api.GET_ENDPOINT_SECURITY_ENDPOINTS,
+            Api.GET_ENDPOINT_LIST,
         ),
         lambda x: None,
         {},
     )
     assert mock_process.call_count == 2
     assert total == 3
+
+
+def test_parse_data_with_endpoint_details():
+    raw_response = Response()
+    raw_response.headers = {"Content-Type": "application/json"}
+    raw_response.status_code = 200
+    raw_response.json = lambda: {
+        "endpointName": "example-hostname",
+        "agentGuid": "94222d63-90da-a1eb-a051-a85d6b61f5fe",
+        "displayName": "example-display-name",
+        "description": "example-description",
+        "type": "desktop",
+        "os": {
+            "name": "Windows 11",
+            "platform": "windows",
+            "architecture": "x86_64",
+            "version": "10.0.22621",
+            "kernelVersion": "10.0.22621",
+        },
+        "lastUsedIp": "192.168.1.100",
+        "serviceGatewayOrProxy": "Direct connection",
+        "isolationStatus": "off",
+        "interfaces": [
+            {
+                "ipAddresses": ["192.168.0.1", "10.1.1.253"],
+                "macAddress": "ff:ff:00:00:00:ff",
+            }
+        ],
+        "eppAgent": {
+            "endpointGroup": "Computers",
+            "protectionManager": "A1-US",
+            "productNames": ["Apex One"],
+            "status": "on",
+            "version": "1.2.3.4",
+            "installedComponentIds": ["1208221992"],
+            "domainHierarchy": "/example/example-sub-domain",
+            "virtualMachineDetails": [
+                {"key": "example key", "value": "example value"}
+            ],
+            "patterns": [
+                {
+                    "id": "512",
+                    "name": "Common Firewall Pattern",
+                    "version": "2.219.00",
+                    "updatedDateTime": "2023-02-06T10:00:00Z",
+                }
+            ],
+            "engines": [
+                {
+                    "id": "1207960102",
+                    "name": "Advanced Threat Scan Engine",
+                    "version": "23.600.10",
+                    "updatedDateTime": "2023-02-06T10:00:00Z",
+                }
+            ],
+            "features": [
+                {
+                    "name": "AntiMalwareScans",
+                    "status": "enabled",
+                    "outdatedPatternIds": ["1208221762"],
+                    "notCompliantSubFeatures": [],
+                }
+            ],
+        },
+        "edrSensor": {
+            "endpointGroup": "Example XES Group Name",
+            "productNames": ["XDR Endpoint Sensor"],
+            "connectivity": "connected",
+            "version": "1.0.0",
+            "status": "enabled",
+            "edrSettings": {
+                "monitoringLevel": "cautious",
+                "deepfakeDetector": {"status": "enabled"},
+            },
+            "advancedRiskTelemetryStatus": "enabled",
+            "patterns": [
+                {
+                    "id": "1208222296",
+                    "name": "Smart Telemetry Pattern",
+                    "version": "2.219.00",
+                    "updatedDateTime": "2024-09-01T10:00:00Z",
+                }
+            ],
+        },
+    }
+    response = core_m._parse_data(raw_response, GetEndpointDetailsResp)
+    detail = response.data
+    assert detail.endpoint_name == "example-hostname"
+    assert detail.agent_guid == "94222d63-90da-a1eb-a051-a85d6b61f5fe"
+    assert detail.display_name == "example-display-name"
+    assert detail.type == "desktop"
+    assert detail.os.name == "Windows 11"
+    assert detail.os.platform == "windows"
+    assert detail.os.architecture == "x86_64"
+    assert detail.isolation_status == "off"
+    assert len(detail.interfaces) == 1
+    assert detail.interfaces[0].ip_addresses == ["192.168.0.1", "10.1.1.253"]
+    assert detail.interfaces[0].mac_address == "ff:ff:00:00:00:ff"
+    assert detail.epp_agent.protection_manager == "A1-US"
+    assert detail.epp_agent.product_names == ["Apex One"]
+    assert detail.epp_agent.patterns[0].id == "512"
+    assert detail.epp_agent.patterns[0].version == "2.219.00"
+    assert detail.epp_agent.engines[0].name == "Advanced Threat Scan Engine"
+    assert detail.epp_agent.features[0].name == "AntiMalwareScans"
+    assert detail.epp_agent.features[0].status == "enabled"
+    assert detail.epp_agent.domain_hierarchy == "/example/example-sub-domain"
+    assert detail.edr_sensor.connectivity == "connected"
+    assert detail.edr_sensor.status == "enabled"
+    assert detail.edr_sensor.edr_settings.monitoring_level == "cautious"
+    assert detail.edr_sensor.edr_settings.deepfake_detector.status == "enabled"
+    assert detail.edr_sensor.advanced_risk_telemetry_status == "enabled"
+    assert detail.edr_sensor.patterns[0].name == "Smart Telemetry Pattern"
+
+
+def test_send_endpoint_details(core, mocker):
+    mock_process = mocker.patch.object(
+        core,
+        "_process",
+        return_value=GetEndpointDetailsResp(
+            data=EndpointDetail.model_construct(
+                endpointName="test-host",
+                agentGuid="guid-1",
+            ),
+        ),
+    )
+    result = core.send(
+        GetEndpointDetailsResp,
+        Api.GET_ENDPOINT_DETAILS.value.format("guid-1"),
+    )
+    mock_process.assert_called()
+    assert result.result_code == ResultCode.SUCCESS
+    assert result.response.data.endpoint_name == "test-host"

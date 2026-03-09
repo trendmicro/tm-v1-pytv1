@@ -15,6 +15,7 @@ from .common import (
     EmailMessage,
     Endpoint,
     EndpointActivity,
+    EndpointDetail,
     EndpointSecurityEndpoint,
     ExceptionObject,
     MsData,
@@ -162,6 +163,10 @@ class GetAlertNoteResp(BaseResponse):
 class GetApiKeyResp(BaseResponse):
     data: ApiKey
     etag: str
+
+
+class GetEndpointDetailsResp(BaseResponse):
+    data: EndpointDetail
 
 
 class GetOatPackageResp(BaseResponse):

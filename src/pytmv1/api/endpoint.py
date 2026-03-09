@@ -13,6 +13,7 @@ from ..model.request import (
 from ..model.response import (
     ConsumeLinkableResp,
     GetEndpointActivitiesCountResp,
+    GetEndpointDetailsResp,
     ListEndpointActivityResp,
     ListEndpointDataResp,
     ListEndpointSecurityResp,
@@ -253,7 +254,22 @@ class Endpoint:
             headers=utils.tmv1_activity_query(op, fields),
         )
 
-    def list_security(
+    def get_endpoint(
+        self, endpoint_id: str
+    ) -> Result[GetEndpointDetailsResp]:
+        """Displays the detailed profile of the specified endpoint.
+
+        :param endpoint_id: The ID of the endpoint
+        on the Vision One platform.
+        :type endpoint_id: str
+        :rtype: Result[GetEndpointDetailsResp]
+        """
+        return self._core.send(
+            GetEndpointDetailsResp,
+            Api.GET_ENDPOINT_DETAILS.value.format(endpoint_id),
+        )
+
+    def list_endpoints(
         self,
         select: Optional[List[str]] = None,
         top: int = 100,
@@ -281,7 +297,7 @@ class Endpoint:
         """
         return self._core.send(
             ListEndpointSecurityResp,
-            Api.GET_ENDPOINT_SECURITY_ENDPOINTS,
+            Api.GET_ENDPOINT_LIST,
             params=utils.filter_none(
                 {
                     "select": ",".join(select) if select else None,
@@ -292,7 +308,7 @@ class Endpoint:
             headers=utils.tmv1_filter(op, fields),
         )
 
-    def consume_security(
+    def consume_endpoints(
         self,
         consumer: Callable[[EndpointSecurityEndpoint], None],
         select: Optional[List[str]] = None,
@@ -323,7 +339,7 @@ class Endpoint:
         """
         return self._core.send_linkable(
             ListEndpointSecurityResp,
-            Api.GET_ENDPOINT_SECURITY_ENDPOINTS,
+            Api.GET_ENDPOINT_LIST,
             consumer,
             params=utils.filter_none(
                 {

@@ -33,6 +33,7 @@ from .model.response import (
     GetAlertNoteResp,
     GetAlertResp,
     GetApiKeyResp,
+    GetEndpointDetailsResp,
     GetOatPackageResp,
     GetPipelineResp,
     MultiApiKeyResp,
@@ -306,6 +307,8 @@ def _parse_data(raw_response: Response, class_: Type[R]) -> R:
         log.debug("Parsing json response [Class=%s]", class_.__name__)
         if class_ in [MultiResp, MultiUrlResp, MultiApiKeyResp]:
             return class_(items=raw_response.json())
+        if class_ == GetEndpointDetailsResp:
+            return class_(data=raw_response.json())
         if class_ == GetOatPackageResp:
             return class_(package=raw_response.json())
         if class_ in [
