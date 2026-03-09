@@ -19,7 +19,7 @@ Using this project requires at least [Python 3.8](https://www.python.org/downloa
 
 - A thread-safe client for your application.
 - HTTP pooling capabilities.
-- Easy integration with TrendAI Vision One APIs.
+- Easy integration with TrendAI Vision One™ APIs.
 
 
 #### Configuration
@@ -121,6 +121,9 @@ Supported APIs
 | `endpoint.isolate`                             | [Isolate endpoint](https://automation.trendmicro.com/xdr/api-v3#tag/Endpoint/paths/~1v3.0~1response~1endpoints~1isolate/post)                                                                             |
 | `endpoint.restore`                             | [Restore endpoint](https://automation.trendmicro.com/xdr/api-v3#tag/Endpoint/paths/~1v3.0~1response~1endpoints~1restore/post)                                                                             |
 | `endpoint.terminate_process`                   | [Terminate process](https://automation.trendmicro.com/xdr/api-v3#tag/Endpoint/paths/~1v3.0~1response~1endpoints~1terminateProcess/post)                                                                   |
+| **Endpoint Security**                          |                                                                                                                                                                                                           |
+| `endpoint.get_endpoint`                         | [Get endpoint details](https://automation.trendmicro.com/xdr/api-v3#tag/Endpoint-Security/paths/~1v3.0~1endpointSecurity~1endpoints~1%7Bid%7D/get)                                                       |
+| `endpoint.[list_endpoints, consume_endpoints]` | [Get endpoint list](https://automation.trendmicro.com/xdr/api-v3#tag/Endpoint-Security/paths/~1v3.0~1endpointSecurity~1endpoints/get)                                                                     |
 | **Observed Attack Techniques**                 |                                                                                                                                                                                                           |
 | `oat.[list, consume]`                          | [Get Observed Attack Techniques events](https://automation.trendmicro.com/xdr/api-v3#tag/Observed-Attack-Techniques/paths/~1v3.0~1oat~1detections/get)                                                    |
 | **Observed Attack Techniques Pipeline**        |                                                                                                                                                                                                           |
@@ -170,7 +173,7 @@ Supported APIs
 
 Contributing
 ------------
-Read our [contributing guide](https://github.com/trendmicro/tm-v1/blob/main/CONTRIBUTING.md) to learn about our development process, how to propose bug fixes and improvements, and how to build and test your changes to TrendAI Vision One.
+Read our [contributing guide](https://github.com/trendmicro/tm-v1/blob/main/CONTRIBUTING.md) to learn about our development process, how to propose bug fixes and improvements, and how to build and test your changes to TrendAI Vision One™.
 
 Code of conduct
 ---------------
@@ -179,4 +182,5 @@ TrendAI™ has adopted a [Code of Conduct](https://github.com/trendmicro/tm-v1/b
 License
 -------
 Project distributed under the [Apache 2.0](https://spdx.org/licenses/Apache-2.0.html) license.
+
 
