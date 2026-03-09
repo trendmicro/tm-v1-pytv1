@@ -11,11 +11,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Set up Python 3.8
+      - name: Set up Python 3.9
         uses: actions/setup-python@v4
         with:
-          python-version: "3.8"
+          python-version: "3.9"
       - name: Install hatch
-        run: pip install --upgrade hatch
+        run: pip install --no-cache-dir "virtualenv<21" hatch==1.14.0
       - name: Run hatch build
-        run: hatch --verbose build
+        run: |
+          hatch env prune
+          hatch --verbose build

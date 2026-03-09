@@ -15,6 +15,8 @@ from .common import (
     EmailMessage,
     Endpoint,
     EndpointActivity,
+    EndpointDetail,
+    EndpointSecurityEndpoint,
     ExceptionObject,
     MsData,
     MsDataApiKey,
@@ -163,6 +165,10 @@ class GetApiKeyResp(BaseResponse):
     etag: str
 
 
+class GetEndpointDetailsResp(BaseResponse):
+    data: EndpointDetail
+
+
 class GetOatPackageResp(BaseResponse):
     package: OatEvent
 
@@ -205,6 +211,11 @@ class GetEmailActivitiesCountResp(BaseResponse):
 
 
 class ListEndpointDataResp(BaseLinkableResp[Endpoint]): ...
+
+
+class ListEndpointSecurityResp(BaseLinkableResp[EndpointSecurityEndpoint]):
+    total_count: int
+    count: int
 
 
 class ListExceptionsResp(BaseLinkableResp[ExceptionObject]): ...
