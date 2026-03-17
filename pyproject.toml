@@ -65,12 +65,17 @@ line_length = 79
 color_output = true
 
 [tool.mypy]
-python_version = "3.8"
+python_version = "3.9"
 exclude = ["dist", "template", "tests", "venv"]
 show_column_numbers = true
 warn_unused_configs = true
 pretty = true
 strict = true
+
+[[tool.mypy.overrides]]
+module = "bs4.*"
+ignore_missing_imports = true
+disallow_untyped_calls = false
 
 [tool.pytest.ini_options]
 

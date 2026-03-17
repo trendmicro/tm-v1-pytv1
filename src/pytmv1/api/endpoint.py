@@ -254,9 +254,7 @@ class Endpoint:
             headers=utils.tmv1_activity_query(op, fields),
         )
 
-    def get_endpoint(
-        self, endpoint_id: str
-    ) -> Result[GetEndpointDetailsResp]:
+    def get_endpoint(self, endpoint_id: str) -> Result[GetEndpointDetailsResp]:
         """Displays the detailed profile of the specified endpoint.
 
         :param endpoint_id: The ID of the endpoint

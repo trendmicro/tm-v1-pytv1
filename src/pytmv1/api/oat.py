@@ -204,9 +204,7 @@ class Oat:
                     "description": description,
                 }
             ),
-            headers={
-                "If-Match": (etag[1:-1] if etag.startswith('"') else etag)
-            },
+            headers={"If-Match": etag[1:-1] if etag.startswith('"') else etag},
         )
 
     def delete_pipelines(self, *pipeline_ids: str) -> MultiResult[MultiResp]:
