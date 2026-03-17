@@ -76,7 +76,8 @@ class Core:
             "User-Agent": f"{self._appname}-{USERAGENT_SUFFIX}/{__version__}",
         }
         self._proxies: Optional[Dict[str, str]] = _proxy(
-            os.getenv("HTTP_PROXY"), os.getenv("HTTPS_PROXY")
+            os.getenv("HTTP_PROXY") or os.getenv("http_proxy"),
+            os.getenv("HTTPS_PROXY") or os.getenv("https_proxy"),
         )
 
     @result
