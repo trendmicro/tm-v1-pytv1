@@ -26,7 +26,9 @@ from pytmv1 import (
     __version__,
 )
 from pytmv1 import core as core_m
-from pytmv1 import result
+from pytmv1 import (
+    result,
+)
 from pytmv1.core import API_VERSION, USERAGENT_SUFFIX, Core
 from pytmv1.exception import (
     ParseModelError,

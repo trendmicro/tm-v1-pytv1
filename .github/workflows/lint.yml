@@ -16,7 +16,7 @@ jobs:
         with:
           python-version: "3.9"
       - name: Install dependencies
-        run: pip install --upgrade pip black
+        run: pip install --no-cache-dir black==24.10.0
       - name: Run black
         run: black --check --diff --verbose .
   isort:
@@ -28,7 +28,7 @@ jobs:
         with:
           python-version: "3.9"
       - name: Install dependencies
-        run: pip install --upgrade pip isort[colors]
+        run: pip install --no-cache-dir "isort[colors]==6.1.0"
       - name: Run isort
         run: isort --check-only --diff --verbose .
   flake8:
@@ -40,7 +40,7 @@ jobs:
         with:
           python-version: "3.9"
       - name: Install dependencies
-        run: pip install --upgrade pip flake8
+        run: pip install --no-cache-dir flake8==7.3.0
       - name: Run flake8
         run: flake8 --verbose .
   mypy:
@@ -52,6 +52,6 @@ jobs:
         with:
           python-version: "3.9"
       - name: Install dependencies
-        run: pip install --upgrade pip mypy pydantic
+        run: pip install --no-cache-dir mypy==1.15.0 pydantic
       - name: Run mypy
         run: mypy --install-types --non-interactive ./src
