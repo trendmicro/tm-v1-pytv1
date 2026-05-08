@@ -82,6 +82,7 @@ class Alert:
         start_time: Optional[str] = None,
         end_time: Optional[str] = None,
         op: QueryOp = QueryOp.AND,
+        order_by: str = "createdDateTime asc",
         **fields: str,
     ) -> Result[ListAlertsResp]:
         """Retrieves workbench alerts in a paginated list.
@@ -96,6 +97,10 @@ class Alert:
         :type end_time: Optional[str]
         :param op: Operator to apply between fields (ie: ... OR ...).
         :type op: QueryOp
+        :param order_by: Sort order for results. Pass
+        ``"createdDateTime asc"`` when paginating across multiple pages,
+        as the descending default does not advance ``nextLink`` reliably.
+        :type order_by: str
         :param fields: Field/value used to filter result (i.e:fileName="1.sh"),
         check Vision One API documentation for full list of supported fields.
         :type fields: Dict[str, str]
@@ -108,7 +113,7 @@ class Alert:
                 {
                     "startDateTime": start_time,
                     "endDateTime": end_time,
-                    "orderBy": "createdDateTime desc",
+                    "orderBy": order_by,
                 }
             ),
             headers=utils.tmv1_filter(op, fields),
@@ -121,6 +126,7 @@ class Alert:
         end_time: Optional[str] = None,
         date_time_target: Optional[str] = "createdDateTime",
         op: QueryOp = QueryOp.AND,
+        order_by: str = "createdDateTime asc",
         **fields: str,
     ) -> Result[ConsumeLinkableResp]:
         """Retrieves and consume workbench alerts.
@@ -137,6 +143,10 @@ class Alert:
         :type end_time: Optional[str]
         :param op: Operator to apply between fields (ie: ... OR ...).
         :type op: QueryOp
+        :param order_by: Sort order for results. Pass
+        ``"createdDateTime asc"`` when paginating across multiple pages,
+        as the descending default does not advance ``nextLink`` reliably.
+        :type order_by: str
         :param fields: Field/value used to filter result (i.e:fileName="1.sh"),
         check Vision One API documentation for full list of supported fields.
         :type fields: Dict[str, str]
@@ -151,7 +161,7 @@ class Alert:
                     "startDateTime": start_time,
                     "endDateTime": end_time,
                     "dateTimeTarget": date_time_target,
-                    "orderBy": "createdDateTime desc",
+                    "orderBy": order_by,
                 }
             ),
             headers=utils.tmv1_filter(op, fields),
