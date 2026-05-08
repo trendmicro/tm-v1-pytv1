@@ -82,7 +82,7 @@ class Alert:
         start_time: Optional[str] = None,
         end_time: Optional[str] = None,
         op: QueryOp = QueryOp.AND,
-        order_by: str = "createdDateTime desc",
+        order_by: str = "createdDateTime asc",
         **fields: str,
     ) -> Result[ListAlertsResp]:
         """Retrieves workbench alerts in a paginated list.
@@ -126,7 +126,7 @@ class Alert:
         end_time: Optional[str] = None,
         date_time_target: Optional[str] = "createdDateTime",
         op: QueryOp = QueryOp.AND,
-        order_by: str = "createdDateTime desc",
+        order_by: str = "createdDateTime asc",
         **fields: str,
     ) -> Result[ConsumeLinkableResp]:
         """Retrieves and consume workbench alerts.
