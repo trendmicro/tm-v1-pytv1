@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Annotated, Any, Dict, List, Optional, Tuple, Union
 
 from pydantic import BaseModel as PydanticBaseModel
 from pydantic import ConfigDict, Field
@@ -622,7 +622,10 @@ class OatEvent(BaseConsumable):
     detected_date_time: Optional[str] = None
     detection_time: Optional[str] = None
     ingested_date_time: Optional[str] = None
-    detail: Union[EndpointActivity, EmailActivity]
+    detail: Annotated[
+        Union[EndpointActivity, EmailActivity, Dict[str, Any]],
+        Field(union_mode="left_to_right"),
+    ]
 
 
 class OatPackage(BaseConsumable):
